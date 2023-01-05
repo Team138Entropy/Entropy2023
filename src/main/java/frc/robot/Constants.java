@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import frc.robot.util.TuneableNumber;
 import frc.robot.util.drivers.SwerveModuleConstants;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 /**
  * Constants
@@ -37,24 +38,24 @@ public class Constants {
       /* Swerve Module IDs */
       public static class SwerveModules {
         /* Module 0 */
-        public static final int module0_Drive = 0;
-        public static final int module0_Rotation = 0;
-        public static final int module0_Cancoder = 0;
+        public static final int module0_DriveMotor = 1;
+        public static final int module0_RotationMotor = 2;
+        public static final int module0_Cancoder = 3;
 
         /* Module 1 */
-        public static final int module1_Drive = 0;
-        public static final int module1_Rotation = 0;
-        public static final int module1_Cancoder = 0;
+        public static final int module1_DriveMotor = 4;
+        public static final int module1_RotationMotor = 5;
+        public static final int module1_Cancoder = 6;
 
         /* Module 2 */
-        public static final int module2_Drive = 0;
-        public static final int module2_Rotation = 0;
-        public static final int module2_Cancoder = 0;
+        public static final int module2_DriveMotor = 7;
+        public static final int module2_RotationMotor = 8;
+        public static final int module2_Cancoder = 9;
 
         /* Module 3 */
-        public static final int module3_Drive = 0;
-        public static final int module3_Rotation = 0;
-        public static final int module3_Cancoder = 0;
+        public static final int module3_DriveMotor = 10;
+        public static final int module3_RotationMotor = 11;
+        public static final int module3_Cancoder = 12;
       }
 
     }
@@ -150,15 +151,31 @@ public class Constants {
       public static final double acceptableError = 0.5;
     }
 
+    public static final class SnapConstants {
+      public static final double kP = 5.0; 
+      public static final double kI = 0;
+      public static final double kD = 0.0;
+      public static final double kTimeout = 0.25;
+      public static final double kEpsilon = 1.0;
+
+      // Constraints for the profiled angle controller
+      public static final double kMaxAngularSpeedRadiansPerSecond = 2.0 * Math.PI;
+      public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.pow(kMaxAngularSpeedRadiansPerSecond, 2);
+
+      public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
+              new TrapezoidProfile.Constraints(kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
+  }
+
     /* Swerve Modules */
     public static class SwerveModules {
       public static class Module0 {
-        public static double AngleOffset = 0;
+        public static double AngleOffset = 68.37;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
-            Talons.Drive.SwerveModules.module0_Drive,
-            Talons.Drive.SwerveModules.module0_Rotation,
+            "Front Left Module - Module 0",
+            Talons.Drive.SwerveModules.module0_DriveMotor,
+            Talons.Drive.SwerveModules.module0_RotationMotor,
             Talons.Drive.SwerveModules.module0_Cancoder,
             AngleOffset
           );
@@ -166,12 +183,13 @@ public class Constants {
       }
 
       public static class Module1 {
-        public static double AngleOffset = 0;
+        public static double AngleOffset = 312.53;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
-            Talons.Drive.SwerveModules.module1_Drive,
-            Talons.Drive.SwerveModules.module1_Rotation,
+            "Front Right Module - Module 1",
+            Talons.Drive.SwerveModules.module1_DriveMotor,
+            Talons.Drive.SwerveModules.module1_RotationMotor,
             Talons.Drive.SwerveModules.module1_Cancoder,
             AngleOffset
           );
@@ -179,12 +197,13 @@ public class Constants {
       }
 
       public static class Module2 {
-        public static double AngleOffset = 0;
+        public static double AngleOffset = 357.97;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
-            Talons.Drive.SwerveModules.module2_Drive,
-            Talons.Drive.SwerveModules.module2_Rotation,
+            "Back Left Module - Module 2",
+            Talons.Drive.SwerveModules.module2_DriveMotor,
+            Talons.Drive.SwerveModules.module2_RotationMotor,
             Talons.Drive.SwerveModules.module2_Cancoder,
             AngleOffset
           );
@@ -192,12 +211,13 @@ public class Constants {
       }
 
       public static class Module3 {
-        public static double AngleOffset = 0;
+        public static double AngleOffset = 295.2;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
-            Talons.Drive.SwerveModules.module3_Drive,
-            Talons.Drive.SwerveModules.module3_Rotation,
+            "Back Right Module - Module 3",
+            Talons.Drive.SwerveModules.module3_DriveMotor,
+            Talons.Drive.SwerveModules.module3_RotationMotor,
             Talons.Drive.SwerveModules.module3_Cancoder,
             AngleOffset
           );
@@ -205,7 +225,11 @@ public class Constants {
       }
     }
 
-  }
+
+    
+
+
+  } // End Drive
 
   public static class Controllers {
     public static final boolean ignore = true;
@@ -365,7 +389,10 @@ public class Constants {
     public static final double openLoopRamp = 0.25;
     public static final double closedLoopRamp = 0.0;
 
-    public static final double driveGearRatio = 6.75;
+    // Gear Ratios - https://www.swervedrivespecialties.com/products/mk4i-swerve-module#:~:text=The%20steering%20gear%20ratio%20of,is%20150%2F7%3A1.
+    // Stearing Gear Ratio is 150/7:1 ~ 21.43
+    // Drive Gear Ratio Varies by Speed 6.12 for L3
+    public static final double driveGearRatio = 6.12;
     public static final double angleGearRatio = 21.43;
 
     /* Angle Encoder Invert */

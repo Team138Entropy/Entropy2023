@@ -5,6 +5,7 @@
       "/LiveWindow/Ungrouped/ADXRS450_Gyro[0]": "Gyro",
       "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/SendableChooser[0]": "String Chooser"
     },
@@ -18,6 +19,18 @@
   },
   "NetworkTables": {
     "SmartDashboard": {
+      "Swerve Modules": {
+        "Module 0": {
+          "open": true
+        },
+        "Module 1": {
+          "open": true
+        },
+        "open": true
+      },
+      "Talon FX 1": {
+        "open": true
+      },
       "open": true
     }
   }

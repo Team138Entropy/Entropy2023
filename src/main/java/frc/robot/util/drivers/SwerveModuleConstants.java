@@ -1,6 +1,7 @@
 package frc.robot.util.drivers;
 
 public class SwerveModuleConstants {
+    public final String moduleName;
     public final int driveMotorID;
     public final int angleMotorID;
     public final int cancoderID;
@@ -13,7 +14,10 @@ public class SwerveModuleConstants {
      * @param canCoderID
      * @param angleOffset
      */
-    public SwerveModuleConstants(int driveMotorID, int angleMotorID, int canCoderID, double angleOffset) {
+    public SwerveModuleConstants(
+        String modName, int driveMotorID, 
+        int angleMotorID, int canCoderID, double angleOffset) {
+        this.moduleName = modName;
         this.driveMotorID = driveMotorID;
         this.angleMotorID = angleMotorID;
         this.cancoderID = canCoderID;

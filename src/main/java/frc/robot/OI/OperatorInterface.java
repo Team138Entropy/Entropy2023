@@ -1,8 +1,10 @@
 package frc.robot.OI;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
+import frc.robot.Enums.SwerveCardinal;
 import frc.robot.OI.XboxController.Axis;
 import frc.robot.OI.XboxController.Button;
 import frc.robot.OI.XboxController.Side;
@@ -89,6 +91,39 @@ public class OperatorInterface {
         } else {
             return Constants.SwerveConstants.maxAngularVelocity * (rotAxis - (Math.signum(rotAxis) * Constants.Controllers.joystickDeadband)) / (1 - Constants.Controllers.joystickDeadband);
         }
+    }
+
+    // Get Quick Snap to a Direction
+    public SwerveCardinal getSwerveSnap() {
+        SwerveCardinal result = SwerveCardinal.NONE;
+
+        // Forward, Backwards, Left, Right
+        if (mDriverController.getButton(Button.Y)) {
+            result = SwerveCardinal.FORWARDS;
+        }
+        if (mDriverController.getButton(Button.A)) {
+            result = SwerveCardinal.BACKWARDS;
+        }
+        if (mDriverController.getButton(Button.X)) {
+            result = SwerveCardinal.LEFT;
+        }
+        if (mDriverController.getButton(Button.B)) {
+            result = SwerveCardinal.RIGHT;
+        }
+
+        return result;
+    }
+
+    public boolean getResetOdometry(){
+        return mDriverController.getButton(Button.START);
+    }
+    
+    public boolean getZeroGyro(){
+        return mDriverController.getButton(Button.START);
+    }
+
+    public boolean getBrake(){
+        return mDriverController.getButton(Button.LB);
     }
 
     public boolean getDriveAutoSteer(){

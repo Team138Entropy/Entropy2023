@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
@@ -10,6 +11,7 @@ import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Enums.SwerveCardinal;
 import frc.robot.OI.OperatorInterface;
 import frc.robot.auto.AutoModeExecutor;
 import frc.robot.auto.TrajectoryGeneratorHelper;
@@ -72,6 +74,12 @@ public class Robot extends TimedRobot {
 
     // generate generic auto modes to load into JIT
     TrajectoryGeneratorHelper.generateExampleTrajectories();
+
+    // reset odometry
+    mDrive.resetOdometry(new Pose2d());
+
+    // Reset Drive Sensors
+    mDrive.zeroSensors();
   }
 
 
@@ -227,7 +235,6 @@ public class Robot extends TimedRobot {
     double driveThrottle = mOperatorInterface.getDriveThrottle()*-1;
     double driveTurn = mOperatorInterface.getDriveTurn();
 
-
     // precision steer (slow down throttle if left trigger is held)
    if(precisionSteer) driveThrottle *= .3;
 
@@ -277,10 +284,30 @@ public class Robot extends TimedRobot {
     }
     else if(Drive.DriveStyle.SWERVE_DRIVE == driveStyle)
     {
+      // Zero Gyro
+      if(mOperatorInterface.getZeroGyro())
+      {
+        mDrive.zeroHeading();
+      }
+
+      // Swerve Brake
+      mDrive.setBrake(mOperatorInterface.getBrake());
+
+      // Swerve Snap to a Direction (Button Press Quickly Moves Robot)
+      SwerveCardinal snapCardinal = mOperatorInterface.getSwerveSnap();
+      if(SwerveCardinal.NONE != snapCardinal) // Snap Direction Detected!
+      {
+        mDrive.startSnap(snapCardinal.degrees);
+      }
+
       // Swerve Drive
       Translation2d sTrans = mOperatorInterface.getSwerveTranslation();
       double sRotation = mOperatorInterface.getSwerveRotation();
       mDrive.setSwerveDrive(sTrans, sRotation, true, true);
+
+      // Log Inputs
+      SmartDashboard.putString("Swerve Input Translation", sTrans.toString());
+      SmartDashboard.putNumber("Swerve Input Rotation", sRotation);
     }
 
     // Update Odometry of Robot (only if real)
