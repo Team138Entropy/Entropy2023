@@ -10,6 +10,8 @@ public class Enums {
     };
 
     // Swerve Cardinal Directions
+    // These are SNAP Directions that will allow the swerve system
+    // to auto turn to them
     public enum SwerveCardinal {
         NONE(0),
 

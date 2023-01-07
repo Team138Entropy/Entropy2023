@@ -20,8 +20,23 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 
+/*
+ Swerve Module
+ Each Swerve Module consists of a Drive Motor, Angle Motor and a CANCoder
 
+ CANCoders in the swerve module measure absolute angle by reading the orientation of a cylindrical magnet
+ glued to the swerve module in line with the rotational axis. Since the rotation of the magnet relative to
+ the wheel will vary between module to module. An offset is needed to tell the robot the difference between the 
+ magnet roation and wheel rotation. THere is no correlation with modules, its about how its mounted.
 
+ To calculate, turn all bevels (to the right) of the front side.. so the wheels are facing front. Use a straight
+ edge to line them up. Its important that the wheels are pointed in the same direction.
+
+ TalonFX position is realtive to where the encoder is zeroed. Zero the TalonFX encoders on bootup 
+ to the CANCoder reading minus the offset. So Requesting 0-360 degrees from the motor will set the appropriate angle.
+
+ @TODO: pid constants of angle motor seem a little rough, might need a retune 
+*/
 public class SwerveModule  {
     private final int mModuleNumber;
     private final String mModuleName;
@@ -52,7 +67,11 @@ public class SwerveModule  {
         mAngleOffset = swerveConstants.angleOffset;
         mDriveMotor = new EntropyTalonFX(swerveConstants.driveMotorID);
         mAngleMotor = new EntropyTalonFX(swerveConstants.angleMotorID);
-        mDesiredState = new SwerveModuleState(0, new Rotation2d());
+        mDesiredState = new SwerveModuleState(0, new Rotation2d()); // zero desired state
+
+        // Set Motor Descriptions for logging
+        mDriveMotor.setDescription(mModuleName + " Drive Motor");
+        mAngleMotor.setDescription(mModuleName + " Angle Motor");
 
         // Angle Encoder
         mAngleEncoder = new EntropyCANCoder(swerveConstants.cancoderID);

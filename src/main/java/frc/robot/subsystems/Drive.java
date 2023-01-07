@@ -116,7 +116,7 @@ public class Drive extends Subsystem {
   private boolean mIsSnapping;
 
   private ProfiledPIDController mSnapPidController;
-  private PIDController mVisionPidController;
+  private PIDController mVisionPIDController;
   private TimeDelayedBoolean mDelayedBoolean;
 
 

@@ -167,6 +167,8 @@ public class Constants {
   }
 
     /* Swerve Modules */
+    // Each Angle Offset is a measured value from the CANCoder
+    // More information detailed in the Swerve Module Class 
     public static class SwerveModules {
       public static class Module0 {
         public static double AngleOffset = 114.7;

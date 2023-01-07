@@ -10,6 +10,7 @@ import frc.robot.Constants;
 public class EntropyTalonFX extends TalonFX {
     private final double decisecondsPerSecond = 10;
     private String deviceInfo;
+    private String description;
     private double ticksPerMeter;
     private double saturationVoltage = 12;
     private int velocitySlotIdx;
@@ -105,8 +106,19 @@ public class EntropyTalonFX extends TalonFX {
         return super.configVoltageCompSaturation(voltage);
     }
 
+    public void setDescription(String desc)
+    {
+        description = desc;
+    }
+
+    public String getDescription(String desc)
+    {
+        return description;
+    }
+
     public void updateSmartdashboard()
     {    
+       SmartDashboard.putString(deviceInfo + "/Description", description);
        SmartDashboard.putNumber(deviceInfo + "/Voltage", getBusVoltage());
        SmartDashboard.putNumber(deviceInfo + "/Current", getSupplyCurrent()); 
        SmartDashboard.putBoolean(deviceInfo + "/Inverted", getInverted()); 
