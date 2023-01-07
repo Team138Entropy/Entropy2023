@@ -43,8 +43,8 @@ public class Constants {
         public static final int module0_Cancoder = 3;
 
         /* Module 1 */
-        public static final int module1_DriveMotor = 4;
-        public static final int module1_RotationMotor = 5;
+        public static final int module1_DriveMotor = 5;
+        public static final int module1_RotationMotor = 4;
         public static final int module1_Cancoder = 6;
 
         /* Module 2 */
@@ -61,14 +61,14 @@ public class Constants {
     }
 
     public static class Shooter {
-      public static final int leftMaster = 5;
-      public static final int rightMaster = 6;
+      public static final int leftMaster = 50;
+      public static final int rightMaster = 61;
     }
 
     public static class Feeder {
-      public static final int shooterInput = 7;
-      public static final int feeder1 = 9;
-      public static final int feeder2 = 8;
+      public static final int shooterInput = 72;
+      public static final int feeder1 = 92;
+      public static final int feeder2 = 82;
     }
 
     public static class Sensors {
@@ -169,7 +169,7 @@ public class Constants {
     /* Swerve Modules */
     public static class SwerveModules {
       public static class Module0 {
-        public static double AngleOffset = 68.37;
+        public static double AngleOffset = 114.7;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
@@ -183,7 +183,7 @@ public class Constants {
       }
 
       public static class Module1 {
-        public static double AngleOffset = 312.53;
+        public static double AngleOffset = 133.6;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
@@ -197,7 +197,7 @@ public class Constants {
       }
 
       public static class Module2 {
-        public static double AngleOffset = 357.97;
+        public static double AngleOffset = 66.4;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
@@ -211,7 +211,7 @@ public class Constants {
       }
 
       public static class Module3 {
-        public static double AngleOffset = 295.2;
+        public static double AngleOffset = 309.46;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
@@ -334,7 +334,7 @@ public class Constants {
 
   public static class SwerveConstants { // constants related to swerve system
     public static final boolean invertGyro = false; // Always ensure Gyro is CCW+ CW-
-    public static final boolean invertYAxis = false;
+    public static final boolean invertYAxis = true;
     public static final boolean invertXAxis = false;
     public static final boolean invertRotateAxis = false;
 

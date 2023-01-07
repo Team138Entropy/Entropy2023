@@ -2,26 +2,28 @@ package frc.robot.util.drivers;
 
 import com.ctre.phoenix.sensors.Pigeon2;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
+import frc.robot.util.geometry.Rotation2d;
+
 
 public class Pigeon {
+
     private static Pigeon mInstance;
 
     public static Pigeon getInstance() {
         if (mInstance == null) {
-            mInstance = new Pigeon(Constants.Talons.Sensors.pigeonCan);
+            mInstance = new Pigeon(15);
         }
         return mInstance;
     }
 
-    // pigeon object
+    // Actual pigeon object
     private final Pigeon2 mGyro;
-    
 
     // Configs
-    //private Rotation2d yawAdjustmentAngle = Rotation2d.identity();
-    //private Rotation2d rollAdjustmentAngle = Rotation2d.identity();
+    private boolean inverted = Constants.SwerveConstants.invertGyro;
+    private Rotation2d yawAdjustmentAngle = Rotation2d.identity();
+    private Rotation2d rollAdjustmentAngle = Rotation2d.identity();
 
     private Pigeon(int port) {        
         mGyro = new Pigeon2(port);
@@ -29,14 +31,15 @@ public class Pigeon {
     }
 
     public Rotation2d getYaw() {
-        //Rotation2d angle = getUnadjustedYaw().rotateBy(yawAdjustmentAngle.inverse());
-        //return angle;
-        return getUnadjustedYaw();
+        Rotation2d angle = getUnadjustedYaw().rotateBy(yawAdjustmentAngle.inverse());
+        if (inverted) {
+            return angle.inverse();
+        }
+        return angle;
     }
 
     public Rotation2d getRoll() {
-       // return getUnadjustedRoll().rotateBy(rollAdjustmentAngle.inverse());
-       return getUnadjustedRoll();
+        return getUnadjustedRoll().rotateBy(rollAdjustmentAngle.inverse());
     }
 
     /**
@@ -45,7 +48,7 @@ public class Pigeon {
      * @param angleDeg New yaw in degrees
      */
     public void setYaw(double angleDeg) {
-       // yawAdjustmentAngle = getUnadjustedYaw().rotateBy(Rotation2d.fromDegrees(angleDeg).inverse());
+        yawAdjustmentAngle = getUnadjustedYaw().rotateBy(Rotation2d.fromDegrees(angleDeg).inverse());
     }
 
     /**
@@ -54,7 +57,7 @@ public class Pigeon {
      * @param angleDeg New yaw in degrees
      */
     public void setRoll(double angleDeg) {
-        //rollAdjustmentAngle = getUnadjustedRoll().rotateBy(Rotation2d.fromDegrees(angleDeg).inverse());
+        rollAdjustmentAngle = getUnadjustedRoll().rotateBy(Rotation2d.fromDegrees(angleDeg).inverse());
     }
 
     public Rotation2d getUnadjustedYaw() {

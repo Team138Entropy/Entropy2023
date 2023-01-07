@@ -18,6 +18,7 @@ import frc.robot.auto.TrajectoryGeneratorHelper;
 import frc.robot.auto.modes.*;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.Drive.DriveStyle;
+import frc.robot.util.drivers.Pigeon;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -50,6 +51,8 @@ public class Robot extends TimedRobot {
 
   // Field Object
   private final Field2d mField = new Field2d();
+
+  private final Pigeon mPigeon = Pigeon.getInstance();
 
   // Real Robot Indicator
   private final boolean mRealRobot = Robot.isReal();
@@ -104,7 +107,9 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("drive throttle", mOperatorInterface.getDriveThrottle());
     SmartDashboard.putNumber("drive turn", mOperatorInterface.getDriveTurn());
     SmartDashboard.putData("Field", mField);
-    
+    SmartDashboard.putNumber("Pigeon Degrees", mPigeon.getYaw().getDegrees());
+    SmartDashboard.putNumber("Pigeon Radians", mPigeon.getYaw().getRadians());
+
     // Iterates each Subsytem 
     mSubsystemManager.updateSmartdashboard();
   }
@@ -234,6 +239,9 @@ public class Robot extends TimedRobot {
   private void DriveLoop(boolean precisionSteer, boolean allowAutoSteer){
     double driveThrottle = mOperatorInterface.getDriveThrottle()*-1;
     double driveTurn = mOperatorInterface.getDriveTurn();
+    SmartDashboard.putNumber("Driver Throttle", driveThrottle);
+    SmartDashboard.putNumber("Driver Trun", driveTurn);
+
 
     // precision steer (slow down throttle if left trigger is held)
    if(precisionSteer) driveThrottle *= .3;

@@ -58,16 +58,25 @@ public class OperatorInterface {
         return mDriverController.getJoystick(Side.RIGHT, Axis.X);
     }
 
+
     /* Swerve Drive Controls */
     public Translation2d getSwerveTranslation() {
         // joystick inputs
         double forwardAxis = mDriverController.getJoystick(Side.LEFT, Axis.Y);
         double strafeAxis = mDriverController.getJoystick(Side.LEFT, Axis.X);
 
+        SmartDashboard.putNumber("Swerve Forward Axis", forwardAxis);
+        SmartDashboard.putNumber("Swerve Strafe Axis", strafeAxis);
+
+
         forwardAxis = Constants.SwerveConstants.invertYAxis ? forwardAxis : -forwardAxis;
         strafeAxis = Constants.SwerveConstants.invertXAxis ? strafeAxis :-strafeAxis;
 
         Translation2d tAxes = new Translation2d(forwardAxis, strafeAxis);
+        //Translation2d tAxes = new Translation2d(strafeAxis, forwardAxis);
+
+        // optional code to deadband each one side
+
 
         if (Math.abs(tAxes.getNorm()) < Constants.Controllers.joystickDeadband) {
             return new Translation2d();

@@ -238,7 +238,7 @@ public class Drive extends Subsystem {
     };
 
     // Swerve Odometry
-    mSwerveOdometry = new SwerveDriveOdometry(Constants.SwerveConstants.swerveKinematics, mPigeon.getYaw());
+    mSwerveOdometry = new SwerveDriveOdometry(Constants.SwerveConstants.swerveKinematics, mPigeon.getYaw().getWPIRotation2d());
   }
 
   private void configTalon(EntropyTalonFX talon) {
@@ -503,7 +503,7 @@ public class Drive extends Subsystem {
                               translation.getX(), 
                               translation.getY(), 
                               rotation, 
-                              mPigeon.getYaw()
+                              mPigeon.getYaw().getWPIRotation2d()
                           )
                           : new ChassisSpeeds(
                               translation.getX(), 
@@ -575,6 +575,7 @@ public class Drive extends Subsystem {
    // SmartDashboard.putNumber("gyro", getHeading());
    SmartDashboard.putBoolean("Break Enabled", mBrakeEnabled);
    SmartDashboard.putBoolean("Is Snapping", mIsSnapping);
+   SmartDashboard.putNumber("Pigeon Yaw", mPigeon.getYaw().getDegrees());
 
    // Drive Style Specific Dashboard
    switch(mDriveStyle)
@@ -720,7 +721,7 @@ public class Drive extends Subsystem {
         mDriveSimSystem.updateDrive(getLastDriveSignal());
       break;
       case SWERVE_DRIVE:
-        mSwerveOdometry.update(mPigeon.getYaw(), getDesiredSwerveModuleStates());
+        mSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), getDesiredSwerveModuleStates());
        // mSwerveDriveSimSystem.updateStates()        
       break;
     }
@@ -736,7 +737,7 @@ public class Drive extends Subsystem {
         );
       break;
       case SWERVE_DRIVE:
-        mSwerveOdometry.update(mPigeon.getYaw(), getSwerveModuleStates());
+        mSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), getSwerveModuleStates());
       break;
     }
 

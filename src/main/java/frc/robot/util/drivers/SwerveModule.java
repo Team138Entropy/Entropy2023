@@ -98,6 +98,7 @@ public class SwerveModule  {
     }
 
     public void resetToAbsolute(){
+        
         double absolutePosition = Conversions.degreesToFalcon(getCanCoder().getDegrees() - mAngleOffset, Constants.SwerveConstants.angleGearRatio);
         mAngleMotor.setSelectedSensorPosition(absolutePosition);
     }
@@ -176,6 +177,7 @@ public class SwerveModule  {
         SmartDashboard.putNumber(BaseKey + "CANCoderID", mAngleEncoder.getDeviceID());
         SmartDashboard.putNumber(BaseKey + "Last Angle", mLastAngle);
         SmartDashboard.putString(BaseKey + "Desired State", mDesiredState.toString());
+        SmartDashboard.putNumber(BaseKey + "CanCoder Position", getCanCoder().getDegrees());
 
         // CANCoder
         mAngleEncoder.updateSmartdashboard();

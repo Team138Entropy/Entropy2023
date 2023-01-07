@@ -17,6 +17,7 @@ public class Enums {
         LEFT(270),
         RIGHT(90),
         BACKWARDS(180),
+        TEST(45),
 
         FAR_FENDER(143),
         RIGHT_FENDER(233),

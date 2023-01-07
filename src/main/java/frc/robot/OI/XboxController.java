@@ -90,6 +90,12 @@ public class XboxController {
         (y ? -1 : 1) * mController.getRawAxis((left ? 0 : 4) + (y ? 1 : 0)), deadband);
   }
 
+  double getAxis(Side side, Axis axis) {
+    boolean left = side == Side.LEFT;
+    boolean y = axis == Axis.Y;
+    return mController.getRawAxis((left ? 0 : 4) + (y ? 1 : 0));
+  }
+
   // analog trigger version
   double getTriggerValue(Side side) {
     return mController.getRawAxis(side == Side.LEFT ? 2 : 3);
