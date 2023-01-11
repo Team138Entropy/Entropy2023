@@ -79,10 +79,10 @@ public class Robot extends TimedRobot {
     TrajectoryGeneratorHelper.generateExampleTrajectories();
 
     // reset odometry
-    mDrive.resetOdometry(new Pose2d());
+    //mDrive.resetOdometry(new Pose2d());
 
     // Reset Drive Sensors
-    mDrive.zeroSensors();
+    //mDrive.zeroSensors();
   }
 
 
@@ -163,7 +163,7 @@ public class Robot extends TimedRobot {
     }
 
     // Zero Drive Sensors
-    mDrive.zeroSensors();
+    //mDrive.zeroSensors();
   }
 
   /** This function is called periodically during operator control. */
@@ -215,7 +215,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {
-    mDrive.updateDriveSim();
+    //mDrive.updateDriveSim();
 
     // Update Pose on Virtual Field
     
@@ -228,7 +228,7 @@ public class Robot extends TimedRobot {
     DriveLoop(mOperatorInterface.getDrivePrecisionSteer(), false);
 
     // Update Robot Field Position
-    mField.setRobotPose(mDrive.getPose());
+    //mField.setRobotPose(mDrive.getPose());
   }
 
    /**
@@ -284,6 +284,7 @@ public class Robot extends TimedRobot {
     */
 
     // Procced based on Drive Style
+    /*
     Drive.DriveStyle driveStyle = mDrive.getDriveStyle();
     if(Drive.DriveStyle.DIFFERENTIAL_DRIVE == driveStyle)
     {
@@ -320,6 +321,7 @@ public class Robot extends TimedRobot {
 
     // Update Odometry of Robot (only if real)
     if(mRealRobot) mDrive.updateOdometry();
+    */
   }
 
 }
