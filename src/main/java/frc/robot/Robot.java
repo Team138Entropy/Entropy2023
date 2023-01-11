@@ -37,7 +37,7 @@ public class Robot extends TimedRobot {
   private final SubsystemManager mSubsystemManager = SubsystemManager.getInstance();
   
   // Subsystems
-  private final Drive mDrive = Drive.getInstance();
+  //private final Drive mDrive = Drive.getInstance();
 
   // Autonomous Execution Thread
   private AutoModeExecutor mAutoModeExecutor = null;
