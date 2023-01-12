@@ -21,7 +21,11 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import org.photonvision.targeting.TargetCorner;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -31,8 +35,22 @@ import frc.robot.Constants;
 public class photonVision {
     public static photonVision mInstance = null;
 
-    static PhotonCamera camera = new PhotonCamera("camera138");
-  
+    
+
+    // TODO - Likely two more camera to come to be a 3 camera system
+    //      - this should be in an array with a corresponding transform3d, enums to index
+    public static final PhotonCamera camera = new PhotonCamera("camera138");
+    // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+    public static final Transform3d robotToCam = 
+                    new Transform3d(new Translation3d(0.5, 0.0, 0.5), 
+                    new Rotation3d(0,0,0)); 
+
+    // TODO - Add Additional Cameras
+    public static final List<Pair<PhotonCamera, Transform3d>> CameraList = List.of(
+      new Pair<PhotonCamera, Transform3d>(camera, robotToCam)
+    );
+
+
     public boolean hasTarget = false;
     
     //Transform2d pose = target.getCameraToTarget();

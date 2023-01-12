@@ -416,12 +416,4 @@ public class Constants {
     public static final double wheelCircumference = wheelDiameter * Math.PI;
   }
 
-   /** Contains various field dimensions and useful reference points. */
-  public static class FieldConstants {
-    // Field dimensions
-    public static final double fieldLength = Units.inchesToMeters(54.0 * 12.0);
-    public static final double fieldWidth = Units.inchesToMeters(27.0 * 12.0);
-
-  };
-
 }

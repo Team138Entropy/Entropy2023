@@ -33,6 +33,9 @@ public class Robot extends TimedRobot {
   // Controllers Reference
   private final OperatorInterface mOperatorInterface = OperatorInterface.getInstance();
 
+  // Robot State
+  private final RobotState mRobotState = RobotState.getInstance();
+
   // Subsystem Manager
   private final SubsystemManager mSubsystemManager = SubsystemManager.getInstance();
   
@@ -91,6 +94,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    // Update Robotstate
+    mRobotState.update();
 
     // Update Smartdashboard Overall and Subsystems
     updateSmartdashboard();
@@ -110,7 +115,10 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Pigeon Degrees", mPigeon.getYaw().getDegrees());
     SmartDashboard.putNumber("Pigeon Radians", mPigeon.getYaw().getRadians());
 
-    // Iterates each Subsytem 
+    // RobotState
+    mRobotState.updateSmartdashboard();
+
+    // Iterates each Subsystem 
     mSubsystemManager.updateSmartdashboard();
   }
 

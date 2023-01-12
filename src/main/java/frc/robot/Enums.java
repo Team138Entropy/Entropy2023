@@ -32,4 +32,22 @@ public class Enums {
             this.degrees = degrees;
         }
     }
+
+    // Camera IDs
+    public enum Cameras {
+        FRONT_SIDE(0),
+        BACK_SIZE(1),
+        ARM(2);
+
+        public final int camID;
+
+        Cameras(int cid) {
+            this.camID = cid;
+        }
+    }
+
+    // Names to April Tag IDs
+    public enum AprilTagName {
+        
+    }
 }
