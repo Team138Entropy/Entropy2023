@@ -242,6 +242,14 @@ public class Drive extends Subsystem {
       new SwerveModule(3, Constants.Drive.SwerveModules.Module3.SwerveModuleConstants())
     };
 
+    // Initalize Each Swerve Module Position
+    mSwerveModulePositions = new SwerveModulePosition[] {
+      new SwerveModulePosition(),
+      new SwerveModulePosition(),
+      new SwerveModulePosition(),
+      new SwerveModulePosition()
+    };
+
     // Swerve Odometry
     mSwerveOdometry = new SwerveDriveOdometry(Constants.SwerveConstants.swerveKinematics, 
                                               mPigeon.getYaw().getWPIRotation2d(),
