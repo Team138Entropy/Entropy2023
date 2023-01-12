@@ -18,15 +18,23 @@ import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstrain
  */
 public class Constants {
   // Used for tuneable numbers
-  public static final boolean tuningMode = true;
+  public static Boolean tuningMode = true;
+  public static final TuneableNumber tuneableKf = new TuneableNumber("Kf",0);
+  public static final TuneableNumber tuneableKp = new TuneableNumber("Kp",0);
+  public static final TuneableNumber tuneableKi = new TuneableNumber("Ki",0);
+  public static final TuneableNumber tuneableKd = new TuneableNumber("Kd",0);
 
   
   // Potential Targets
-  public enum TargetType {
-    CAMERA_1_RED_CARGO,
-    CAMERA_1_BLUE_CARGO,
-    CAMERA_2_RED_CARGO,
-    CAMERA_2_BLUE_CARGO;
+  public static class Targets {
+    public static final int redBottom1 = 1;
+    public static final int redMiddle2 = 2;
+    public static final int redTop3 = 3;
+    public static final int redFeeder5 = 5;
+    public static final int blueBottom8 = 8;
+    public static final int blueMiddle7 = 7;
+    public static final int blueTop6 = 6;
+    public static final int blueFeeder4 = 4;
   }
 
   // Talon Can IDs

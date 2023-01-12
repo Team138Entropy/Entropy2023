@@ -83,6 +83,11 @@ public class Drive extends Subsystem {
   private final DifferentialDriveKinematics mKinematics = 
     new DifferentialDriveKinematics(kTrackWidth);
 
+  
+  public double previous_error = 0;
+
+  private double turningValue = 0.0;
+
   // Swerve Based Systems
   public SwerveDriveOdometry mSwerveOdometry;
   public SwerveModule[] mSwerveModules; 
@@ -107,6 +112,7 @@ public class Drive extends Subsystem {
   // Autonomous PID Controllers
   private final PIDController mLeftPIDController = new PIDController(1, 0, 0);
   private final PIDController mRightPIDController = new PIDController(1, 0, 0);
+  private final PIDController autoSteerController = new PIDController(Constants.tuneableKp.get(), Constants.tuneableKi.get(), Constants.tuneableKd.get());
 
   // Differential Drivetrain Simulation 
   DiffDriveSimSystem mDriveSimSystem;
@@ -643,6 +649,43 @@ public class Drive extends Subsystem {
    *
    * @param speeds The desired wheel speeds.
    */
+  public void autoAimSpeed(DifferentialDriveWheelSpeeds speeds) {
+    final double leftFeedforward = mFeedForward.calculate(speeds.leftMetersPerSecond);
+    final double rightFeedforward = mFeedForward.calculate(speeds.rightMetersPerSecond);
+
+    double leftEncoderRate = mLeftMaster.getRateMetersPerSecond();
+    double rightEncoderRate = mRightMaster.getRateMetersPerSecond();
+
+    // calculate left and right outputs
+    final double leftOutput =
+        mLeftPIDController.calculate(leftEncoderRate, speeds.leftMetersPerSecond);
+    final double rightOutput =
+        mRightPIDController.calculate(rightEncoderRate, speeds.rightMetersPerSecond);
+
+    // calculte left and right voltage to feed to motors
+    double leftVoltage = leftOutput + leftFeedforward;
+    double rightVoltage = rightOutput + rightFeedforward;
+
+    // normalize voltage out of robot voltage (~12)
+    // this command from the WPILib is normalized out of 12 
+    // Talons expect [1, -1]
+    // calculate out of battery voltage
+    leftVoltage = leftVoltage/RobotController.getBatteryVoltage();
+    rightVoltage = rightVoltage/RobotController.getBatteryVoltage();
+
+    // Invert Right Voltage (same as Teleop)
+    rightVoltage *= -1;
+
+    // set motor outputs
+    mLeftMaster.set(ControlMode.PercentOutput, leftVoltage);
+    mRightMaster.set(ControlMode.PercentOutput, rightVoltage);
+  }
+
+    /**
+   * Sets the desired wheel speeds.
+   *
+   * @param speeds The desired wheel speeds.
+   */
   public void setAutoSpeeds(DifferentialDriveWheelSpeeds speeds) {
     final double leftFeedforward = mFeedForward.calculate(speeds.leftMetersPerSecond);
     final double rightFeedforward = mFeedForward.calculate(speeds.rightMetersPerSecond);
@@ -711,11 +754,56 @@ public class Drive extends Subsystem {
    * 
    */
   public synchronized void driveErrorAngle(double throttle, double error){
-    final double kP = 0.187;
+    //1st value is wheel speed, 3rd is rotation
+    var wheelSpeeds = mKinematics.toWheelSpeeds(new ChassisSpeeds(0, 0.0, 0));
+    autoAimSpeed(wheelSpeeds);
+
+    double setpoint = 0;
+    double integral = 0;
+    double derivative = 0;
+
+    SmartDashboard.putNumber("Previous Error", previous_error);
+
+    error = setpoint - error; //Error = Target - Actual
+    //System.out.println(error);
+    integral += (error*.02); // Integral is increased by the error*time (which is .02 seconds using normal IterativeRobot)
+    derivative = (error - previous_error) / .02;
+    SmartDashboard.putNumber("Error", error);
+    SmartDashboard.putNumber("Integral", integral);
+    SmartDashboard.putNumber("Derivative", derivative);
+    
+    previous_error = error;  
+
+    
+    
+    
+    final double kP = 0.02;
+    final double kI = 0.0;
+    final double kD = 3.5;
+    /*
+    final double kP = Constants.tuneableKp.get();
+    final double kI = Constants.tuneableKi.get();
+    final double kD = Constants.tuneableKd.get();
+    */
+    /*
     final double minOutput = 0;
     final double maxOutput = .6155;
-    double turningValue = error * kP;
+    //maxoutpus was .6155
+    */
+    //turningValue = kP * error + kI * integral + kD * derivative;
+    autoSteerController.setP(Constants.tuneableKp.get());
+    autoSteerController.setI(Constants.tuneableKi.get());
+    autoSteerController.setD(Constants.tuneableKd.get());
+  
+    turningValue = autoSteerController.calculate(-error);
 
+    if(turningValue > 1){
+      turningValue = 1;
+    }else if(turningValue < -1){
+      turningValue = -1;
+    }
+    
+    /*
     // Constrain to min output
     if(turningValue < minOutput && turningValue >= 0){
       turningValue = minOutput;
@@ -729,9 +817,19 @@ public class Drive extends Subsystem {
     }else if(turningValue < -maxOutput){
       turningValue = -maxOutput;
     }
-
+    */
+    
     // set into drive with no ramp
-    setUnrampedDrive(throttle, turningValue, true);
+    // Multiply turningValue by -1 to not spin the opposite direction
+    //setUnrampedDrive(throttle, turningValue*-1, true);
+    if(Math.abs(turningValue) > .15){
+      setDrive(throttle, turningValue*-1, true);
+    }else{
+      setDrive(throttle, 0, true);
+    }
+    
+    
+    
   }
 
   /** Return the last Drive Signal for Differential Drive */

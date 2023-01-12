@@ -116,19 +116,19 @@ public class photonVision {
         myIDString =  matcher.group(1);
         //System.out.println(myIDString);
       }
-      /*
-      try{
-        System.out.println("before string to int");
-        System.out.println(myIDString);
-        myIDInt= Integer.valueOf(myIDString);
-        System.out.println("after string to int");
-      }finally{
-        System.out.println("connot convert string to int");
-      }
-      */
       
       return myIDString;
     }
+    /*
+    private synchronized double getBestTarget2DPose(){
+      if(seesTargets()){
+        PhotonTrackedTarget target = bestTarget();
+        return target.();
+        
+      }
+      return 0;
+    }
+    */
   
     public synchronized boolean seesTargets(){
       var result = camera.getLatestResult();

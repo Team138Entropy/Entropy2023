@@ -34,6 +34,9 @@ public class Robot extends TimedRobot {
   NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
 
+  // PhotonVision
+  private final photonVision mPhotonVision = photonVision.getInstance();
+  
   // Controllers Reference
   private final OperatorInterface mOperatorInterface = OperatorInterface.getInstance();
 
@@ -121,6 +124,9 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Field", mField);
     SmartDashboard.putNumber("Pigeon Degrees", mPigeon.getYaw().getDegrees());
     SmartDashboard.putNumber("Pigeon Radians", mPigeon.getYaw().getRadians());
+    SmartDashboard.putNumber("vision target: yaw", mPhotonVision.getBestTargetYaw());
+    SmartDashboard.putBoolean("vision has target", mPhotonVision.seesTargets());
+
 
     // RobotState
     mRobotState.updateSmartdashboard();
