@@ -1,24 +1,14 @@
 package frc.robot.vision;
 
-import java.lang.annotation.Target;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
-import java.util.regex.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import javax.swing.text.html.HTMLDocument.Iterator;
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
-
-import org.opencv.core.Range;
-import org.opencv.photo.Photo;
-import org.photonvision.*;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
-import org.photonvision.targeting.TargetCorner;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.Pair;
@@ -27,10 +17,6 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants;
-//import frc.robot.Logger;
 
 public class photonVision {
     public static photonVision mInstance = null;
