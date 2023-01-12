@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import frc.robot.Constants;
 import frc.robot.Kinematics;
 import frc.robot.Robot;
@@ -84,6 +85,7 @@ public class Drive extends Subsystem {
   // Swerve Based Systems
   public SwerveDriveOdometry mSwerveOdometry;
   public SwerveModule[] mSwerveModules; 
+  public SwerveModulePosition[] mSwerveModulePositions;
 
   private Pose2d mStoredPose;
 
@@ -162,11 +164,7 @@ public class Drive extends Subsystem {
     m_gyro.reset();
 
     // Reset Odometrey 
-    /*
-    mDifferentialDriveOdometry = new DifferentialDriveOdometry(m_gyro.getRotation2d(), 
-                0, 0);
-    */
-    mDifferentialDriveOdometry = new DifferentialDriveOdometry(m_gyro.getRotation2d());
+    mDifferentialDriveOdometry = new DifferentialDriveOdometry(m_gyro.getRotation2d(), 0, 0);
 
     // Initialize Simulation Systems
     initSimulationSystems();
@@ -237,8 +235,19 @@ public class Drive extends Subsystem {
       new SwerveModule(3, Constants.Drive.SwerveModules.Module3.SwerveModuleConstants())
     };
 
+    // Initalize Each Swerve Module Position
+    mSwerveModulePositions = new SwerveModulePosition[] {
+      new SwerveModulePosition(),
+      new SwerveModulePosition(),
+      new SwerveModulePosition(),
+      new SwerveModulePosition()
+    };
+
     // Swerve Odometry
-    mSwerveOdometry = new SwerveDriveOdometry(Constants.SwerveConstants.swerveKinematics, mPigeon.getYaw().getWPIRotation2d());
+    mSwerveOdometry = new SwerveDriveOdometry(Constants.SwerveConstants.swerveKinematics, 
+                                              mPigeon.getYaw().getWPIRotation2d(),
+                                              mSwerveModulePositions
+    );
   }
 
   private void configTalon(EntropyTalonFX talon) {
@@ -721,7 +730,8 @@ public class Drive extends Subsystem {
         mDriveSimSystem.updateDrive(getLastDriveSignal());
       break;
       case SWERVE_DRIVE:
-        mSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), getDesiredSwerveModuleStates());
+        //mSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), getDesiredSwerveModuleStates());
+        mSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), mSwerveModulePositions);
        // mSwerveDriveSimSystem.updateStates()        
       break;
     }
@@ -737,7 +747,8 @@ public class Drive extends Subsystem {
         );
       break;
       case SWERVE_DRIVE:
-        mSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), getSwerveModuleStates());
+       // mSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), getSwerveModuleStates());
+       mSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), mSwerveModulePositions);
       break;
     }
 
