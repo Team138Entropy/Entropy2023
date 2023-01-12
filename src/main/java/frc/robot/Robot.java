@@ -37,7 +37,7 @@ public class Robot extends TimedRobot {
   private final SubsystemManager mSubsystemManager = SubsystemManager.getInstance();
   
   // Subsystems
-  private final Drive mDrive = Drive.getInstance();
+  private final Arm mArm = Arm.getInstance();
 
   // Autonomous Execution Thread
   private AutoModeExecutor mAutoModeExecutor = null;
@@ -79,10 +79,8 @@ public class Robot extends TimedRobot {
     TrajectoryGeneratorHelper.generateExampleTrajectories();
 
     // reset odometry
-    mDrive.resetOdometry(new Pose2d());
 
     // Reset Drive Sensors
-    mDrive.zeroSensors();
   }
 
 
@@ -109,7 +107,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Field", mField);
     SmartDashboard.putNumber("Pigeon Degrees", mPigeon.getYaw().getDegrees());
     SmartDashboard.putNumber("Pigeon Radians", mPigeon.getYaw().getRadians());
-
+    mArm.updateSmartDashBoard();
     // Iterates each Subsytem 
     mSubsystemManager.updateSmartdashboard();
   }
@@ -163,7 +161,6 @@ public class Robot extends TimedRobot {
     }
 
     // Zero Drive Sensors
-    mDrive.zeroSensors();
   }
 
   /** This function is called periodically during operator control. */
@@ -203,8 +200,20 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
+    if (mOperatorInterface.getArmJogUp()){
+      mArm.setArmAngle(45);
+    }
+      else if (mOperatorInterface.getArmJogDown()){
+      mArm.setArmAngle(135); 
+    }
+      else {mArm.setArmAngle(90);
+      }
 
   }
+
+  
+  
+
 
   /** This function is called once when the robot is first started up. */
   @Override
@@ -215,7 +224,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {
-    mDrive.updateDriveSim();
 
     // Update Pose on Virtual Field
     
@@ -225,10 +233,8 @@ public class Robot extends TimedRobot {
   private void RobotLoop(){
 
     // Drive the Robot
-    DriveLoop(mOperatorInterface.getDrivePrecisionSteer(), false);
 
     // Update Robot Field Position
-    mField.setRobotPose(mDrive.getPose());
   }
 
    /**
@@ -236,90 +242,5 @@ public class Robot extends TimedRobot {
    * precisionSteer - Tunes Down Throttle. Useful for precise movements
    * allowAutoSteer - Enables/Disables AutoSteering
    */
-  private void DriveLoop(boolean precisionSteer, boolean allowAutoSteer){
-    double driveThrottle = mOperatorInterface.getDriveThrottle()*-1;
-    double driveTurn = mOperatorInterface.getDriveTurn();
-    SmartDashboard.putNumber("Driver Throttle", driveThrottle);
-    SmartDashboard.putNumber("Driver Trun", driveTurn);
-
-
-    // precision steer (slow down throttle if left trigger is held)
-   if(precisionSteer) driveThrottle *= .3;
-
-    boolean wantsAutoSteer = mOperatorInterface.getDriveAutoSteer();
-    wantsAutoSteer &= allowAutoSteer; //disable if autosteer isn't allowed
-    SmartDashboard.putBoolean("Autosteer", wantsAutoSteer);
-
-    // Get Target within the allowed Threshold
-    //TargetInfo ti = mVisionManager.getSelectedTarget(Constants.Vision.kAllowedSecondsThreshold);
-    //boolean validTargetInfo = (ti != null);
-    boolean validTargetInfo = false;
-    double errorAngle = 0;
-    boolean validTarget = false;
-    if(validTargetInfo){
-      // Valid Target Packet
-      //errorAngle = ti.getErrorAngle();
-      //validTarget = ti.isValid();
-    }
-    SmartDashboard.putBoolean("Valid Target", validTarget);
-    SmartDashboard.putNumber("Target Angle", errorAngle);
-    
-    /*
-    if(wantsAutoSteer && validTargetInfo){        
-      if(ti.isValid()){ //only allow if valud packet
-        // autonomously steering robot towards cargo
-        // todo: only allow drive in a certain direction? 
-       //mDrive.autoSteer(driveThrottle * .4, ti.getErrorAngle());
-       mDrive.driveErrorAngle(driveThrottle * .4, ti.getErrorAngle());
-      }else{
-        System.out.println("Invalid Packet!");
-      }
-    }else if(wantsAutoSteer){
-      // wants auto steer, but invalid target info
-      // TODO: vibrate controller so driver knows
-    }else{
-      //manual drive
-      mDrive.setDrive(driveThrottle, driveTurn, false);
-    }
-    */
-
-    // Procced based on Drive Style
-    Drive.DriveStyle driveStyle = mDrive.getDriveStyle();
-    if(Drive.DriveStyle.DIFFERENTIAL_DRIVE == driveStyle)
-    {
-      // Differential Drive
-      mDrive.setDrive(driveThrottle, driveTurn, false);
-    }
-    else if(Drive.DriveStyle.SWERVE_DRIVE == driveStyle)
-    {
-      // Zero Gyro
-      if(mOperatorInterface.getZeroGyro())
-      {
-        mDrive.zeroHeading();
-      }
-
-      // Swerve Brake
-      mDrive.setBrake(mOperatorInterface.getBrake());
-
-      // Swerve Snap to a Direction (Button Press Quickly Moves Robot)
-      SwerveCardinal snapCardinal = mOperatorInterface.getSwerveSnap();
-      if(SwerveCardinal.NONE != snapCardinal) // Snap Direction Detected!
-      {
-        mDrive.startSnap(snapCardinal.degrees);
-      }
-
-      // Swerve Drive
-      Translation2d sTrans = mOperatorInterface.getSwerveTranslation();
-      double sRotation = mOperatorInterface.getSwerveRotation();
-      mDrive.setSwerveDrive(sTrans, sRotation, true, true);
-
-      // Log Inputs
-      SmartDashboard.putString("Swerve Input Translation", sTrans.toString());
-      SmartDashboard.putNumber("Swerve Input Rotation", sRotation);
-    }
-
-    // Update Odometry of Robot (only if real)
-    if(mRealRobot) mDrive.updateOdometry();
-  }
-
+  
 }
