@@ -6,11 +6,18 @@ import java.util.Optional;
 import org.photonvision.RobotPoseEstimator;
 import org.photonvision.RobotPoseEstimator.PoseStrategy;
 
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.Vision;
 import frc.robot.vision.photonVision;
@@ -38,6 +45,15 @@ public class RobotState {
     // Robots Estimated Pose2d based 
     Pose2d mVisionBasedRobotPose;
 
+    // Robots Vision Estimated Pose2d Latency
+    double mVisionBasedRobotPoseLatencySeconds;
+
+    // Simulation or Real
+    boolean mRealRobot;
+
+    // Visulation Field
+    Field2d mVisualField;
+
     private RobotState()
     {
         init();
@@ -56,6 +72,15 @@ public class RobotState {
 
         // Robot Pose Calculated off of Vision
         mVisionBasedRobotPose = new Pose2d();
+        mVisionBasedRobotPoseLatencySeconds = 0;
+
+        // Visulation Field
+        mVisualField = new Field2d();
+    }
+
+    // Simulation or Real Robot
+    public void setRealRobot(boolean value) {
+        mRealRobot = value;
     }
 
     // Get Vision Estimated Robot Pose
@@ -65,7 +90,7 @@ public class RobotState {
     
         double currentTime = Timer.getFPGATimestamp();
         Optional<Pair<Pose3d, Double>> result = mRobotPoseEstimator.update();
-        if (result.isPresent()) {
+        if (result.isPresent() && null != result.get().getFirst()) {
             return new Pair<Pose2d, Double>(result.get().getFirst().toPose2d(), currentTime - result.get().getSecond());
         } else {
             return new Pair<Pose2d, Double>(null, 0.0);
@@ -82,14 +107,49 @@ public class RobotState {
         {
             // No Pose2d Able to be found, zero the vision pose
             mVisionBasedRobotPose = new Pose2d();
+            mVisionBasedRobotPoseLatencySeconds = -1;
         } else {
             // Valid Pose2D
             mVisionBasedRobotPose = VisionBasedEstimate.getFirst();
+            mVisionBasedRobotPoseLatencySeconds = VisionBasedEstimate.getSecond();
+        }
+
+        // Simulation Only
+        if(!mRealRobot)
+        {
+            // Update the Visualization Field
+            updateVisualField();
         }
     }
 
 
     // TODO - Function to get Translation2D to a Node? 
+
+    // Visual Plotting Field for Debug Perposes
+    private void updateVisualField()
+    {
+        // X -> Field Length I believe.. 50 feet in field2d
+        // Y -> Field Width
+        mVisualField.setRobotPose(new Pose2d(FieldConstants.fieldLength/2, 
+                                FieldConstants.fieldWidth/2, new Rotation2d()));
+
+        // Iterate April Tags and Plot
+        for(int i = 0; i < FieldConstants.aprilTags.size(); i++)
+        {
+            AprilTag currTag = FieldConstants.aprilTags.get(i);
+            String currName = "AprilTag " + currTag.ID;
+            Pose3d currPose3d = currTag.pose;
+            Pose2d currPose2d = currPose3d.toPose2d();
+            FieldObject2d fieldObj = mVisualField.getObject(currName);
+            fieldObj.setPose(currPose2d);
+        }
+        
+        // Test Translation Between 2 Points
+        Pose2d result = mVisualField.getRobotPose().relativeTo(
+            FieldConstants.aprilTags.get(0).pose.toPose2d());
+        SmartDashboard.putString("RobotState/Translation2DTest", result.toString());
+
+    }
 
 
 
@@ -98,6 +158,8 @@ public class RobotState {
     {
         final String key = "RobotState/";
         SmartDashboard.putString(key + "Vision Pose", mVisionBasedRobotPose.toString());
+        SmartDashboard.putNumber(key + "Vision Pose Latency", mVisionBasedRobotPoseLatencySeconds);
+        SmartDashboard.putData(key + "Visual Field", mVisualField);
     }
 
 

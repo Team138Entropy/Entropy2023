@@ -73,7 +73,10 @@ public class Robot extends TimedRobot {
     DataLogManager.start();
 
     // Record both DS control and joystick data
-    DriverStation.startDataLog(DataLogManager.getLog());    
+    DriverStation.startDataLog(DataLogManager.getLog());  
+    
+    // Real or Simulation Robot
+    mRobotState.setRealRobot(mRealRobot);
 
     // populate autonomous list
     populateAutonomousModes();

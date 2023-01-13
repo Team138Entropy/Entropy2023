@@ -582,6 +582,7 @@ public class Drive extends Subsystem {
    // SmartDashboard.putNumber("encoder_left", getLeftEncoderPosition());
    // SmartDashboard.putNumber("encoder_right", getRightEncoderPosition());
    // SmartDashboard.putNumber("gyro", getHeading());
+   SmartDashboard.putString("Drive Pose", getPose().toString());
    SmartDashboard.putBoolean("Break Enabled", mBrakeEnabled);
    SmartDashboard.putBoolean("Is Snapping", mIsSnapping);
    SmartDashboard.putNumber("Pigeon Yaw", mPigeon.getYaw().getDegrees());
