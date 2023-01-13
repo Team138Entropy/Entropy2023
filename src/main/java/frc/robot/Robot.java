@@ -19,6 +19,7 @@ import frc.robot.auto.modes.*;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.Drive.DriveStyle;
 import frc.robot.util.drivers.Pigeon;
+import frc.robot.util.drivers.RevColorSensorV3;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -34,13 +35,11 @@ public class Robot extends TimedRobot {
   private final OperatorInterface mOperatorInterface = OperatorInterface.getInstance();
 
   // Robot State
-  private final RobotState mRobotState = RobotState.getInstance();
 
   // Subsystem Manager
   private final SubsystemManager mSubsystemManager = SubsystemManager.getInstance();
   
   // Subsystems
-  private final Drive mDrive = Drive.getInstance();
 
   // Autonomous Execution Thread
   private AutoModeExecutor mAutoModeExecutor = null;
@@ -56,6 +55,8 @@ public class Robot extends TimedRobot {
   private final Field2d mField = new Field2d();
 
   private final Pigeon mPigeon = Pigeon.getInstance();
+
+  RevColorSensorV3 mColorSensor = new RevColorSensorV3();
 
   // Real Robot Indicator
   private final boolean mRealRobot = Robot.isReal();
@@ -81,11 +82,7 @@ public class Robot extends TimedRobot {
     // generate generic auto modes to load into JIT
     TrajectoryGeneratorHelper.generateExampleTrajectories();
 
-    // reset odometry
-    mDrive.resetOdometry(new Pose2d());
-
-    // Reset Drive Sensors
-    mDrive.zeroSensors();
+  
   }
 
 
@@ -95,7 +92,6 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     // Update Robotstate
-    mRobotState.update();
 
     // Update Smartdashboard Overall and Subsystems
     updateSmartdashboard();
@@ -116,7 +112,6 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Pigeon Radians", mPigeon.getYaw().getRadians());
 
     // RobotState
-    mRobotState.updateSmartdashboard();
 
     // Iterates each Subsystem 
     mSubsystemManager.updateSmartdashboard();
@@ -171,7 +166,6 @@ public class Robot extends TimedRobot {
     }
 
     // Zero Drive Sensors
-    mDrive.zeroSensors();
   }
 
   /** This function is called periodically during operator control. */
@@ -210,7 +204,8 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {
+  public void testPeriodic() { 
+    mColorSensor.updateSmartdashboard();
 
   }
 
@@ -223,7 +218,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {
-    mDrive.updateDriveSim();
+
 
     // Update Pose on Virtual Field
     
@@ -236,7 +231,6 @@ public class Robot extends TimedRobot {
     DriveLoop(mOperatorInterface.getDrivePrecisionSteer(), false);
 
     // Update Robot Field Position
-    mField.setRobotPose(mDrive.getPose());
   }
 
    /**
@@ -291,43 +285,7 @@ public class Robot extends TimedRobot {
     }
     */
 
-    // Procced based on Drive Style
-    Drive.DriveStyle driveStyle = mDrive.getDriveStyle();
-    if(Drive.DriveStyle.DIFFERENTIAL_DRIVE == driveStyle)
-    {
-      // Differential Drive
-      mDrive.setDrive(driveThrottle, driveTurn, false);
-    }
-    else if(Drive.DriveStyle.SWERVE_DRIVE == driveStyle)
-    {
-      // Zero Gyro
-      if(mOperatorInterface.getZeroGyro())
-      {
-        mDrive.zeroHeading();
-      }
 
-      // Swerve Brake
-      mDrive.setBrake(mOperatorInterface.getBrake());
-
-      // Swerve Snap to a Direction (Button Press Quickly Moves Robot)
-      SwerveCardinal snapCardinal = mOperatorInterface.getSwerveSnap();
-      if(SwerveCardinal.NONE != snapCardinal) // Snap Direction Detected!
-      {
-        mDrive.startSnap(snapCardinal.degrees);
-      }
-
-      // Swerve Drive
-      Translation2d sTrans = mOperatorInterface.getSwerveTranslation();
-      double sRotation = mOperatorInterface.getSwerveRotation();
-      mDrive.setSwerveDrive(sTrans, sRotation, true, true);
-
-      // Log Inputs
-      SmartDashboard.putString("Swerve Input Translation", sTrans.toString());
-      SmartDashboard.putNumber("Swerve Input Rotation", sRotation);
-    }
-
-    // Update Odometry of Robot (only if real)
-    if(mRealRobot) mDrive.updateOdometry();
   }
 
 }

@@ -42,7 +42,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Drive extends Subsystem {
+public class Drive {
   private static Drive mInstance;
 
   // Drive Talons
