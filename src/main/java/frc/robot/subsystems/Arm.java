@@ -51,8 +51,10 @@ public class Arm {
         SmartDashboard.putNumber("Arm Percent Output", ArmMotor.getMotorOutputPercent());
     }
 
-
-
+    public void setArmExtension(double Inches){
+        ArmMotor.set(ControlMode.Position, Inches); ?
+     //extension takes inches
+    }
     
 
 

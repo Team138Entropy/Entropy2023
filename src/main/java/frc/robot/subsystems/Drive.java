@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
@@ -166,7 +167,7 @@ public class Drive extends Subsystem {
     mDifferentialDriveOdometry = new DifferentialDriveOdometry(m_gyro.getRotation2d(), 
                 0, 0);
     */
-    mDifferentialDriveOdometry = new DifferentialDriveOdometry(m_gyro.getRotation2d());
+    mDifferentialDriveOdometry = new DifferentialDriveOdometry(m_gyro.getRotation2d(), drivetrainTicksPerMeter, drivetrainTicksPerMeter, mStoredPose);
 
     // Initialize Simulation Systems
     initSimulationSystems();
@@ -238,7 +239,7 @@ public class Drive extends Subsystem {
     };
 
     // Swerve Odometry
-    mSwerveOdometry = new SwerveDriveOdometry(Constants.SwerveConstants.swerveKinematics, mPigeon.getYaw().getWPIRotation2d());
+    mSwerveOdometry = new SwerveDriveOdometry(Constants.SwerveConstants.swerveKinematics, mPigeon.getYaw().getWPIRotation2d(), null);
   }
 
   private void configTalon(EntropyTalonFX talon) {
@@ -720,10 +721,10 @@ public class Drive extends Subsystem {
       case DIFFERENTIAL_DRIVE:
         mDriveSimSystem.updateDrive(getLastDriveSignal());
       break;
-      case SWERVE_DRIVE:
-        mSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), getDesiredSwerveModuleStates());
+      //case SWERVE_DRIVE:
+      //  mSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), getDesiredSwerveModuleStates());
        // mSwerveDriveSimSystem.updateStates()        
-      break;
+      //break;
     }
   }
 
@@ -736,9 +737,9 @@ public class Drive extends Subsystem {
             m_gyro.getRotation2d(), mLeftMaster.getDistanceMeters(), mRightMaster.getDistanceMeters()
         );
       break;
-      case SWERVE_DRIVE:
-        mSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), getSwerveModuleStates());
-      break;
+      //case SWERVE_DRIVE:
+      //  mSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), getSwerveModuleStates());
+      //break;
     }
 
   }

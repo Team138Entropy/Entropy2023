@@ -203,9 +203,19 @@ public class Robot extends TimedRobot {
     if (mOperatorInterface.getArmJogUp()){
       mArm.setArmAngle(45);
     }
+
+      else if (mOperatorInterface.getArmJogMidUp()){
+      mArm.setArmAngle(67.5); 
+    }
+
       else if (mOperatorInterface.getArmJogDown()){
       mArm.setArmAngle(135); 
     }
+
+      else if (mOperatorInterface.getArmJogMidDown()){
+      mArm.setArmAngle(112.5); 
+    }
+    
       else {mArm.setArmAngle(90);
       }
 
