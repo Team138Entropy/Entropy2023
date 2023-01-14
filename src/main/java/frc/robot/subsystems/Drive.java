@@ -241,7 +241,7 @@ public class Drive extends Subsystem {
       new SwerveModule(2, Constants.Drive.SwerveModules.Module2.SwerveModuleConstants()),
       new SwerveModule(3, Constants.Drive.SwerveModules.Module3.SwerveModuleConstants())
     };
-
+    /* 
     // Initalize Each Swerve Module Position
     mSwerveModulePositions = new SwerveModulePosition[] {
       new SwerveModulePosition(),
@@ -249,6 +249,7 @@ public class Drive extends Subsystem {
       new SwerveModulePosition(),
       new SwerveModulePosition()
     };
+    */
 
     // Swerve Odometry
     mSwerveOdometry = new SwerveDriveOdometry(Constants.SwerveConstants.swerveKinematics, 

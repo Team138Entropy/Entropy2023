@@ -46,6 +46,19 @@ public class Enums {
         }
     }
 
+    //pipeline IDs
+    public enum pipelineIDs {
+        APRILTAG_PIPELINE(0),
+        CUBE_PIPELINE(1),
+        CONE_PIPELINE(2);
+
+        public final int pipelineID;
+
+        pipelineIDs(int ID) {
+            this.pipelineID = ID;
+        }
+    }
+
     // Names to April Tag IDs
     public enum AprilTagName {
         

@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Enums.SwerveCardinal;
+import frc.robot.Enums.*;
 import frc.robot.OI.OperatorInterface;
 import frc.robot.auto.AutoModeExecutor;
 import frc.robot.auto.TrajectoryGeneratorHelper;
@@ -131,7 +131,7 @@ public class Robot extends TimedRobot {
     //SmartDashboard.putNumber("Pigeon Radians", mPigeon.getYaw().getRadians());
     SmartDashboard.putNumber("vision target: yaw", mPhotonVision.getBestTargetYaw());
     SmartDashboard.putBoolean("vision has target", mPhotonVision.seesTargets());
-    
+    SmartDashboard.putString("curent pipeline", mPhotonVision.getPipeLineName());
 
 
     FieldObject2d testFieldObject = mField.getObject("testObject");
@@ -273,11 +273,11 @@ public class Robot extends TimedRobot {
     mRobotState.setRobotPose(robotPose);
     mField.setRobotPose(mDrive.getPose());
     if(mOperatorInterface.getPipeLineAprilTag()){
-      mPhotonVision.setPipeLine(0);
+      mPhotonVision.setPipeLine(pipelineIDs.APRILTAG_PIPELINE.pipelineID);
     }else if(mOperatorInterface.getPipeLineCube()){
-      mPhotonVision.setPipeLine(1);
+      mPhotonVision.setPipeLine(pipelineIDs.CUBE_PIPELINE.pipelineID);
     }else if(mOperatorInterface.getPipeLineCone()){
-      mPhotonVision.setPipeLine(2);
+      mPhotonVision.setPipeLine(pipelineIDs.CONE_PIPELINE.pipelineID);
     }
     System.out.println("the pipeline is"+ mPhotonVision.getPipeLineNum());
     

@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
+import org.photonvision.SimVisionSystem;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -17,6 +18,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Enums.pipelineIDs;
 
 public class photonVision {
     public static photonVision mInstance = null;
@@ -96,6 +98,17 @@ public class photonVision {
 
     public synchronized int getPipeLineNum() {
       return camera.getPipelineIndex();
+    }
+
+    public synchronized String getPipeLineName() {
+      if(camera.getPipelineIndex() == pipelineIDs.APRILTAG_PIPELINE.pipelineID){
+        return "apriltagPipeline";
+      }else if(camera.getPipelineIndex() == pipelineIDs.CONE_PIPELINE.pipelineID){
+        return "conePipeline";
+      }else if(camera.getPipelineIndex() == pipelineIDs.CUBE_PIPELINE.pipelineID){
+        return "cubePipeline";
+      }
+      return "no pipeline";
     }
   
   
