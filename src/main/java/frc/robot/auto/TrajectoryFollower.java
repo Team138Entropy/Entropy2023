@@ -32,6 +32,7 @@ public class TrajectoryFollower {
 
     // Trajectory to Drive
     private Trajectory mTrajectory;
+    private boolean mTrajectorySet;
 
     // The Ramsete Controller to follow the trajectory.
     // RamsetController for Differential/West Coast Drive Trains
@@ -84,6 +85,9 @@ public class TrajectoryFollower {
     }
     
     private void init(){
+        // No Trajectory Set
+        mTrajectorySet = false;
+
         System.out.println("TrajectorFollower::Init");
         // Create and push Field2d to SmartDashboard.
         mField = new Field2d();
@@ -224,6 +228,13 @@ public class TrajectoryFollower {
         final String key = "TrajectorFollower/";
         SmartDashboard.putBoolean(key + "Complete", mComplete);
         SmartDashboard.putBoolean(key + "Running", mRun);
+        SmartDashboard.putBoolean(key + "Trajectory Set", mTrajectorySet);
+        SmartDashboard.putString(key + "Trajectory Initial Pose",
+                mTrajectorySet ? mTrajectory.toString() : "");
+        SmartDashboard.putNumber(key + "Trajectory RunTime (S)", 
+                mTrajectorySet ? mTrajectory.getTotalTimeSeconds() : 0);
+
+        
     }
 
 
