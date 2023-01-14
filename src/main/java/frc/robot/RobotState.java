@@ -129,7 +129,7 @@ public class RobotState {
         if(!mRealRobot)
         {
             // Update the Visualization Field
-            updateVisualField();
+            updateSimVisualField();
         }
     }
 
@@ -137,7 +137,7 @@ public class RobotState {
     // TODO - Function to get Translation2D to a Node? 
 
     // Visual Plotting Field for Debug Perposes
-    private void updateVisualField()
+    private void updateSimVisualField()
     {
         // X -> Field Length I believe.. 50 feet in field2d
         // Y -> Field Width

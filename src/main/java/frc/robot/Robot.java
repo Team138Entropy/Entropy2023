@@ -250,7 +250,7 @@ public class Robot extends TimedRobot {
   private void RobotLoop(){
 
     // Drive the Robot
-    DriveLoop(mOperatorInterface.getDrivePrecisionSteer(), false);
+    DriveLoop(mOperatorInterface.getDrivePrecisionSteer(), true);
 
     // Update Robot Field Position
     Pose2d robotPose = mRealRobot ? mDrive.getPose() : mDrive.getSimulatedPose();

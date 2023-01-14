@@ -528,6 +528,17 @@ public class Drive extends Subsystem {
     }
   }
 
+
+  /* Used by SwerveControllerCommand in Auto */
+  // Directly Sets the Desired State into the Module
+  public void setModuleStates(SwerveModuleState[] desiredStates) {
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.SwerveConstants.maxSpeed);
+    
+    for(SwerveModule mod : mSwerveModules){
+        mod.setDesiredState(desiredStates[mod.getModuleNumber()], false);
+    }
+}   
+
   /* Get Swerve Module States */
   public SwerveModuleState[] getSwerveModuleStates()
   {
@@ -777,10 +788,11 @@ public class Drive extends Subsystem {
     
 
 
-    //mDifferentialDriveOdometry.resetPosition(m_gyro.getRotation2d(), 0, 0, pose);
+    
     switch(mDriveStyle)
     {
       case DIFFERENTIAL_DRIVE:
+        //mDifferentialDriveOdometry.resetPosition(m_gyro.getRotation2d(), 0, 0, pose);
       break;
       case SWERVE_DRIVE:
         
@@ -900,5 +912,9 @@ public class Drive extends Subsystem {
 
   public DifferentialDriveKinematics getKinematics() {
     return mKinematics;
+  }
+
+  public SwerveDriveKinematics getSwerveKinematics() {
+    return Constants.SwerveConstants.swerveKinematics;
   }
 }

@@ -120,6 +120,8 @@ public class OperatorInterface {
             result = SwerveCardinal.RIGHT;
         }
 
+        // TODO: do we need to add the DPAD?
+
         return result;
     }
 

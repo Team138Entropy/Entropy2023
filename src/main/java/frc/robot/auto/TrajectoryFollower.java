@@ -8,6 +8,7 @@ import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
@@ -116,18 +117,22 @@ public class TrajectoryFollower {
         // Initialize the timer.
         mTimer = new Timer();
         mTimer.start();
-
+        
+        // TODO - no for swerve?
         // Reset Encoder Values
-        mDrive.zeroEncoders();
+        //mDrive.zeroEncoders();
 
         // Zero Gyro Position
-        mDrive.zeroHeading();
+        //mDrive.zeroHeading();
 
         // Reset the drivetrain's odometry to the starting pose of the trajectory.
-        mDrive.resetOdometry(mTrajectory.getInitialPose());
+        //mDrive.resetOdometry(mTrajectory.getInitialPose());
 
         // Store the Current Pose of the Drive
         mDrive.storeCurrentPose();
+
+        // Update the Smartdashboard
+        updateSmartdashboard();
     }
 
     public void Update(){
@@ -138,12 +143,14 @@ public class TrajectoryFollower {
         // Update the Robot Position on Field2D
         mField.setRobotPose(mDrive.getPose());
         System.out.println("robot pose done");
+
         // if the time is within the total trajectory time
         if (mRun && mTimer.get() < mTrajectory.getTotalTimeSeconds()) {
             System.out.println("Timer Seconds: " + mTimer.get());
             System.out.println("Total Seconds: " + mTrajectory.getTotalTimeSeconds());
 
             // Get the desired pose from the trajectory.
+            var currentDrivePose = mDrive.getPose();
             var desiredPose = mTrajectory.sample(mTimer.get());
             Rotation2d desiredRotation = new Rotation2d();
 
@@ -159,7 +166,12 @@ public class TrajectoryFollower {
             }
             else if(DriveStyle.SWERVE_DRIVE == mDrive.getDriveStyle())
             {
-                // Calculate Swerve
+                // Calculate Swerve Chasis Speeds
+                ChassisSpeeds calculatedSpeeds = mHolonomicDriveController.calculate(currentDrivePose, desiredPose, desiredRotation);
+                var targetSwerveModuleStates = mDrive.getSwerveKinematics().toSwerveModuleStates(calculatedSpeeds);
+
+                // Set Swerve to those Module States
+                mDrive.setModuleStates(targetSwerveModuleStates);
             }
           } else {
             // Log the Trajectory Follower Completeing the Path
@@ -178,7 +190,10 @@ public class TrajectoryFollower {
             {
                 mDrive.setSwerveDrive(new Translation2d(), 0, true, true);
             }
-          }
+        }
+
+        // Update the Smartdashboard
+        updateSmartdashboard();
     }
 
     // Stop Drivetrain from moving
@@ -191,6 +206,13 @@ public class TrajectoryFollower {
     //returns if getComplete is done
     public boolean isComplete(){
         return mComplete;
+    }
+
+    public void updateSmartdashboard()
+    {
+        final String key = "TrajectorFollower/";
+        SmartDashboard.putBoolean(key + "Complete", mComplete);
+        SmartDashboard.putBoolean(key + "Running", mRun);
     }
 
 

@@ -64,6 +64,11 @@ public abstract class AutoModeBase {
         }
     }
 
+    public void addAction(Action a)
+    {
+        registerAction(a);
+    }
+
     public void registerAction(Action a)
     {
         mAutoActions.add(a);
