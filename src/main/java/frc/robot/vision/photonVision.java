@@ -51,6 +51,29 @@ public class photonVision {
     );
 
 
+    // Simulated Test Code TEMP TEMP TEMP
+        // Simulated Vision System.
+    // Configure these to match your PhotonVision Camera,
+    // pipeline, and LED setup.
+    double camDiagFOV = 75.0; // degrees
+    double camPitch = 15.0; // degrees
+    double camHeightOffGround = 0.85; // meters
+    double maxLEDRange = 20; // meters
+    int camResolutionWidth = 640; // pixels
+    int camResolutionHeight = 480; // pixels
+    double minTargetArea = 10; // square pixels
+
+    public SimVisionSystem simVision =
+            new SimVisionSystem(
+                    "camera138",
+                    camDiagFOV,
+                    robotToCam,
+                    maxLEDRange,
+                    camResolutionWidth,
+                    camResolutionHeight,
+                    minTargetArea);
+  
+
     public boolean hasTarget = false;
     
     //Transform2d pose = target.getCameraToTarget();

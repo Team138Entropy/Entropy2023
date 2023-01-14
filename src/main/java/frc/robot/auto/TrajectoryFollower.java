@@ -1,10 +1,14 @@
 package frc.robot.auto;
 
 
+import edu.wpi.first.math.controller.HolonomicDriveController;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -13,8 +17,10 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import frc.robot.Constants;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Drive.DriveStyle;
+import frc.robot.util.DriveSignal;
 
 import java.util.List;
 
@@ -27,7 +33,16 @@ public class TrajectoryFollower {
     private Trajectory mTrajectory;
 
     // The Ramsete Controller to follow the trajectory.
+    // RamsetController for Differential/West Coast Drive Trains
     private final RamseteController mRamseteController;
+
+    // Swerve 
+    // HolonomicDriveController for Swerve/Mechanum based systems
+    private HolonomicDriveController mHolonomicDriveController;
+    private ProfiledPIDController mSwerveThetaController;
+    private PIDController mSwerveXPidController;
+    private PIDController mSwerveYPidController;
+
 
     // The timer to use during the autonomous period.
     private Timer mTimer;
@@ -72,6 +87,21 @@ public class TrajectoryFollower {
         // Create and push Field2d to SmartDashboard.
         mField = new Field2d();
         SmartDashboard.putData("Autonomous Field", mField);
+
+        // Swerve Specific
+        // Rotation Controller
+        mSwerveThetaController = new ProfiledPIDController(
+                Constants.SwerveConstants.AutoConstants.kPThetaController, 0, 0,
+                Constants.SwerveConstants.AutoConstants.kThetaControllerConstraints);
+        mSwerveThetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+        // Swerve Translation X and Y PID Controllers
+        mSwerveXPidController = new PIDController(Constants.SwerveConstants.AutoConstants.kPXController, 0, 0);
+        mSwerveYPidController = new PIDController(Constants.SwerveConstants.AutoConstants.kPYController, 0, 0);
+
+        // Swerve Specific Controller
+        mHolonomicDriveController = new HolonomicDriveController(mSwerveXPidController, 
+                                        mSwerveYPidController, mSwerveThetaController);
     }
 
     // Called Once at the Start of following the Path
@@ -104,7 +134,7 @@ public class TrajectoryFollower {
         System.out.println("TrajectoryFollower::Update");
         // Update the Drives Odometry
         mDrive.updateOdometry();
-        System.out.println("set robot pose");
+
         // Update the Robot Position on Field2D
         mField.setRobotPose(mDrive.getPose());
         System.out.println("robot pose done");
@@ -115,12 +145,22 @@ public class TrajectoryFollower {
 
             // Get the desired pose from the trajectory.
             var desiredPose = mTrajectory.sample(mTimer.get());
-                  
-            // Get the reference chassis speeds from the Ramsete controller.
-            var refChassisSpeeds = mRamseteController.calculate(mDrive.getPose(), desiredPose);
-            
-            // Set the linear and angular speeds.
-            mDrive.automousDrive(refChassisSpeeds.vxMetersPerSecond, refChassisSpeeds.omegaRadiansPerSecond);
+            Rotation2d desiredRotation = new Rotation2d();
+
+
+            // Drive System Specific Logic
+            if(DriveStyle.DIFFERENTIAL_DRIVE == mDrive.getDriveStyle())
+            {
+                // Get the reference chassis speeds from the Ramsete controller.
+                var refChassisSpeeds = mRamseteController.calculate(mDrive.getPose(), desiredPose);
+                
+                // Set the linear and angular speeds.
+                mDrive.automousDrive(refChassisSpeeds.vxMetersPerSecond, refChassisSpeeds.omegaRadiansPerSecond);
+            }
+            else if(DriveStyle.SWERVE_DRIVE == mDrive.getDriveStyle())
+            {
+                // Calculate Swerve
+            }
           } else {
             // Log the Trajectory Follower Completeing the Path
             System.out.println("TrajectoryFollower::PathComplete");
@@ -128,8 +168,16 @@ public class TrajectoryFollower {
             // mark path as complete
             mComplete = true;
 
-            // set drive to do nothing
-            mDrive.automousDrive(0, 0);
+            // Set Drive System to do Nothing
+            // Drive System Specific Logic
+            if(DriveStyle.DIFFERENTIAL_DRIVE == mDrive.getDriveStyle())
+            {
+                mDrive.automousDrive(0, 0);
+            }
+            else if(DriveStyle.SWERVE_DRIVE == mDrive.getDriveStyle())
+            {
+                mDrive.setSwerveDrive(new Translation2d(), 0, true, true);
+            }
           }
     }
 

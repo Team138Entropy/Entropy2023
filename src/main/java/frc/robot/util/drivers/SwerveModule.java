@@ -16,6 +16,7 @@ import frc.robot.util.drivers.CTRE.CTREConfigs;
 import frc.robot.util.drivers.CTRE.CTREModuleState;
 import frc.robot.util.math.Conversions;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
@@ -182,6 +183,26 @@ public class SwerveModule  {
         return mModuleNumber;
     }
 
+    public SwerveModulePosition getPosition() {
+        return new SwerveModulePosition(getDriveMeters(), getHeadingRotation2d());
+    }
+    
+    public double getHeadingDegrees() {
+        return mAngleMotor.getSelectedSensorPosition() * Constants.SwerveConstants.Motor.kTurnDistancePerPulse;
+      }
+    
+    public Rotation2d getHeadingRotation2d() {
+        return Rotation2d.fromDegrees(getHeadingDegrees());
+    }
+
+    public double getDriveMetersPerSecond() {
+        return mDriveMotor.getSelectedSensorVelocity() * Constants.SwerveConstants.Motor.kDriveDistancePerPulse * 10;
+    }
+    
+    public double getDriveMeters() {
+        return mDriveMotor.getSelectedSensorPosition() * Constants.SwerveConstants.Motor.kDriveDistancePerPulse;
+    }
+
     public void zeroEncoders()
     {
         
@@ -196,6 +217,8 @@ public class SwerveModule  {
         SmartDashboard.putNumber(BaseKey + "CANCoderID", mAngleEncoder.getDeviceID());
         SmartDashboard.putNumber(BaseKey + "Last Angle", mLastAngle);
         SmartDashboard.putString(BaseKey + "Desired State", mDesiredState.toString());
+        SmartDashboard.putNumber(BaseKey + "Drive Motor M/S", getDriveMetersPerSecond());
+        SmartDashboard.putNumber(BaseKey + "Drive Motor Meters", getDriveMeters());
         SmartDashboard.putNumber(BaseKey + "CanCoder Position", getCanCoder().getDegrees());
 
         // CANCoder

@@ -1,6 +1,9 @@
 package frc.robot;
 
+import org.photonvision.SimVisionTarget;
+
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
@@ -19,6 +22,7 @@ import frc.robot.auto.modes.*;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.Drive.DriveStyle;
 import frc.robot.util.drivers.Pigeon;
+import frc.robot.vision.photonVision;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -221,6 +225,8 @@ public class Robot extends TimedRobot {
   @Override
   public void simulationInit() {
 
+    // Add April Tag Fields 
+    photonVision.getInstance().simVision.addVisionTargets(FieldConstants.aprilTagField);
   }
 
   /** This function is called periodically whilst in simulation. */
@@ -229,6 +235,14 @@ public class Robot extends TimedRobot {
     mDrive.updateDriveSim();
 
     // Update Pose on Virtual Field
+
+    // 
+    Pose2d testPose = new Pose2d(FieldConstants.fieldLength/3, FieldConstants.fieldWidth/2, new Rotation2d());
+    photonVision.getInstance().simVision.processFrame(testPose);
+
+    SmartDashboard.putNumber("TEST/Size", photonVision.getInstance().getTargetIds().size());
+    SmartDashboard.putNumber("TEST/Best Yaw",  photonVision.getInstance().getBestTargetYaw());
+
     
   }
 
@@ -239,7 +253,9 @@ public class Robot extends TimedRobot {
     DriveLoop(mOperatorInterface.getDrivePrecisionSteer(), false);
 
     // Update Robot Field Position
-    mField.setRobotPose(mDrive.getPose());
+    Pose2d robotPose = mRealRobot ? mDrive.getPose() : mDrive.getSimulatedPose();
+    mField.setRobotPose(robotPose);
+    mRobotState.setRobotPose(robotPose);
   }
 
    /**

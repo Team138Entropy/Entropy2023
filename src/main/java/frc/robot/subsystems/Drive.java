@@ -26,6 +26,7 @@ import frc.robot.util.Util;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.util.geometry.Twist2d;
 import frc.robot.util.simulation.DiffDriveSimSystem;
+import frc.robot.util.simulation.SimSwerveOdometry;
 import frc.robot.util.simulation.SwerveDriveSimSystem;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -85,7 +86,7 @@ public class Drive extends Subsystem {
   // Swerve Based Systems
   public SwerveDriveOdometry mSwerveOdometry;
   public SwerveModule[] mSwerveModules; 
-  public SwerveModulePosition[] mSwerveModulePositions;
+  public SimSwerveOdometry mSimSwerveOdometry;
 
   private Pose2d mStoredPose;
 
@@ -235,19 +236,15 @@ public class Drive extends Subsystem {
       new SwerveModule(3, Constants.Drive.SwerveModules.Module3.SwerveModuleConstants())
     };
 
-    // Initalize Each Swerve Module Position
-    mSwerveModulePositions = new SwerveModulePosition[] {
-      new SwerveModulePosition(),
-      new SwerveModulePosition(),
-      new SwerveModulePosition(),
-      new SwerveModulePosition()
-    };
-
     // Swerve Odometry
     mSwerveOdometry = new SwerveDriveOdometry(Constants.SwerveConstants.swerveKinematics, 
                                               mPigeon.getYaw().getWPIRotation2d(),
-                                              mSwerveModulePositions
+                                              getModulePositions()
     );
+
+    // Sim Swerve Odometry
+    mSimSwerveOdometry = new SimSwerveOdometry(Constants.SwerveConstants.swerveKinematics, 
+                                                mPigeon.getYaw().getWPIRotation2d());
   }
 
   private void configTalon(EntropyTalonFX talon) {
@@ -551,6 +548,16 @@ public class Drive extends Subsystem {
     return states;
   }
 
+  /* Get Swerve Module Positions */
+  public SwerveModulePosition[] getModulePositions()
+  {
+    SwerveModulePosition[] positions = new SwerveModulePosition[4];
+    for(SwerveModule mod : mSwerveModules){
+        positions[mod.getModuleNumber()] = mod.getPosition();
+    }
+    return positions;
+  }
+
   /* Start Snap */
   /* Just Swerve for now... */
   public void startSnap(double snapAngle)
@@ -731,9 +738,8 @@ public class Drive extends Subsystem {
         mDriveSimSystem.updateDrive(getLastDriveSignal());
       break;
       case SWERVE_DRIVE:
-        //mSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), getDesiredSwerveModuleStates());
-        mSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), mSwerveModulePositions);
-       // mSwerveDriveSimSystem.updateStates()        
+        mSimSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), getDesiredSwerveModuleStates());
+        //mSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), mSwerveModulePositions);
       break;
     }
   }
@@ -749,7 +755,7 @@ public class Drive extends Subsystem {
       break;
       case SWERVE_DRIVE:
        // mSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), getSwerveModuleStates());
-       mSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), mSwerveModulePositions);
+       mSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), getModulePositions());
       break;
     }
 
@@ -805,6 +811,29 @@ public class Drive extends Subsystem {
     }
     return result;
   }
+
+  /**
+   * Returns the currently-estimated pose of the robot.
+   *
+   * @return The pose.
+   */
+  public synchronized Pose2d getSimulatedPose() {
+    Pose2d result;
+    switch(mDriveStyle)
+    {
+      case DIFFERENTIAL_DRIVE:
+        result = mDifferentialDriveOdometry.getPoseMeters();
+      break;
+      case SWERVE_DRIVE:
+        result = mSimSwerveOdometry.getPoseMeters();
+      break;
+      default:
+        result = new Pose2d();
+      break;
+    }
+    return result;
+  }
+
 
   /**
    * Stores the Pose of the Robot

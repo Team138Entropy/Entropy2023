@@ -7,7 +7,10 @@ import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import frc.robot.util.TuneableNumber;
 import frc.robot.util.drivers.SwerveModuleConstants;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstraint;
 
 /**
  * Constants
@@ -414,6 +417,81 @@ public class Constants {
 
     public static final double wheelDiameter = Units.inchesToMeters(4.0);
     public static final double wheelCircumference = wheelDiameter * Math.PI;
-  }
 
+    /* Swerve Motor */
+    public static final class Motor 
+    {
+      public static final int kFalconEncoderCPR = 2048;
+      public static final int kCANCoderCPR = 4096;
+      public static final DCMotor kDriveGearbox = DCMotor.getFalcon500(1);
+      public static final DCMotor kTurnGearbox = DCMotor.getFalcon500(1);
+
+      public static final double kDriveDistancePerPulse =
+      (wheelDiameter * Math.PI) / (kFalconEncoderCPR * driveGearRatio);
+      public static final double kTurnDistancePerPulse =
+          360.0 / (kFalconEncoderCPR * angleGearRatio);
+      public static final double kTurningEncoderDistancePerPulse = 360.0 / kCANCoderCPR;
+
+      public static final double ksDriveVoltSecondsPerMeter = 0.667 / 12;
+      public static final double kvDriveVoltSecondsSquaredPerMeter = 2.44 / 12;
+      public static final double kaDriveVoltSecondsSquaredPerMeter = 0.27 / 12;
+
+      public static final double kvTurnVoltSecondsPerRadian = 1.47; // originally 1.5
+      public static final double kaTurnVoltSecondsSquaredPerRadian = 0.348; // originally 0.3
+      }
+
+    /* Swerve Specific Auto Constants */
+    public static final class AutoConstants 
+    {
+      public static final double kSlowSpeedMetersPerSecond = 1.7;
+      public static final double kSlowAccelerationMetersPerSecondSquared = 2.0;
+
+      public static final double kMaxSpeedMetersPerSecond = 2.2; 
+      public static final double kMaxAccelerationMetersPerSecondSquared = 2.3;
+      
+      public static final double kSlowMaxAngularSpeedRadiansPerSecond = 0.8 * Math.PI;
+      public static final double kSlowMaxAngularSpeedRadiansPerSecondSquared = Math.pow(kSlowMaxAngularSpeedRadiansPerSecond, 2);
+
+      public static final double kMaxAngularSpeedRadiansPerSecond = 1.2 * Math.PI;
+      public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.pow(kMaxAngularSpeedRadiansPerSecond, 2);
+
+      public static final double kPXController = 1;
+      public static final double kPYController = 1;
+      public static final double kPThetaController = 5;
+
+       // Constraint for the motion profilied robot angle controller
+       public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
+         new TrapezoidProfile.Constraints(
+               kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
+
+       // Constraint for the motion profilied robot angle controller
+       public static final TrapezoidProfile.Constraints kSlowThetaControllerConstraints =
+         new TrapezoidProfile.Constraints(
+               kSlowMaxAngularSpeedRadiansPerSecond, kSlowMaxAngularSpeedRadiansPerSecondSquared);
+       
+               public static TrajectoryConfig createConfig(double maxSpeed, double maxAccel, double startSpeed, double endSpeed) {
+                TrajectoryConfig config = new TrajectoryConfig(maxSpeed, maxAccel);
+                config.setKinematics(Constants.SwerveConstants.swerveKinematics);
+                config.setStartVelocity(startSpeed);
+                config.setEndVelocity(endSpeed);
+                config.addConstraint(new CentripetalAccelerationConstraint(3.0));
+                return config;
+            }
+    
+            // Trajectory Speed Configs
+            public static final TrajectoryConfig defaultSwerveTrajectorySpeedConfig =
+                    new TrajectoryConfig(
+                            kMaxSpeedMetersPerSecond,
+                            kMaxAccelerationMetersPerSecondSquared)
+                            .setKinematics(Constants.SwerveConstants.swerveKinematics);
+    
+            public static final TrajectoryConfig slowSwerveSpeedConfig =
+                    new TrajectoryConfig(
+                    kSlowSpeedMetersPerSecond,
+                    kSlowAccelerationMetersPerSecondSquared)    
+                    .setKinematics(Constants.SwerveConstants.swerveKinematics)
+                            .setStartVelocity(0)
+                            .setEndVelocity(0); 
+    }; 
+  }
 }

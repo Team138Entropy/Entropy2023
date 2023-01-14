@@ -39,6 +39,9 @@ public class RobotState {
     // Reference to Photonvision
     photonVision mPhotonVision = photonVision.getInstance();
 
+    // Robots Pose2d
+    Pose2d mRobotPose;
+
     // Photon Vision Class to Estimate RobotPose based on last seen vision 
     RobotPoseEstimator mRobotPoseEstimator;
 
@@ -61,6 +64,9 @@ public class RobotState {
 
     private void init()
     {
+       // Zero RobotState
+       mRobotPose = new Pose2d(); 
+
        // Estimate the Robot's Pose on the Field
        //  Uses last seen AprilTag
        //  Various different strategies are available (AverageBestTargets, Closest_To_Camera_Height, Closest_To_Last_Pose,
@@ -81,6 +87,11 @@ public class RobotState {
     // Simulation or Real Robot
     public void setRealRobot(boolean value) {
         mRealRobot = value;
+    }
+
+    // Set Robot Pose
+    public void setRobotPose(Pose2d pose) {
+        mRobotPose = pose;
     }
 
     // Get Vision Estimated Robot Pose
@@ -130,8 +141,11 @@ public class RobotState {
     {
         // X -> Field Length I believe.. 50 feet in field2d
         // Y -> Field Width
+        /*
         mVisualField.setRobotPose(new Pose2d(FieldConstants.fieldLength/2, 
                                 FieldConstants.fieldWidth/2, new Rotation2d()));
+        */
+        mVisualField.setRobotPose(mRobotPose);
 
         // Iterate April Tags and Plot
         for(int i = 0; i < FieldConstants.aprilTags.size(); i++)
