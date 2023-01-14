@@ -262,5 +262,8 @@ public class OperatorInterface {
         return mOperatorController.getButton(Button.X);
     }
 
+    public boolean getDriverRelease() {
+        return mDriverController.getTrigger(Side.RIGHT);
+    }
 
 }
