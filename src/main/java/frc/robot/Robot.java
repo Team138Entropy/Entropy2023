@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Enums.SwerveCardinal;
 import frc.robot.OI.OperatorInterface;
 import frc.robot.auto.AutoModeExecutor;
+import frc.robot.auto.TrajectoryFollower;
 import frc.robot.auto.TrajectoryGeneratorHelper;
 import frc.robot.auto.modes.*;
 import frc.robot.subsystems.*;
@@ -39,6 +40,9 @@ public class Robot extends TimedRobot {
 
   // Robot State
   private final RobotState mRobotState = RobotState.getInstance();
+
+  // Trajectory Follower
+  private final TrajectoryFollower mTrajectoryFollower = TrajectoryFollower.getInstance();
 
   // Subsystem Manager
   private final SubsystemManager mSubsystemManager = SubsystemManager.getInstance();
@@ -121,6 +125,9 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Field", mField);
     SmartDashboard.putNumber("Pigeon Degrees", mPigeon.getYaw().getDegrees());
     SmartDashboard.putNumber("Pigeon Radians", mPigeon.getYaw().getRadians());
+
+    // Trajectory Follower 
+    mTrajectoryFollower.updateSmartdashboard();
 
     // RobotState
     mRobotState.updateSmartdashboard();
