@@ -224,15 +224,15 @@ public class OperatorInterface {
         return mOperatorController.getTrigger(Side.RIGHT);
     }
 
-    public boolean getScoringUp() {
+    public boolean getArmScoringUpFront() {
         return mOperatorController.getButton(Button.A);
     }
 
-    public boolean getScoringMid() {
+    public boolean getArmScoringMidFront() {
         return mOperatorController.getButton(Button.B);
     }
 
-    public boolean getScoringLow() {
+    public boolean getArmScoringLowFront() {
         return mOperatorController.getButton(Button.X);
     }
 
@@ -242,6 +242,24 @@ public class OperatorInterface {
 
     public boolean getIntakeArm() {
         return mOperatorController.getButton(Button.LB);
+    }
+
+
+    //place holder buttons because we ran out of buttons on the controller    
+    public boolean getIntakeArmBack() {
+        return mOperatorController.getButton(Button.A);
+    }
+
+    public boolean getArmScoringUpBack() {
+        return mOperatorController.getButton(Button.A);
+    }
+
+    public boolean getArmScoringMidBack() {
+        return mOperatorController.getButton(Button.B);
+    }
+
+    public boolean getArmScoringLowBack() {
+        return mOperatorController.getButton(Button.X);
     }
 
 
