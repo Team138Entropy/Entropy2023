@@ -224,12 +224,6 @@ public class Robot extends TimedRobot {
       /*if (mOperatorInterface.getArmJogExtended5()){
         mArm.setArmExtension(5);
       } 
-      else if (mOperatorInterface.getArmJogExtended10()){
-        mArm.setArmExtension(10);
-      }
-      else if (mOperatorInterface.getArmJogExtended15()){
-        mArm.setArmExtension(0);
-      }
       else if (mOperatorInterface.getArmJogRetracted()){
         mArm.setArmExtension(0);
       }*/
@@ -245,11 +239,8 @@ public class Robot extends TimedRobot {
       /*if (mOperatorInterface.getGrasperOpen()){
         mGrasper.setGrasperOpen();
       }
-        else if (mOperatorInterface.getCubeGrasperClosed()){
-          mGrasper.setCubeGrasperClosed();
-      }
-        else if (mOperatorInterface.getConeGrasperClosed()){
-        mGrasper.setConeGrasperClosed();; 
+        else if (mOperatorInterface.getGrasperClosed()){
+          mGrasper.setGrasperClosed();
       }*/
 
       if (mOperatorInterface.getWristUp()) {

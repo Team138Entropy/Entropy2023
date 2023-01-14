@@ -11,8 +11,7 @@ public class Grasper {
     private static Grasper mInstance;
 
     TalonSRX GrasperMotor = new TalonSRX(7);
-    Solenoid GrasperCubeSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
-    Solenoid GrasperConeSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 2);
+    Solenoid GrasperSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
 
     public static synchronized Grasper getInstance() {
         if (mInstance == null) {
@@ -21,30 +20,19 @@ public class Grasper {
         return mInstance;
       }
 
-      public void setCubeGrasperTrue(){
-    GrasperCubeSolenoid.set(true);
+      public void setGrasperTrue(){
+    GrasperSolenoid.set(true);
       }
-      public void setCubeGrasperFalse(){
-        GrasperConeSolenoid.set(false);
+      public void setGrasperFalse(){
+        GrasperSolenoid.set(false);
           }
-    
-        public void setConeGrasperTrue(){
-    GrasperConeSolenoid.set(true);
-         }
-        public void setConeGrasperFalse(){
-        GrasperConeSolenoid.set(false);
-                 }
 
       public void setGrasperOpen(){
-        setConeGrasperFalse();
-        setCubeGrasperFalse();
+        setGrasperFalse();
         }
 
-        public void setCubeGrasperClosed(){
-            setCubeGrasperTrue();
-         }
-         public void setConeGrasperClosed(){
-            setConeGrasperTrue();
+        public void setGrasperClosed(){
+            setGrasperTrue();
          }
 
        }

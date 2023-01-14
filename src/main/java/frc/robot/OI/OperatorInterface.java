@@ -219,14 +219,6 @@ public class OperatorInterface {
         return mOperatorController.getButton(Button.RB);
     }
 
-    public boolean getArmJogExtended10() {
-        return mOperatorController.getButton(Button.START);
-    }
-
-    public boolean getArmJogExtended15() {
-        return mOperatorController.getButton(Button.BACK);
-    }
-
     public boolean getArmJogExtended() {
         return mOperatorController.getButton(Button.RB);
     }
@@ -299,9 +291,9 @@ public class OperatorInterface {
 
 
     public boolean getGrasperOpen() {
-        return mDriverController.getButton(Button.Y);
+        return mDriverController.getButton(Button.LB);
     }
-    public boolean getCubeGrasperClosed() {
+    public boolean getGrasperClosed() {
         return mDriverController.getButton(Button.RB);
     }
 
