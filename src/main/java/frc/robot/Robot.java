@@ -38,6 +38,8 @@ public class Robot extends TimedRobot {
   
   // Subsystems
   private final Arm mArm = Arm.getInstance();
+  private final Grasper mGrasper = Grasper.getInstance();
+  private final Wrist mWrist = Wrist.getInstance();
 
   // Autonomous Execution Thread
   private AutoModeExecutor mAutoModeExecutor = null;
@@ -219,7 +221,7 @@ public class Robot extends TimedRobot {
       else {mArm.setArmAngle(90);
       }
 
-      if (mOperatorInterface.getArmJogExtended5()){
+      /*if (mOperatorInterface.getArmJogExtended5()){
         mArm.setArmExtension(5);
       } 
       else if (mOperatorInterface.getArmJogExtended10()){
@@ -230,8 +232,8 @@ public class Robot extends TimedRobot {
       }
       else if (mOperatorInterface.getArmJogRetracted()){
         mArm.setArmExtension(0);
-      }
-      /*if (mOperatorInterface.getArmJogExtended()){
+      }*/
+      if (mOperatorInterface.getArmJogExtended()){
         mArm.setArmJog(0.4);
       } 
       else if (mOperatorInterface.getArmJogRetracted()){
@@ -239,7 +241,24 @@ public class Robot extends TimedRobot {
       }      
       else {
         mArm.setArmJog(0);
-      }      */
+      }      
+      /*if (mOperatorInterface.getGrasperOpen()){
+        mGrasper.setGrasperOpen();
+      }
+        else if (mOperatorInterface.getCubeGrasperClosed()){
+          mGrasper.setCubeGrasperClosed();
+      }
+        else if (mOperatorInterface.getConeGrasperClosed()){
+        mGrasper.setConeGrasperClosed();; 
+      }*/
+
+      if (mOperatorInterface.getWristUp()) {
+        mWrist.setWristUp();
+      }
+      else if (mOperatorInterface.getWristDown()) {
+        mWrist.setWristDown();
+      }
+
   }
 
   

@@ -296,4 +296,19 @@ public class OperatorInterface {
     public boolean getFeedShooterDown() {
         return mDriverController.getButton(Button.B);
     }
+
+
+    public boolean getGrasperOpen() {
+        return mDriverController.getButton(Button.Y);
+    }
+    public boolean getCubeGrasperClosed() {
+        return mDriverController.getButton(Button.RB);
+    }
+
+    public boolean getWristUp() {
+        return mDriverController.getTrigger(Side.RIGHT);
+    }
+    public boolean getWristDown() {
+        return mDriverController.getTrigger(Side.LEFT);
+    }
 }
