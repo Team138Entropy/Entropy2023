@@ -4,7 +4,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
-import frc.robot.Enums.SwerveCardinal;
+import frc.robot.Enums.*;
+import frc.robot.Enums.scoringNodes;
 import frc.robot.OI.XboxController.Axis;
 import frc.robot.OI.XboxController.Button;
 import frc.robot.OI.XboxController.Side;
@@ -123,6 +124,40 @@ public class OperatorInterface {
         return result;
     }
 
+    public scoringNodes getScoringCommand() {
+        scoringNodes node = scoringNodes.NONE;
+
+        if (mOperatorController.getButton(Button.RB)) {
+            node = scoringNodes.BOTTOM_1;
+        }
+        if (mOperatorController.getButton(Button.BACK)) {
+            node = scoringNodes.BOTTOM_2;
+        }
+        if (mOperatorController.getButton(Button.START)) {
+            node = scoringNodes.BOTTOM_3;
+        }
+        if (mOperatorController.getButton(Button.L_JOYSTICK)) {
+            node = scoringNodes.MIDDLE_1;
+        }
+        if (mOperatorController.getButton(Button.R_JOYSTICK)) {
+            node = scoringNodes.MIDDLE_2;
+        }
+        if (mOperatorController.getDPad() == 0) {
+            node = scoringNodes.MIDDLE_3;
+        }
+        if (mOperatorController.getDPad() == 90) {
+            node = scoringNodes.TOP_1;
+        }
+        if (mOperatorController.getDPad() == 180) {
+            node = scoringNodes.TOP_2;
+        }
+        if (mOperatorController.getDPad() == 270) {
+            node = scoringNodes.TOP_3;
+        }
+
+        return node;
+    }
+
     public boolean getResetOdometry(){
         return mDriverController.getButton(Button.START);
     }
@@ -151,62 +186,6 @@ public class OperatorInterface {
         mDriverController.setRumble(a);
     }
 
-  
-    public boolean getArmEject() {
-        return mOperatorController.getTrigger(Side.LEFT);
-    }
-
-    public boolean getGrasperIntakeManual() {
-        return mLeftBumper.update(mOperatorController.getTrigger(Side.RIGHT));
-    }
-
-    /**
-     * Switches the Robot Mode
-     * On the Start Button of the Operator Controller
-     * @return
-     */
-    public boolean getSwitchModePress(){
-        return mOperatorStartButton.update(mOperatorController.getButton(Button.START));
-    }
-
-    public boolean getSelectButtonPress(){
-        return mOperatorSelectButton.update(mOperatorController.getButton(Button.BACK));
-    }
-
-    public boolean getArmExtend() {
-        int input = mOperatorController.getDPad();
-        return input <= 45 && input >= 315;
-    }
-
-    public boolean getArmRetract() {
-        int input = mOperatorController.getDPad();
-        return input <= 225 && input >= 135;
-    }
-
-    public boolean getArmExtendManual() {
-        return mOperatorController.getButton(Button.B);
-    }
-
-    public boolean getArmRetractManual() {
-        return mOperatorController.getButton(Button.X);
-    }
-
-    public boolean getArmExtendPress(){
-        return mExtensionUp.update(mOperatorController.getButton(Button.B));
-    }
-
-    public boolean getArmRetractPress(){
-        return mExtensionDown.update(mOperatorController.getButton(Button.X));
-    }
-
-    public boolean getArmJogUp() {
-        return mOperatorController.getButton(Button.Y);
-    }
-
-    public boolean getArmJogDown() {
-        return mOperatorController.getButton(Button.A);
-    }
-
     public boolean getArmRotateUp() {
         return mArmRotateUp.update(mDriverController.getButton(Button.Y));
     }
@@ -215,38 +194,6 @@ public class OperatorInterface {
         return mArmRotateDown.update(mDriverController.getButton(Button.A));
     }
 
-    public double getShoulderTargetX() {
-        return mOperatorController.getJoystick(Side.RIGHT, Axis.X);
-    }
-
-    public double getShoulderTargetY() {
-        return mOperatorController.getJoystick(Side.RIGHT, Axis.X);
-    }
-
-    public boolean getClimberTestExtend() {
-        return mOperatorController.getButton(Button.RB);
-    }
-
-    public boolean getClimberTestRetract() {
-        return mOperatorController.getButton(Button.LB);
-    }
-
-    public boolean getTestZeroPress(){
-        return mOperatorController.getButton(Button.L_JOYSTICK);
-    }
-
-    public boolean getSwitchExtensionMode(){
-        return mExtensionSwitchMode.update(mOperatorController.getButton(Button.R_JOYSTICK));
-    }
-
-    // Operator Presses to Approve Next Climbing Stage
-    public boolean getOperatorClimbStageApprovePress() {
-        return mOperatorClimbApprovePress.update(mOperatorController.getButton(Button.A));
-    }
-
-    public boolean getClimbCancel() {
-        return mOperatorController.getButton(Button.BACK);
-    }
     public boolean getRunShooterForward() {
         return mDriverController.getTrigger(Side.RIGHT);
     }
@@ -268,4 +215,34 @@ public class OperatorInterface {
     public boolean getFeedShooterDown() {
         return mDriverController.getButton(Button.B);
     }
+
+    public boolean getIntakeOpen() {
+        return mOperatorController.getTrigger(Side.LEFT);
+    }
+
+    public boolean getIntakeClose() {
+        return mOperatorController.getTrigger(Side.RIGHT);
+    }
+
+    public boolean getScoringUp() {
+        return mOperatorController.getButton(Button.A);
+    }
+
+    public boolean getScoringMid() {
+        return mOperatorController.getButton(Button.B);
+    }
+
+    public boolean getScoringLow() {
+        return mOperatorController.getButton(Button.X);
+    }
+
+    public boolean getSafeArm() {
+        return mOperatorController.getButton(Button.Y);
+    }
+
+    public boolean getIntakeArm() {
+        return mOperatorController.getButton(Button.LB);
+    }
+
+
 }

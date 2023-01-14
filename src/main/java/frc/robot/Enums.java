@@ -9,6 +9,21 @@ public class Enums {
         STOP
     };
 
+    // scoring nodes
+    public enum scoringNodes {
+        //bottom, middle, and top are refering to the grids not the scoring hights
+        NONE,
+        BOTTOM_1,
+        BOTTOM_2,
+        BOTTOM_3,
+        MIDDLE_1,
+        MIDDLE_2,
+        MIDDLE_3,
+        TOP_1,
+        TOP_2,
+        TOP_3;
+    }
+
     // Swerve Cardinal Directions
     // These are SNAP Directions that will allow the swerve system
     // to auto turn to them
