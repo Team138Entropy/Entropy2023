@@ -2,7 +2,9 @@ package frc.robot;
 
 import org.photonvision.SimVisionTarget;
 
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTable;
@@ -136,6 +138,14 @@ public class Robot extends TimedRobot {
 
     FieldObject2d testFieldObject = mField.getObject("testObject");
     testFieldObject.setPose(new Pose2d(10, 4, new Rotation2d()));
+
+    for(int i = 0; i < FieldConstants.aprilTags.size(); i++)
+        {
+            AprilTag currTag = FieldConstants.aprilTags.get(i);
+            String currName = "AprilTag " + currTag.ID;
+            FieldObject2d fieldObj = mField.getObject(currName);
+            fieldObj.setPose(currTag.pose.toPose2d());
+        }
 
     // RobotState
     mRobotState.updateSmartdashboard();
