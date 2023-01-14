@@ -64,7 +64,7 @@ public class Robot extends TimedRobot {
   // Field Object
   private final Field2d mField = new Field2d();
 
-  private final Pigeon mPigeon = Pigeon.getInstance();
+  //private final Pigeon mPigeon = Pigeon.getInstance();
 
   // Real Robot Indicator
   private final boolean mRealRobot = Robot.isReal();
@@ -79,13 +79,14 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     // Start Datalog Manager
-    DataLogManager.start();
+    //DataLogManager.start();
 
     // Record both DS control and joystick data
     DriverStation.startDataLog(DataLogManager.getLog());  
     
     // Real or Simulation Robot
     mRobotState.setRealRobot(mRealRobot);
+    //DriverStation.startDataLog(DataLogManager.getLog());    
 
     // populate autonomous list
     populateAutonomousModes();
@@ -124,8 +125,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Drive Throttle", mOperatorInterface.getDriveThrottle());
     SmartDashboard.putNumber("Drive Turn", mOperatorInterface.getDriveTurn());
     SmartDashboard.putData("Field", mField);
-    SmartDashboard.putNumber("Pigeon Degrees", mPigeon.getYaw().getDegrees());
-    SmartDashboard.putNumber("Pigeon Radians", mPigeon.getYaw().getRadians());
+   // SmartDashboard.putNumber("Pigeon Degrees", mPigeon.getYaw().getDegrees());
+    //SmartDashboard.putNumber("Pigeon Radians", mPigeon.getYaw().getRadians());
     SmartDashboard.putNumber("vision target: yaw", mPhotonVision.getBestTargetYaw());
     SmartDashboard.putBoolean("vision has target", mPhotonVision.seesTargets());
 
@@ -264,6 +265,16 @@ public class Robot extends TimedRobot {
     Pose2d robotPose = mRealRobot ? mDrive.getPose() : mDrive.getSimulatedPose();
     mField.setRobotPose(robotPose);
     mRobotState.setRobotPose(robotPose);
+    mField.setRobotPose(mDrive.getPose());
+    if(mOperatorInterface.getPipeLineAprilTag()){
+      mPhotonVision.setPipeLine(0);
+    }else if(mOperatorInterface.getPipeLineCube()){
+      mPhotonVision.setPipeLine(1);
+    }else if(mOperatorInterface.getPipeLineCone()){
+      mPhotonVision.setPipeLine(2);
+    }
+    System.out.println("the pipeline is"+ mPhotonVision.getPipeLineNum());
+    
   }
 
    /**

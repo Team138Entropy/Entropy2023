@@ -87,6 +87,15 @@ public class photonVision {
   
   
       return targetIDs;
+
+    }
+
+    public synchronized void setPipeLine(int pipeLineNum) {
+      camera.setPipelineIndex(pipeLineNum);
+    }
+
+    public synchronized int getPipeLineNum() {
+      return camera.getPipelineIndex();
     }
   
   

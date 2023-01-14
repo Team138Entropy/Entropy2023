@@ -267,7 +267,29 @@ public class OperatorInterface {
     public boolean getFeedShooterUp() {
         return mDriverController.getButton(Button.Y);
     }
+
     public boolean getFeedShooterDown() {
         return mDriverController.getButton(Button.B);
+    }
+
+    public boolean getPipeLineAprilTag() {
+        if(mDriverController.getDPad() == 0){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean getPipeLineCube() {
+        if(mDriverController.getDPad() == 90){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean getPipeLineCone() {
+        if(mDriverController.getDPad() == 270){
+            return true;
+        }
+        return false;
     }
 }

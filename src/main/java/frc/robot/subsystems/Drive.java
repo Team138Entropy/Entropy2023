@@ -58,7 +58,7 @@ public class Drive extends Subsystem {
   
   // Default to Differential Drive
   // Change this variable to change the drive style
-  private final DriveStyle mDriveStyle = DriveStyle.SWERVE_DRIVE;
+  private final DriveStyle mDriveStyle = DriveStyle.DIFFERENTIAL_DRIVE;
 
   // Potential Drive Modes
   public enum DriveControlState {

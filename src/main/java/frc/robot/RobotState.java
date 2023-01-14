@@ -73,7 +73,7 @@ public class RobotState {
        //                                              Closest_To_Reference_Pose, Lowest_Ambiguity)
        //  ref: https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html
        mRobotPoseEstimator = new RobotPoseEstimator(FieldConstants.aprilTagField, 
-                                                        PoseStrategy.CLOSEST_TO_REFERENCE_POSE, photonVision.CameraList
+                                                        PoseStrategy.LOWEST_AMBIGUITY, photonVision.CameraList
                                                     );
 
         // Robot Pose Calculated off of Vision
@@ -101,7 +101,7 @@ public class RobotState {
     
         double currentTime = Timer.getFPGATimestamp();
         Optional<Pair<Pose3d, Double>> result = mRobotPoseEstimator.update();
-        if (result.isPresent() && null != result.get().getFirst()) {
+        if (result.isPresent() && result.get().getFirst() != null) {
             return new Pair<Pose2d, Double>(result.get().getFirst().toPose2d(), currentTime - result.get().getSecond());
         } else {
             return new Pair<Pose2d, Double>(null, 0.0);
