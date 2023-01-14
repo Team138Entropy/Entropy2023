@@ -3,6 +3,7 @@ package frc.robot.util.drivers;
 import com.ctre.phoenix.sensors.Pigeon2;
 
 import frc.robot.Constants;
+import frc.robot.auto.actions.TurnInPlaceAction;
 import frc.robot.util.geometry.Rotation2d;
 
 
@@ -70,5 +71,13 @@ public class Pigeon {
 
     public Rotation2d getUnadjustedRoll() {
         return Rotation2d.fromDegrees(mGyro.getRoll());
+    }
+
+    public boolean isTipping() {
+        Rotation2d rotation = getUnadjustedPitch();
+        if(Math.abs(rotation.getDegrees()) > 2.5){
+            return true;
+        }
+        return false;
     }
 }

@@ -103,12 +103,13 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("accel X", mAccelerometer.getX());
     SmartDashboard.putNumber("accel Y", mAccelerometer.getY());
     SmartDashboard.putNumber("accel Z", mAccelerometer.getZ());
-    //SmartDashboard.putBoolean("isTipping", robotTippingCheck());
+    SmartDashboard.putBoolean("isTipping", mPigeon.isTipping());
     SmartDashboard.putNumber("Drive Throttle", mOperatorInterface.getDriveThrottle());
     SmartDashboard.putNumber("Drive Turn", mOperatorInterface.getDriveTurn());
     SmartDashboard.putData("Field", mField);
     SmartDashboard.putNumber("Pigeon Degrees", mPigeon.getYaw().getDegrees());
     SmartDashboard.putNumber("Pigeon Radians", mPigeon.getYaw().getRadians());
+  
 
     // Iterates each Subsytem 
     mSubsystemManager.updateSmartdashboard();
