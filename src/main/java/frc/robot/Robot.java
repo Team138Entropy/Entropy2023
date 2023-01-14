@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Enums.SwerveCardinal;
@@ -125,11 +126,16 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Drive Throttle", mOperatorInterface.getDriveThrottle());
     SmartDashboard.putNumber("Drive Turn", mOperatorInterface.getDriveTurn());
     SmartDashboard.putData("Field", mField);
+    SmartDashboard.putString("robot pose", mField.getRobotPose().toString());
    // SmartDashboard.putNumber("Pigeon Degrees", mPigeon.getYaw().getDegrees());
     //SmartDashboard.putNumber("Pigeon Radians", mPigeon.getYaw().getRadians());
     SmartDashboard.putNumber("vision target: yaw", mPhotonVision.getBestTargetYaw());
     SmartDashboard.putBoolean("vision has target", mPhotonVision.seesTargets());
+    
 
+
+    FieldObject2d testFieldObject = mField.getObject("testObject");
+    testFieldObject.setPose(new Pose2d(10, 4, new Rotation2d()));
 
     // RobotState
     mRobotState.updateSmartdashboard();
