@@ -133,7 +133,8 @@ public class Robot extends TimedRobot {
   private void populateAutonomousModes(){
     // Auto Mode
     mAutoModes = new SendableChooser<AutoModeBase>();
-    mAutoModes.setDefaultOption("Nothing", new DoNothingMode());
+    //mAutoModes.setDefaultOption("Nothing", new DoNothingMode());
+    mAutoModes.setDefaultOption("Test Swerve Mode", new SwerveTestAutoMode() );
     SmartDashboard.putData(mAutoModes);
   }
 

@@ -785,17 +785,13 @@ public class Drive extends Subsystem {
    */
   public void resetOdometry(Pose2d pose) {
     // Zero the Pigeon
-    
-
-
-    
     switch(mDriveStyle)
     {
       case DIFFERENTIAL_DRIVE:
         //mDifferentialDriveOdometry.resetPosition(m_gyro.getRotation2d(), 0, 0, pose);
       break;
       case SWERVE_DRIVE:
-        
+        mSwerveOdometry.resetPosition(mPigeon.getYaw().getWPIRotation2d(), getModulePositions(), pose);
       break;
       default:
       break;

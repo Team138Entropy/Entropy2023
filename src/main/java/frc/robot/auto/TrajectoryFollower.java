@@ -126,7 +126,16 @@ public class TrajectoryFollower {
         //mDrive.zeroHeading();
 
         // Reset the drivetrain's odometry to the starting pose of the trajectory.
-        //mDrive.resetOdometry(mTrajectory.getInitialPose());
+        mDrive.resetOdometry(mTrajectory.getInitialPose());
+        System.out.println("TrajectoryFollower::Initial Pose " 
+            + mTrajectory.getInitialPose().toString()
+        );
+
+        System.out.println("TrajectoryFollower::Initial DrivePose " 
+            + mDrive.getPose().toString()
+        );
+
+        //mTrajectory.getStates().get(0).
 
         // Store the Current Pose of the Drive
         mDrive.storeCurrentPose();
@@ -142,13 +151,13 @@ public class TrajectoryFollower {
 
         // Update the Robot Position on Field2D
         mField.setRobotPose(mDrive.getPose());
-        System.out.println("robot pose done");
+
+        System.out.println("TrajectoryFollower: " + mTimer.get() + 
+                " of " + mTrajectory.getTotalTimeSeconds());
 
         // if the time is within the total trajectory time
         if (mRun && mTimer.get() < mTrajectory.getTotalTimeSeconds()) {
-            System.out.println("Timer Seconds: " + mTimer.get());
-            System.out.println("Total Seconds: " + mTrajectory.getTotalTimeSeconds());
-
+ 
             // Get the desired pose from the trajectory.
             var currentDrivePose = mDrive.getPose();
             var desiredPose = mTrajectory.sample(mTimer.get());
@@ -182,14 +191,7 @@ public class TrajectoryFollower {
 
             // Set Drive System to do Nothing
             // Drive System Specific Logic
-            if(DriveStyle.DIFFERENTIAL_DRIVE == mDrive.getDriveStyle())
-            {
-                mDrive.automousDrive(0, 0);
-            }
-            else if(DriveStyle.SWERVE_DRIVE == mDrive.getDriveStyle())
-            {
-                mDrive.setSwerveDrive(new Translation2d(), 0, true, true);
-            }
+            StopDrive();
         }
 
         // Update the Smartdashboard
@@ -200,7 +202,16 @@ public class TrajectoryFollower {
     public void StopDrive(){
         System.out.println("TrajectoryFollower::StopDrive");
         mRun = false;
-        mDrive.setDrive(0, 0, false);
+        
+        // Stop the Drive System
+        if(DriveStyle.DIFFERENTIAL_DRIVE == mDrive.getDriveStyle())
+        {
+            mDrive.automousDrive(0, 0);
+        }
+        else if(DriveStyle.SWERVE_DRIVE == mDrive.getDriveStyle())
+        {
+            mDrive.setSwerveDrive(new Translation2d(), 0, true, true);
+        }
     }
 
     //returns if getComplete is done

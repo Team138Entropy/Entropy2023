@@ -70,6 +70,11 @@ public class SwerveModule  {
         mAngleMotor = new EntropyTalonFX(swerveConstants.angleMotorID);
         mDesiredState = new SwerveModuleState(0, new Rotation2d()); // zero desired state
 
+        // Feedforward Controller for non open loop
+        mFeedforward = new SimpleMotorFeedforward(Constants.SwerveConstants.driveKS, 
+                                            Constants.SwerveConstants.driveKV, Constants.SwerveConstants.driveKA);
+
+
         // Set Motor Descriptions for logging
         mDriveMotor.setDescription(mModuleName + " Drive Motor");
         mAngleMotor.setDescription(mModuleName + " Angle Motor");

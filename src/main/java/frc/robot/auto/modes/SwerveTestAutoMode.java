@@ -18,7 +18,8 @@ public class SwerveTestAutoMode extends AutoModeBase {
         // Make a Slow Swerve Trajectory that wants to go up field 3 meters?
         Trajectory genTraj = TrajectoryGenerator.generateTrajectory(List.of(
             new Pose2d(0, 0, new Rotation2d()),
-            new Pose2d(3, 0, new Rotation2d())
+            new Pose2d(1.5, 1, new Rotation2d()),
+            new Pose2d(1.5, 0, new Rotation2d())
         ), Constants.SwerveConstants.AutoConstants.slowSwerveSpeedConfig);
 
         addAction(new DriveTrajectoryAction(genTraj));
