@@ -143,9 +143,6 @@ public class TrajectoryFollower {
 
         // Store the Current Pose of the Drive
         mDrive.storeCurrentPose();
-
-        // Update the Smartdashboard
-        updateSmartdashboard();
     }
 
     public void Update(){
@@ -197,9 +194,6 @@ public class TrajectoryFollower {
             // Drive System Specific Logic
             StopDrive();
         }
-
-        // Update the Smartdashboard
-        updateSmartdashboard();
     }
 
     // Stop Drivetrain from moving
@@ -225,7 +219,7 @@ public class TrajectoryFollower {
 
     public void updateSmartdashboard()
     {
-        final String key = "TrajectorFollower/";
+        final String key = "TrajectoryFollower/";
         SmartDashboard.putBoolean(key + "Complete", mComplete);
         SmartDashboard.putBoolean(key + "Running", mRun);
         SmartDashboard.putBoolean(key + "Trajectory Set", mTrajectorySet);
