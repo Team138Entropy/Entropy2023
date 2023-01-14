@@ -10,7 +10,9 @@ import frc.robot.Constants;
 
 public class Arm {
     private static Arm mInstance;
-    TalonSRX ArmMotor = new TalonSRX(5);
+    TalonSRX ShoulderMotor = new TalonSRX(5);
+
+    TalonSRX ExtensionMotor = new TalonSRX(6);
 
     public static synchronized Arm getInstance() {
         if (mInstance == null) {
@@ -19,22 +21,31 @@ public class Arm {
         return mInstance;
       }
       private Arm () {
-        ArmMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
-        ArmMotor.setSensorPhase(true);
-        ArmMotor.setInverted(true);
-        ArmMotor.config_kF(0, 1);
-        ArmMotor.config_kP(0, 30);
-        ArmMotor.config_kI(0, .01);
-        ArmMotor.config_kD(0, 300);
-        ArmMotor.configSelectedFeedbackCoefficient(360.0/8192.0);
-        ArmMotor.configMotionAcceleration(5);
-        ArmMotor.configMotionCruiseVelocity(5, 10);
-        ArmMotor.setSelectedSensorPosition(90.0);
-
+     ShoulderMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
+     ShoulderMotor.setSensorPhase(true);
+     ShoulderMotor.setInverted(true);
+     ShoulderMotor.config_kF(0, 1);
+     ShoulderMotor.config_kP(0, 30);
+     ShoulderMotor.config_kI(0, .01);
+     ShoulderMotor.config_kD(0, 300);
+     ShoulderMotor.configSelectedFeedbackCoefficient(360.0/8192.0);
+     ShoulderMotor.configMotionAcceleration(5);
+     ShoulderMotor.configMotionCruiseVelocity(5, 10);
+     ShoulderMotor.setSelectedSensorPosition(90.0);
+     ExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
+     ExtensionMotor.setInverted(true);
+     ExtensionMotor.setSensorPhase(true);
+     ExtensionMotor.config_kF(0, 1);
+     ExtensionMotor.config_kP(0, 0.9);
+     ExtensionMotor.config_kI(0, 0);
+     ExtensionMotor.config_kD(0, 0);
+     ExtensionMotor.configMotionAcceleration(10000);
+     ExtensionMotor.configMotionCruiseVelocity(5000);
+     ExtensionMotor.setSelectedSensorPosition(0);
     }
 
     public double getGravity(){
-        double currentRadians = ArmMotor.getSelectedSensorPosition() * Constants.Misc.degreeToRadian;
+        double currentRadians = ShoulderMotor.getSelectedSensorPosition() * Constants.Misc.degreeToRadian;
         double feedForward = 0.2 * Math.cos(currentRadians);
             return feedForward;
         
@@ -43,23 +54,26 @@ public class Arm {
 
     public void setArmAngle(double Degrees){
         double feedForward = getGravity();
-        ArmMotor.set(ControlMode.MotionMagic, Degrees, DemandType.ArbitraryFeedForward, feedForward);
+     ShoulderMotor.set(ControlMode.MotionMagic, Degrees, DemandType.ArbitraryFeedForward, feedForward);
     }
 
     public void updateSmartDashBoard(){
-        SmartDashboard.putNumber("ArmPosition", ArmMotor.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Arm Percent Output", ArmMotor.getMotorOutputPercent());
+        SmartDashboard.putNumber("ArmPosition", ShoulderMotor.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Arm Percent Output", ShoulderMotor.getMotorOutputPercent());
+        SmartDashboard.putNumber("ExtensionPosition", ExtensionMotor.getSelectedSensorPosition());
     }
 
     public void setArmExtension(double Inches){
-        ArmMotor.set(ControlMode.Position, Inches); ?
+     ExtensionMotor.set(ControlMode.MotionMagic, Inches * 8600, DemandType.ArbitraryFeedForward, 0.3); 
      //extension takes inches
     }
-    
 
+    public void setArmJog (double Percent){
+        ExtensionMotor.set(ControlMode.PercentOutput, Percent);
+    }
 
- public void setArmJog (double Percent){
-     ArmMotor.set(ControlMode.PercentOutput, Percent);
+ public void setShoulderJog (double Percent){
+     ShoulderMotor.set(ControlMode.PercentOutput, Percent);
  }
 }
 

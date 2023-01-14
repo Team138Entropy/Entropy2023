@@ -219,6 +219,27 @@ public class Robot extends TimedRobot {
       else {mArm.setArmAngle(90);
       }
 
+      if (mOperatorInterface.getArmJogExtended5()){
+        mArm.setArmExtension(5);
+      } 
+      else if (mOperatorInterface.getArmJogExtended10()){
+        mArm.setArmExtension(10);
+      }
+      else if (mOperatorInterface.getArmJogExtended15()){
+        mArm.setArmExtension(0);
+      }
+      else if (mOperatorInterface.getArmJogRetracted()){
+        mArm.setArmExtension(0);
+      }
+      /*if (mOperatorInterface.getArmJogExtended()){
+        mArm.setArmJog(0.4);
+      } 
+      else if (mOperatorInterface.getArmJogRetracted()){
+        mArm.setArmJog(-0.4);
+      }      
+      else {
+        mArm.setArmJog(0);
+      }      */
   }
 
   

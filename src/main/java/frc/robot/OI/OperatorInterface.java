@@ -215,6 +215,25 @@ public class OperatorInterface {
         return mOperatorController.getButton(Button.B);
     }
 
+    public boolean getArmJogExtended5() {
+        return mOperatorController.getButton(Button.RB);
+    }
+
+    public boolean getArmJogExtended10() {
+        return mOperatorController.getButton(Button.START);
+    }
+
+    public boolean getArmJogExtended15() {
+        return mOperatorController.getButton(Button.BACK);
+    }
+
+    public boolean getArmJogExtended() {
+        return mOperatorController.getButton(Button.RB);
+    }
+
+    public boolean getArmJogRetracted() {
+        return mOperatorController.getButton(Button.LB);
+    }
 
     public boolean getArmRotateUp() {
         return mArmRotateUp.update(mDriverController.getButton(Button.Y));
