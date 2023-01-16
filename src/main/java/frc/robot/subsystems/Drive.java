@@ -743,6 +743,7 @@ public class Drive extends Subsystem {
   /** Update Drivesim */
   public synchronized void updateDriveSim()
   {
+    Pose2d SimPose = new Pose2d();
     switch(mDriveStyle)
     {
       case DIFFERENTIAL_DRIVE:

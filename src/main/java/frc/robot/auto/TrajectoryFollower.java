@@ -79,6 +79,7 @@ public class TrajectoryFollower {
     // Sets Selected Trajectory
     public void setTrajectory(Trajectory traj){
         mTrajectory = traj;
+        mTrajectorySet = true;
 
         // Push the trajectory to Field2d.
         mField.getObject("traj").setTrajectory(mTrajectory);
@@ -199,7 +200,8 @@ public class TrajectoryFollower {
     // Stop Drivetrain from moving
     public void StopDrive(){
         System.out.println("TrajectoryFollower::StopDrive");
-        mRun = false;
+        // Stop the Trajectory Follower
+        Stop();
         
         // Stop the Drive System
         if(DriveStyle.DIFFERENTIAL_DRIVE == mDrive.getDriveStyle())
@@ -210,6 +212,10 @@ public class TrajectoryFollower {
         {
             mDrive.setSwerveDrive(new Translation2d(), 0, true, true);
         }
+    }
+
+    public void Stop() {
+        mRun = false;
     }
 
     //returns if getComplete is done

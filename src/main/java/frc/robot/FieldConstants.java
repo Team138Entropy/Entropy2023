@@ -77,6 +77,21 @@ public final class FieldConstants {
       )
     );
 
+    // Get an April Tag by Id
+    public static AprilTag getAprilTag(int tagID)
+    {
+        AprilTag result = null;
+        for(int i = 0; i < aprilTags.size(); ++i)
+        {
+            if(aprilTags.get(i).ID == tagID)
+            {
+                result = aprilTags.get(i);
+                break;
+            }
+        }
+        return result;
+    }
+
     // April Tag Field Locations
     public static final AprilTagFieldLayout aprilTagField = new AprilTagFieldLayout(aprilTags, fieldLength, fieldWidth);
 

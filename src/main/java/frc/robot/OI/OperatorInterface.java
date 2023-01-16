@@ -138,7 +138,9 @@ public class OperatorInterface {
     }
 
     public boolean getDriveAutoSteer(){
-        return mDriverController.getTrigger(Side.RIGHT);
+        //return mDriverController.getTrigger(Side.RIGHT);
+        return mDriverController.getButton(Button.A);
+
     }
 
     public boolean getDrivePrecisionSteer(){

@@ -157,11 +157,11 @@ public class RobotState {
             FieldObject2d fieldObj = mVisualField.getObject(currName);
             fieldObj.setPose(currPose2d);
         }
-        
-        // Test Translation Between 2 Points
-        Pose2d result = mVisualField.getRobotPose().relativeTo(
-            FieldConstants.aprilTags.get(0).pose.toPose2d());
-        SmartDashboard.putString("RobotState/Translation2DTest", result.toString());
+
+        // Vision Estimated Robot Pose
+        FieldObject2d simVisionPose = mVisualField.getObject("VisionEstimatedPose");
+        simVisionPose.setPose(mVisionBasedRobotPose);
+
 
     }
 

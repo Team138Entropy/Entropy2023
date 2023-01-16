@@ -2,6 +2,7 @@ package frc.robot;
 
 import org.photonvision.SimVisionTarget;
 
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -45,6 +46,9 @@ public class Robot extends TimedRobot {
 
   // Trajectory Follower
   private final TrajectoryFollower mTrajectoryFollower = TrajectoryFollower.getInstance();
+
+  // PhotonVision
+  private final photonVision mPhotonVision = photonVision.getInstance();
 
   // Vision Driver
   private final VisionDriver mVisionDriver = VisionDriver.getInstance();
@@ -128,11 +132,15 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Drive Throttle", mOperatorInterface.getDriveThrottle());
     SmartDashboard.putNumber("Drive Turn", mOperatorInterface.getDriveTurn());
     SmartDashboard.putData("Field", mField);
+    SmartDashboard.putString("Robot Pose", mField.getRobotPose().toString());
     SmartDashboard.putNumber("Pigeon Degrees", mPigeon.getYaw().getDegrees());
     SmartDashboard.putNumber("Pigeon Radians", mPigeon.getYaw().getRadians());
 
     // Vision Based Driver
     mVisionDriver.updateSmartDashBoard();
+
+    // PhotonVision Smartdashboard
+    mPhotonVision.updateSmartDashboard();
 
     // Trajectory Follower 
     mTrajectoryFollower.updateSmartdashboard();
@@ -241,8 +249,8 @@ public class Robot extends TimedRobot {
   @Override
   public void simulationInit() {
 
-    // Add April Tag Fields 
-    photonVision.getInstance().simVision.addVisionTargets(FieldConstants.aprilTagField);
+    // Add April Tag Fields to Camera Sim System
+    mPhotonVision.simVision.addVisionTargets(FieldConstants.aprilTagField);
   }
 
   /** This function is called periodically whilst in simulation. */
@@ -254,12 +262,9 @@ public class Robot extends TimedRobot {
 
     // 
     Pose2d testPose = new Pose2d(FieldConstants.fieldLength/3, FieldConstants.fieldWidth/2, new Rotation2d());
-    photonVision.getInstance().simVision.processFrame(testPose);
 
-    SmartDashboard.putNumber("TEST/Size", photonVision.getInstance().getTargetIds().size());
-    SmartDashboard.putNumber("TEST/Best Yaw",  photonVision.getInstance().getBestTargetYaw());
-
-    
+    // Process Frame where the Robot currently is
+    mPhotonVision.simVision.processFrame(mField.getRobotPose());  
   }
 
   /** Called Throughout Teleop Periodic */
@@ -351,14 +356,15 @@ public class Robot extends TimedRobot {
         if(!mVisionDriver.getRunning())
         {
           // test code
-          Pose2d StartingPose = mDrive.getPose();
-          Pose2d TargetPose = StartingPose;
-
-          Transform2d trans = new Transform2d(new Translation2d(1, 0), new Rotation2d());
-          TargetPose.transformBy(trans);
+          Pose2d StartingPose = mField.getRobotPose();
+          //aprilTags
+          AprilTag tag3  = FieldConstants.getAprilTag(3);
+          Pose2d tag3Pose = tag3.pose.toPose2d();
+      
+          // test code
 
           mVisionDriver.setStartingPose(StartingPose);
-          mVisionDriver.setTargetPose(TargetPose);
+          mVisionDriver.setTargetPose(tag3Pose);
         }
 
         // general vision driving update

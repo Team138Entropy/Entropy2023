@@ -274,4 +274,27 @@ public class photonVision {
       
     }
     */  
+
+  public void updateSmartDashboard()
+    {
+      final String key = "Vision/";
+      SmartDashboard.putNumber(key + "Target Count", getTargetIds().size());
+      SmartDashboard.putNumber(key + "Best Target Yaw", getBestTargetYaw());
+
+      var targetList = getTargetList();
+      for(int i = 0; i < targetList.size(); ++i)
+      {
+        PhotonTrackedTarget target = targetList.get(i);
+        String targetKey = key + "Target " + target.getFiducialId() + "/";
+        SmartDashboard.putNumber(targetKey + "Yaw", target.getYaw());
+        SmartDashboard.putNumber(targetKey + "Area", target.getArea());
+        SmartDashboard.putNumber(targetKey + "Pitch", target.getPitch());
+        SmartDashboard.putNumber(targetKey + "Skew", target.getSkew());
+
+        // Ratio of Pose Projection Errors
+        SmartDashboard.putNumber(targetKey + "Ambiguity", target.getPoseAmbiguity());
+      }
+
+
+    }
 }

@@ -89,6 +89,9 @@ public class VisionDriver {
     {
         mRunning = false;
         mTrajectorySet = false;
+
+        // Stop the Trajectory Follower
+        mTrajectoryFollower.Stop();
     }
 
     public boolean getRunning()
