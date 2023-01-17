@@ -50,4 +50,10 @@ public class Enums {
     public enum AprilTagName {
         
     }
+
+    // Game Object
+    public enum GamePiece {
+        Cone,
+        Cube
+    };
 }

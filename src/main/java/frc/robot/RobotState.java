@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.Vision;
+import frc.robot.vision.VisionDriver;
 import frc.robot.vision.photonVision;
 
 /**
@@ -162,6 +163,12 @@ public class RobotState {
         FieldObject2d simVisionPose = mVisualField.getObject("VisionEstimatedPose");
         simVisionPose.setPose(mVisionBasedRobotPose);
 
+        // Vision Following Trajectory if applicable
+        Trajectory driveTraj = VisionDriver.getInstance().getTrajectory();
+        if(null != driveTraj)
+        {
+            mVisualField.getObject("Trajectory").setTrajectory(driveTraj);
+        }
 
     }
 

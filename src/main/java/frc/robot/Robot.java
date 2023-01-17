@@ -351,21 +351,25 @@ public class Robot extends TimedRobot {
       // Auto Steering
       if(wantsAutoSteer)
       {
-        System.out.println("AUTO STEERING!");
         // if not running, set up initial system
         if(!mVisionDriver.getRunning())
         {
           // test code
           Pose2d StartingPose = mField.getRobotPose();
           //aprilTags
-          AprilTag tag3  = FieldConstants.getAprilTag(3);
-          Pose2d tag3Pose = tag3.pose.toPose2d();
+          AprilTag tag1 = FieldConstants.getAprilTag(1);
+          Pose2d tag1Pose = tag1.pose.toPose2d();
+
+          // 
+          Pose2d tag1PoseWithRotation = new Pose2d(tag1Pose.getTranslation(), StartingPose.getRotation());
       
           // test code
 
           mVisionDriver.setStartingPose(StartingPose);
-          mVisionDriver.setTargetPose(tag3Pose);
+          mVisionDriver.setTargetPose(tag1PoseWithRotation);
         }
+
+        // Constantly Feed the Vision Updated Pose
 
         // general vision driving update
         mVisionDriver.update();

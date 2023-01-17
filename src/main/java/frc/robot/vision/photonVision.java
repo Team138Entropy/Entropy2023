@@ -32,6 +32,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 //import frc.robot.Logger;
 
+// PhotonVision Class
+//  Yaw is positive to the right. If an object is offset to your right, its a positive yaw
 public class photonVision {
     public static photonVision mInstance = null;
 
@@ -42,8 +44,8 @@ public class photonVision {
     public static final PhotonCamera camera = new PhotonCamera("camera138");
     // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
     public static final Transform3d robotToCam = 
-                    new Transform3d(new Translation3d(0.5, 0.0, 0.5), 
-                    new Rotation3d(0,0,0)); 
+                    new Transform3d(new Translation3d(0, 0.0, 0), 
+                    new Rotation3d(0.5,0,0.5)); 
 
     // TODO - Add Additional Cameras
     public static final List<Pair<PhotonCamera, Transform3d>> CameraList = List.of(
@@ -56,7 +58,7 @@ public class photonVision {
     // Configure these to match your PhotonVision Camera,
     // pipeline, and LED setup.
     double camDiagFOV = 75.0; // degrees
-    double camPitch = 15.0; // degrees
+    double camPitch = 0; // degrees
     double camHeightOffGround = 0.85; // meters
     double maxLEDRange = 20; // meters
     int camResolutionWidth = 640; // pixels

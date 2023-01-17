@@ -95,9 +95,10 @@ public final class FieldConstants {
     // April Tag Field Locations
     public static final AprilTagFieldLayout aprilTagField = new AprilTagFieldLayout(aprilTags, fieldLength, fieldWidth);
 
-    // Scoring Location
+    // Scoring Location (Each Grid Consists of 9 Nodes)
     public static final class Node {
         // Enum for Node Type
+        public Enums.GamePiece mNodeType;
 
         // Nodes 3D Pose
         final Pose3d mNodeLocation = new Pose3d(0, 0, 0, new Rotation3d());
@@ -111,9 +112,11 @@ public final class FieldConstants {
     // 3 Grids on each Side of the Field, Each Made up of 9 Nodes
     public static final class Grid {
         public final Node mNodes[];
+        private final int nodeCount;
 
         public Grid()
         {
+            nodeCount = 9;
             mNodes = new Node[9];
             for(int i = 0; i < 9; ++i)
             {
