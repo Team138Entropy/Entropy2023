@@ -227,11 +227,11 @@ public class OperatorInterface {
         return mOperatorController.getButton(Button.LB);
     }
 
-    public boolean getArmRotateUp() {
+    public boolean getArmRotateForward() {
         return mArmRotateUp.update(mDriverController.getButton(Button.Y));
     }
 
-    public boolean getArmRotateDown() {
+    public boolean getArmRotateBackward() {
         return mArmRotateDown.update(mDriverController.getButton(Button.A));
     }
 

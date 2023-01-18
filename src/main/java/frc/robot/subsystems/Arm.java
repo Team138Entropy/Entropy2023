@@ -68,7 +68,7 @@ public class Arm {
      //extension takes inches
     }
 
-    public void setArmJog (double Percent){
+    public void setExtensionJog (double Percent){
         ExtensionMotor.set(ControlMode.PercentOutput, Percent);
     }
 

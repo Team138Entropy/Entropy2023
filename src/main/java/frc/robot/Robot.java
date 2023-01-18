@@ -202,54 +202,28 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
-    if (mOperatorInterface.getArmJogUp()){
-      mArm.setArmAngle(45);
-    }
 
-      else if (mOperatorInterface.getArmJogMidUp()){
-      mArm.setArmAngle(67.5); 
-    }
-
-      else if (mOperatorInterface.getArmJogDown()){
-      mArm.setArmAngle(135); 
-    }
-
-      else if (mOperatorInterface.getArmJogMidDown()){
-      mArm.setArmAngle(112.5); 
-    }
-    
-      else {mArm.setArmAngle(90);
-      }
-
-      /*if (mOperatorInterface.getArmJogExtended5()){
-        mArm.setArmExtension(5);
-      } 
-      else if (mOperatorInterface.getArmJogRetracted()){
-        mArm.setArmExtension(0);
-      }*/
+    //manual extension of the arm using RB/LB
       if (mOperatorInterface.getArmJogExtended()){
-        mArm.setArmJog(0.4);
+        mArm.setExtensionJog(0.4);
       } 
       else if (mOperatorInterface.getArmJogRetracted()){
-        mArm.setArmJog(-0.4);
+        mArm.setExtensionJog(-0.4);
       }      
       else {
-        mArm.setArmJog(0);
-      }      
-      /*if (mOperatorInterface.getGrasperOpen()){
-        mGrasper.setGrasperOpen();
-      }
-        else if (mOperatorInterface.getGrasperClosed()){
-          mGrasper.setGrasperClosed();
-      }*/
+        mArm.setExtensionJog(0);
+      }  
 
-      if (mOperatorInterface.getWristUp()) {
-        mWrist.setWristUp();
-      }
-      else if (mOperatorInterface.getWristDown()) {
-        mWrist.setWristDown();
-      }
-
+    //Manual rotation of the arm using Y/A
+    if (mOperatorInterface.getArmRotateForward()){
+      mArm.setShoulderJog(0.2);  
+    } 
+    else if (mOperatorInterface.getArmRotateBackward()) {
+      mArm.setShoulderJog(-0.2);
+    }
+    else {
+      mArm.setShoulderJog(0);
+    }
   }
 
   
