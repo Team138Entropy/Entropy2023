@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Enums.*;
@@ -22,6 +23,7 @@ import frc.robot.auto.AutoModeExecutor;
 import frc.robot.auto.TrajectoryFollower;
 import frc.robot.auto.TrajectoryGeneratorHelper;
 import frc.robot.auto.modes.*;
+import frc.robot.simulation.SimMechanism;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.Drive.DriveStyle;
 import frc.robot.util.drivers.Pigeon;
@@ -44,6 +46,9 @@ public class Robot extends TimedRobot {
 
   // Robot State
   private final RobotState mRobotState = RobotState.getInstance();
+
+  // Simulation Mechanism
+  private final SimMechanism mSimMechanism = SimMechanism.getInstance();
 
   // Trajectory Follower
   private final TrajectoryFollower mTrajectoryFollower = TrajectoryFollower.getInstance();
@@ -162,6 +167,9 @@ public class Robot extends TimedRobot {
 
     // RobotState
     mRobotState.updateSmartdashboard();
+
+    // Sim Mechanism 
+    mSimMechanism.updateSmartDashboard(); // Sim Only
 
     // Iterates each Subsystem 
     mSubsystemManager.updateSmartdashboard();
