@@ -64,7 +64,7 @@ public class Enums {
 
     }
 
-    public enum targetedObject {
+    public enum TargetedObject {
         CONE,
         CUBE;
     }

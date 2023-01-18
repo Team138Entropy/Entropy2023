@@ -66,7 +66,13 @@ public class Robot extends TimedRobot {
   public TargetedPositions mTargetedPosition = TargetedPositions.NONE;
 
   //relay channel is temp
-  public Relay gamerLightsRelay = new Relay(0);
+  public Relay gamerLightsRelayCone = new Relay(0);
+
+  public Relay gamerLightsRelayCube = new Relay(1);
+
+  public TargetedObject mCurrentTargetedObject = TargetedObject.CONE;
+
+
 
 
 
@@ -182,9 +188,12 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    if(mOperatorInterface.getIntakeOpen()){
-      gamerLightsRelay.set(Relay.Value.kOn);
-      gamerLightsRelay.set(Relay.Value.kForward);
+    if(mOperatorInterface.getIntakeOpen() && mCurrentTargetedObject == TargetedObject.CONE){
+      gamerLightsRelayCone.set(Relay.Value.kOn);
+      gamerLightsRelayCone.set(Relay.Value.kForward);
+    }else if(mOperatorInterface.getIntakeOpen() && mCurrentTargetedObject == TargetedObject.CUBE){
+      gamerLightsRelayCube.set(Relay.Value.kOn);
+      gamerLightsRelayCube.set(Relay.Value.kForward);
     }
     
     RobotLoop();
