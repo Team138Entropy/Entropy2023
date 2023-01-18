@@ -67,6 +67,8 @@ public class Robot extends TimedRobot {
   // Field Object
   private final Field2d mField = new Field2d();
 
+  public Double targetDist = null;
+
   //private final Pigeon mPigeon = Pigeon.getInstance();
 
   // Real Robot Indicator
@@ -134,6 +136,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("vision target: yaw", mPhotonVision.getBestTargetYaw());
     SmartDashboard.putBoolean("vision has target", mPhotonVision.seesTargets());
     SmartDashboard.putString("curent pipeline", mPhotonVision.getPipeLineName());
+    SmartDashboard.putNumber("Targ distance", mPhotonVision.targetDist());
 
 
     FieldObject2d testFieldObject = mField.getObject("testObject");
@@ -289,6 +292,7 @@ public class Robot extends TimedRobot {
     }else if(mOperatorInterface.getPipeLineCone()){
       mPhotonVision.setPipeLine(pipelineIDs.CONE_PIPELINE.pipelineID);
     }
+    targetDist = mPhotonVision.targetDist();
     System.out.println("the pipeline is"+ mPhotonVision.getPipeLineNum());
     
   }

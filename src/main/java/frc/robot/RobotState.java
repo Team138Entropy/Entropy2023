@@ -3,6 +3,7 @@ package frc.robot;
 import java.util.Map;
 import java.util.Optional;
 
+import org.photonvision.PhotonUtils;
 import org.photonvision.RobotPoseEstimator;
 import org.photonvision.RobotPoseEstimator.PoseStrategy;
 
@@ -98,6 +99,8 @@ public class RobotState {
     // Returns a Pair of the Pose2D of the Robot with a Latency Value
     public Pair<Pose2d, Double> getVisionEstimatedPose(Pose2d prevEstimatedRobotPose) {
         mRobotPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+
+        // Pose2D robotPose = PhotonUtils.estimateFieldToRobot(kCameraHeight, kTargetHeight, kCameraPitch, kTargetPitch, Rotation2d.fromDegrees(-target.getYaw()), gyro.getRotation2d(), targetPose, cameraToRobot);
     
         double currentTime = Timer.getFPGATimestamp();
         Optional<Pair<Pose3d, Double>> result = mRobotPoseEstimator.update();

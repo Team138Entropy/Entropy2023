@@ -40,7 +40,7 @@ public class photonVision {
 
 
     // Simulated Test Code TEMP TEMP TEMP
-        // Simulated Vision System.
+    // Simulated Vision System.
     // Configure these to match your PhotonVision Camera,
     // pipeline, and LED setup.
     double camDiagFOV = 75.0; // degrees
@@ -228,46 +228,29 @@ public class photonVision {
       return pipeLine.getBestTarget();
     }
   
-    public synchronized double targetDist(){
-      try{
+    public synchronized Double targetDist(){
+      
         //System.out.println("calling targetDist");
         //TODO input camera values
-        double CAMERA_HEIGHT_METERS = 1;
-        double TARGET_HEIGHT_METERS = 0.5;
-        double CAMERA_PITCH_RADIANS = 1;
-        double range = 0;
+        double CAMERA_HEIGHT_METERS = 0;
+        double TARGET_HEIGHT_METERS = 0;
+        double CAMERA_PITCH_RADIANS = 0;
+        
         var result = camera.getLatestResult();
-        //System.out.println(result.getBestTarget().getYaw());
-        /*
-        System.out.println("result:" + result);
-        PhotonTrackedTarget myBestTarget = result.getBestTarget();
-        System.out.println("Yaw: " + myBestTarget.getYaw());
-        */
-  
-        try{
-          if (result.hasTargets()) {
-  
-            // First calculate range
-            range =
-              PhotonUtils.calculateDistanceToTargetMeters(
-                      CAMERA_HEIGHT_METERS,
-                      TARGET_HEIGHT_METERS,
-                      CAMERA_PITCH_RADIANS,
-                      Units.degreesToRadians(result.getBestTarget().getPitch()));
-                      
-                      //System.out.println("Range:"+range);
-                      return range;}
-          
-          else{
-            //System.out.println("returning 0.0");
-            return 0.0;
-          }
-          
-  
-        }finally{}
-      }finally{
-  
-      }
+
+        if (result.hasTargets()){
+          double range = PhotonUtils.calculateDistanceToTargetMeters(CAMERA_PITCH_RADIANS, CAMERA_HEIGHT_METERS, TARGET_HEIGHT_METERS, CAMERA_PITCH_RADIANS);
+
+          System.out.println("Range" + range);
+
+          return range;
+        }
+        else{
+          return null;
+        }
+
+        
+        
     }
   
   /*
