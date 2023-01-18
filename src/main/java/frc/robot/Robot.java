@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Enums.SwerveCardinal;
+import frc.robot.Enums.*;
 import frc.robot.OI.OperatorInterface;
 import frc.robot.auto.AutoModeExecutor;
 import frc.robot.auto.TrajectoryFollower;
@@ -25,6 +25,7 @@ import frc.robot.auto.modes.*;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.Drive.DriveStyle;
 import frc.robot.util.drivers.Pigeon;
+import edu.wpi.first.wpilibj.Relay;
 import frc.robot.vision.VisionDriver;
 import frc.robot.vision.photonVision;
 
@@ -79,6 +80,20 @@ public class Robot extends TimedRobot {
 
   // Various Variables
   int mRumbleTimer = 0;
+
+  public ArmTargets mCurrentArmTarget = ArmTargets.NONE;
+
+  public TargetedPositions mTargetedPosition = TargetedPositions.NONE;
+
+  //relay channel is temp
+  public Relay gamerLightsRelayCone = new Relay(0);
+
+  public Relay gamerLightsRelayCube = new Relay(1);
+
+  public TargetedObject mCurrentTargetedObject = TargetedObject.CONE;
+
+
+
 
 
   /**
@@ -203,11 +218,23 @@ public class Robot extends TimedRobot {
 
     // Zero Drive Sensors
     mDrive.zeroSensors();
+
+    
+
+
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+    if(mOperatorInterface.getIntakeOpen() && mCurrentTargetedObject == TargetedObject.CONE){
+      gamerLightsRelayCone.set(Relay.Value.kOn);
+      gamerLightsRelayCone.set(Relay.Value.kForward);
+    }else if(mOperatorInterface.getIntakeOpen() && mCurrentTargetedObject == TargetedObject.CUBE){
+      gamerLightsRelayCube.set(Relay.Value.kOn);
+      gamerLightsRelayCube.set(Relay.Value.kForward);
+    }
+    
     RobotLoop();
   }
 
@@ -277,6 +304,14 @@ public class Robot extends TimedRobot {
     Pose2d robotPose = mRealRobot ? mDrive.getPose() : mDrive.getSimulatedPose();
     mField.setRobotPose(robotPose);
     mRobotState.setRobotPose(robotPose);
+    if(mOperatorInterface.getScoringCommand() != TargetedPositions.NONE){
+      mTargetedPosition = mOperatorInterface.getScoringCommand();
+    }
+
+    
+    if(mOperatorInterface.getArmTarget() != ArmTargets.NONE){
+      mCurrentArmTarget = mOperatorInterface.getArmTarget();
+    }
   }
 
    /**
