@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Enums.SwerveCardinal;
+import frc.robot.Enums.*;
 import frc.robot.OI.OperatorInterface;
 import frc.robot.auto.AutoModeExecutor;
 import frc.robot.auto.TrajectoryGeneratorHelper;
@@ -59,6 +59,11 @@ public class Robot extends TimedRobot {
 
   // Various Variables
   int mRumbleTimer = 0;
+
+  public ArmTargets mCurrentArmTarget = ArmTargets.NONE;
+
+  public TargetedPositions mTargetedPosition = TargetedPositions.NONE;
+
 
 
   /**
@@ -164,6 +169,10 @@ public class Robot extends TimedRobot {
 
     // Zero Drive Sensors
     mDrive.zeroSensors();
+
+    
+
+
   }
 
   /** This function is called periodically during operator control. */
@@ -229,6 +238,14 @@ public class Robot extends TimedRobot {
 
     // Update Robot Field Position
     mField.setRobotPose(mDrive.getPose());
+
+    if(mOperatorInterface.getScoringCommand() != TargetedPositions.NONE){
+      mTargetedPosition = mOperatorInterface.getScoringCommand();
+    }
+    
+
+    mCurrentArmTarget = mOperatorInterface.getArmTarget();
+
   }
 
    /**

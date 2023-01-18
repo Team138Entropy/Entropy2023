@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
 import frc.robot.Enums.*;
-import frc.robot.Enums.scoringNodes;
 import frc.robot.OI.XboxController.Axis;
 import frc.robot.OI.XboxController.Button;
 import frc.robot.OI.XboxController.Side;
@@ -124,35 +123,27 @@ public class OperatorInterface {
         return result;
     }
 
-    public scoringNodes getScoringCommand() {
-        scoringNodes node = scoringNodes.NONE;
+    public TargetedPositions getScoringCommand() {
+        TargetedPositions node = TargetedPositions.NONE;
 
         if (mOperatorController.getButton(Button.RB)) {
-            node = scoringNodes.BOTTOM_1;
-        }
-        if (mOperatorController.getButton(Button.BACK)) {
-            node = scoringNodes.BOTTOM_2;
-        }
-        if (mOperatorController.getButton(Button.START)) {
-            node = scoringNodes.BOTTOM_3;
-        }
-        if (mOperatorController.getButton(Button.L_JOYSTICK)) {
-            node = scoringNodes.MIDDLE_1;
-        }
-        if (mOperatorController.getButton(Button.R_JOYSTICK)) {
-            node = scoringNodes.MIDDLE_2;
-        }
-        if (mOperatorController.getDPad() == 0) {
-            node = scoringNodes.MIDDLE_3;
-        }
-        if (mOperatorController.getDPad() == 90) {
-            node = scoringNodes.TOP_1;
-        }
-        if (mOperatorController.getDPad() == 180) {
-            node = scoringNodes.TOP_2;
-        }
-        if (mOperatorController.getDPad() == 270) {
-            node = scoringNodes.TOP_3;
+            node = TargetedPositions.GRID_BOTTOM_1;
+        }else if (mOperatorController.getButton(Button.BACK)) {
+            node = TargetedPositions.GRID_BOTTOM_2;
+        }else if (mOperatorController.getButton(Button.START)) {
+            node = TargetedPositions.GRID_BOTTOM_3;
+        }else if (mOperatorController.getButton(Button.L_JOYSTICK)) {
+            node = TargetedPositions.GRID_MIDDLE_1;
+        }else if (mOperatorController.getButton(Button.R_JOYSTICK)) {
+            node = TargetedPositions.GRID_MIDDLE_2;
+        }else if (mOperatorController.getDPad() == 0) {
+            node = TargetedPositions.GRID_MIDDLE_3;
+        }else if (mOperatorController.getDPad() == 90) {
+            node = TargetedPositions.GRID_TOP_1;
+        }else if (mOperatorController.getDPad() == 180) {
+            node = TargetedPositions.GRID_TOP_2;
+        }else if (mOperatorController.getDPad() == 270) {
+            node = TargetedPositions.GRID_TOP_3;
         }
 
         return node;
@@ -212,6 +203,7 @@ public class OperatorInterface {
     public boolean getFeedShooterUp() {
         return mDriverController.getButton(Button.Y);
     }
+
     public boolean getFeedShooterDown() {
         return mDriverController.getButton(Button.B);
     }
@@ -224,46 +216,36 @@ public class OperatorInterface {
         return mOperatorController.getTrigger(Side.RIGHT);
     }
 
-    public boolean getArmScoringUpFront() {
-        return mOperatorController.getButton(Button.A);
-    }
-
-    public boolean getArmScoringMidFront() {
-        return mOperatorController.getButton(Button.B);
-    }
-
-    public boolean getArmScoringLowFront() {
-        return mOperatorController.getButton(Button.X);
-    }
-
-    public boolean getSafeArm() {
-        return mOperatorController.getButton(Button.Y);
-    }
-
-    public boolean getIntakeArm() {
-        return mOperatorController.getButton(Button.LB);
-    }
-
-
-    //place holder buttons because we ran out of buttons on the controller    
-    public boolean getIntakeArmBack() {
-        return mOperatorController.getButton(Button.A);
-    }
-
-    public boolean getArmScoringUpBack() {
-        return mOperatorController.getButton(Button.A);
-    }
-
-    public boolean getArmScoringMidBack() {
-        return mOperatorController.getButton(Button.B);
-    }
-
-    public boolean getArmScoringLowBack() {
-        return mOperatorController.getButton(Button.X);
-    }
-
     public boolean getDriverRelease() {
         return mDriverController.getTrigger(Side.RIGHT);
     }
 
+    public ArmTargets getArmTarget() {
+        ArmTargets target = ArmTargets.NONE;
+
+        if(mOperatorController.getButton(Button.LB)){
+            target = ArmTargets.INTAKE_FRONT;
+        }else if(mOperatorController.getButton(Button.RB)){
+            target = ArmTargets.INTAKE_BACK;
+        }else if(mOperatorController.getButton(Button.Y)){
+            target = ArmTargets.SAFE;
+        }else if(mOperatorController.getButton(Button.A)){
+            target = ArmTargets.TOP_SCORING_FRONT;
+        }else if(mOperatorController.getButton(Button.B)){
+            target = ArmTargets.MID_SCORING_FRONT;
+        }else if(mOperatorController.getButton(Button.X)){
+            target = ArmTargets.LOW_SCORING_FRONT;
+        //all buttons for the back targets are placeholder
+        }else if(mOperatorController.getButton(Button.A)){
+            target = ArmTargets.TOP_SCORING_BACK;
+        }else if(mOperatorController.getButton(Button.B)){
+            target = ArmTargets.MID_SCORING_BACK;
+        }else if(mOperatorController.getButton(Button.X)){
+            target = ArmTargets.LOW_SCORING_BACK;
+        }
+        return target;
+    }
 }
+
+
+

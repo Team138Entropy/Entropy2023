@@ -10,18 +10,23 @@ public class Enums {
     };
 
     // scoring nodes
-    public enum scoringNodes {
+    public enum TargetedPositions {
         //bottom, middle, and top are refering to the grids not the scoring hights
+        //top and bottom are fliped on one side 
         NONE,
-        BOTTOM_1,
-        BOTTOM_2,
-        BOTTOM_3,
-        MIDDLE_1,
-        MIDDLE_2,
-        MIDDLE_3,
-        TOP_1,
-        TOP_2,
-        TOP_3;
+        GRID_BOTTOM_1,
+        GRID_BOTTOM_2,
+        GRID_BOTTOM_3,
+        GRID_MIDDLE_1,
+        GRID_MIDDLE_2,
+        GRID_MIDDLE_3,
+        GRID_TOP_1,
+        GRID_TOP_2,
+        GRID_TOP_3,
+        RED_SUBSTATION_LEFT,
+        RED_SUBSTATION_RIGHT,
+        BLUE_SUBSTATION_LEFT,
+        BLUE_SUBSTATION_RIGHT;
     }
 
     // arm targets
@@ -36,7 +41,10 @@ public class Enums {
         MID_SCORING_BACK(65,60),
         LOW_SCORING_BACK(50,40),
         INTAKE_BACK(80,0),
-        SAFE(90,0);
+        SAFE(90,0),
+        NONE(0,0);
+
+
 
         public final double armAngle;
         public final double armExtend;
