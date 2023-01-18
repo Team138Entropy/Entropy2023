@@ -64,16 +64,9 @@ public class Enums {
 
     }
 
-    public enum targetColor {
-        //color values are temperary
-        CONE_COLOR(10),
-        CUBE_COLOR(20);
-
-        public double colorValue;
-
-        private targetColor(double colorValue) {
-            this.colorValue = colorValue;
-        }
+    public enum targetedObject {
+        CONE,
+        CUBE;
     }
 
     // Swerve Cardinal Directions

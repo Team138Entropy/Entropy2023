@@ -19,6 +19,7 @@ import frc.robot.auto.modes.*;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.Drive.DriveStyle;
 import frc.robot.util.drivers.Pigeon;
+import edu.wpi.first.wpilibj.Relay;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -63,6 +64,9 @@ public class Robot extends TimedRobot {
   public ArmTargets mCurrentArmTarget = ArmTargets.NONE;
 
   public TargetedPositions mTargetedPosition = TargetedPositions.NONE;
+
+  //relay channel is temp
+  public Relay gamerLightsRelay = new Relay(0);
 
 
 
@@ -178,6 +182,11 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+    if(mOperatorInterface.getIntakeOpen()){
+      gamerLightsRelay.set(Relay.Value.kOn);
+      gamerLightsRelay.set(Relay.Value.kForward);
+    }
+    
     RobotLoop();
   }
 
@@ -243,8 +252,9 @@ public class Robot extends TimedRobot {
       mTargetedPosition = mOperatorInterface.getScoringCommand();
     }
     
-
-    mCurrentArmTarget = mOperatorInterface.getArmTarget();
+    if(mOperatorInterface.getArmTarget() != ArmTargets.NONE){
+      mCurrentArmTarget = mOperatorInterface.getArmTarget();
+    }
 
   }
 
