@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.Vision;
-import frc.robot.vision.VisionDriver;
+import frc.robot.vision.AutoPilot;
 import frc.robot.vision.photonVision;
 
 /**
@@ -159,12 +159,21 @@ public class RobotState {
             fieldObj.setPose(currPose2d);
         }
 
+        // Iterate Node Scoring Positions (In Front of the Lowest Node)
+        for(int i = 0; i < FieldConstants.Grids.lowTranslations.length; i++)
+        {
+            Translation2d currTrans = FieldConstants.Grids.lowTranslations[i];
+            Pose2d nodePose = new Pose2d(currTrans, new Rotation2d());
+            FieldObject2d nodePoseObj = mVisualField.getObject("Node " + i);
+            nodePoseObj.setPose(nodePose);
+        }
+
         // Vision Estimated Robot Pose
         FieldObject2d simVisionPose = mVisualField.getObject("VisionEstimatedPose");
         simVisionPose.setPose(mVisionBasedRobotPose);
 
         // Vision Following Trajectory if applicable
-        Trajectory driveTraj = VisionDriver.getInstance().getTrajectory();
+        Trajectory driveTraj = AutoPilot.getInstance().getTrajectory();
         if(null != driveTraj)
         {
             mVisualField.getObject("Trajectory").setTrajectory(driveTraj);

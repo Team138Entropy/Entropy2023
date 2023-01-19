@@ -28,7 +28,7 @@ import frc.robot.subsystems.*;
 import frc.robot.subsystems.Drive.DriveStyle;
 import frc.robot.util.drivers.Pigeon;
 import edu.wpi.first.wpilibj.Relay;
-import frc.robot.vision.VisionDriver;
+import frc.robot.vision.AutoPilot;
 import frc.robot.vision.photonVision;
 
 /**
@@ -57,7 +57,7 @@ public class Robot extends TimedRobot {
   private final photonVision mPhotonVision = photonVision.getInstance();
 
   // Vision Driver
-  private final VisionDriver mVisionDriver = VisionDriver.getInstance();
+  private final AutoPilot mVisionDriver = AutoPilot.getInstance();
 
   // Subsystem Manager
   private final SubsystemManager mSubsystemManager = SubsystemManager.getInstance();
@@ -114,6 +114,7 @@ public class Robot extends TimedRobot {
     
     // Real or Simulation Robot
     mRobotState.setRealRobot(mRealRobot);
+    mDrive.setRealRobot(mRealRobot);
 
     // populate autonomous list
     populateAutonomousModes();
@@ -155,6 +156,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putString("Robot Pose", mField.getRobotPose().toString());
     SmartDashboard.putNumber("Pigeon Degrees", mPigeon.getYaw().getDegrees());
     SmartDashboard.putNumber("Pigeon Radians", mPigeon.getYaw().getRadians());
+    SmartDashboard.putString("Target Position", mTargetedPosition.toString());
 
     // Vision Based Driver
     mVisionDriver.updateSmartDashBoard();
@@ -295,27 +297,24 @@ public class Robot extends TimedRobot {
 
     // Update Pose on Virtual Field
 
-    // 
-    Pose2d testPose = new Pose2d(FieldConstants.fieldLength/3, FieldConstants.fieldWidth/2, new Rotation2d());
-
     // Process Frame where the Robot currently is
     mPhotonVision.simVision.processFrame(mField.getRobotPose());  
   }
 
   /** Called Throughout Teleop Periodic */
   private void RobotLoop(){
-
     // Drive the Robot
     DriveLoop(mOperatorInterface.getDrivePrecisionSteer(), true);
 
     // Update Robot Field Position
-    Pose2d robotPose = mRealRobot ? mDrive.getPose() : mDrive.getSimulatedPose();
+    Pose2d robotPose = mDrive.getPose();
     mField.setRobotPose(robotPose);
     mRobotState.setRobotPose(robotPose);
+
+    // Operator Commands
     if(mOperatorInterface.getScoringCommand() != TargetedPositions.NONE){
       mTargetedPosition = mOperatorInterface.getScoringCommand();
     }
-
     
     if(mOperatorInterface.getArmTarget() != ArmTargets.NONE){
       mCurrentArmTarget = mOperatorInterface.getArmTarget();
@@ -400,16 +399,29 @@ public class Robot extends TimedRobot {
           // test code
           Pose2d StartingPose = mField.getRobotPose();
           //aprilTags
-          AprilTag tag1 = FieldConstants.getAprilTag(1);
-          Pose2d tag1Pose = tag1.pose.toPose2d();
+          AprilTag targetedTag = FieldConstants.getAprilTag(1);
+          //test code
+          if(TargetedPositions.GRID_BOTTOM_1 == mTargetedPosition)
+          {
+            targetedTag = FieldConstants.getAprilTag(1);
+          }
+          else if(TargetedPositions.GRID_BOTTOM_2 == mTargetedPosition)
+          {
+            targetedTag = FieldConstants.getAprilTag(2);
+          }
+          else if(TargetedPositions.GRID_BOTTOM_3 == mTargetedPosition)
+          {
+            targetedTag = FieldConstants.getAprilTag(3);
+          }
+          Pose2d targetedTagPose = targetedTag.pose.toPose2d();
 
           // 
-          Pose2d tag1PoseWithRotation = new Pose2d(tag1Pose.getTranslation(), StartingPose.getRotation());
+          Pose2d targetedTagPoseWithRotation = new Pose2d(targetedTagPose.getTranslation(), StartingPose.getRotation());
       
           // test code
 
           mVisionDriver.setStartingPose(StartingPose);
-          mVisionDriver.setTargetPose(tag1PoseWithRotation);
+          mVisionDriver.setTargetPose(targetedTagPoseWithRotation);
         }
 
         // Constantly Feed the Vision Updated Pose

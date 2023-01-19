@@ -122,6 +122,8 @@ public class Drive extends Subsystem {
   private PIDController mVisionPIDController;
   private TimeDelayedBoolean mDelayedBoolean;
 
+  // Real or Simulated Robot
+  private boolean mRealRobot;
 
   public static synchronized Drive getInstance() {
     if (mInstance == null) {
@@ -793,6 +795,7 @@ public class Drive extends Subsystem {
       break;
       case SWERVE_DRIVE:
         mSwerveOdometry.resetPosition(mPigeon.getYaw().getWPIRotation2d(), getModulePositions(), pose);
+        mSimSwerveOdometry.resetPosition(pose, mPigeon.getYaw().getWPIRotation2d());
       break;
       default:
       break;
@@ -800,11 +803,19 @@ public class Drive extends Subsystem {
   }
 
   /**
-   * Returns the currently-estimated pose of the robot.
+   *  Returns the Pose of Robot
+   * @return
+   */
+  public synchronized Pose2d getPose() {
+    return mRealRobot ? getRealPose() : getSimulatedPose();
+  }
+
+  /**
+   * Returns the currently-estimated real pose of the robot.
    *
    * @return The pose.
    */
-  public synchronized Pose2d getPose() {
+  public synchronized Pose2d getRealPose() {
     Pose2d result;
     switch(mDriveStyle)
     {
@@ -913,5 +924,17 @@ public class Drive extends Subsystem {
 
   public SwerveDriveKinematics getSwerveKinematics() {
     return Constants.SwerveConstants.swerveKinematics;
+  }
+
+  // Sets if a Robot is Real
+  public void setRealRobot(boolean value)
+  {
+    mRealRobot = value;
+  }
+
+  // Is Real Robot
+  public boolean isRealRobot()
+  {
+    return mRealRobot;
   }
 }

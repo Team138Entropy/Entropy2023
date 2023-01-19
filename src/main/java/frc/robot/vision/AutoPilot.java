@@ -5,6 +5,7 @@ import java.util.List;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -13,25 +14,31 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.Vision;
 import frc.robot.auto.TrajectoryFollower;
+import frc.robot.subsystems.Drive;
 
-// Vision Driver System
-// Need some sort of force regenerate based on a path reupdate
-public class VisionDriver {
-    private static VisionDriver mInstance;
+// Auto Pilot System
+//      Calculates How to Drive to a Pose
+//      https://github.com/STMARobotics/swerve-test/blob/main/src/main/java/frc/robot/commands/ChaseTagCommand.java
+//      Todo: Need to figure out how to allow constraints in this system.. path solving variables maybe A*
+//      Todo: Regineration of Path, especially if noin new Latent vision targets
+public class AutoPilot {
+    private static AutoPilot mInstance;
 
-    public static synchronized VisionDriver getInstance() {
+    public static synchronized AutoPilot getInstance() {
         if (mInstance == null) {
-          mInstance = new VisionDriver();
+          mInstance = new AutoPilot();
         }
         return mInstance;
     }
 
+    private final Drive mDrive = Drive.getInstance();
     private final TrajectoryFollower mTrajectoryFollower = TrajectoryFollower.getInstance();
     private boolean mRunning;
     private Trajectory mTrajectory;
     private boolean mTrajectorySet;
     private Pose2d mStartingPose;
     private Pose2d mTargetedPose;
+    private Pose2d mGoalPose;
 
     // Motion Control
     private static final TrapezoidProfile.Constraints mX_CONSTRAINTS = 
@@ -51,7 +58,7 @@ public class VisionDriver {
     };
     private VisionDriveMode mDriveMode;
 
-    private VisionDriver()
+    private AutoPilot()
     {
         init();
     }
@@ -63,11 +70,12 @@ public class VisionDriver {
         mTrajectorySet = false;
 
         // Drive Style
-        mDriveMode = VisionDriveMode.TrajectoryFollower;
+        mDriveMode = VisionDriveMode.MotionControl;
 
         // Placeholder Pose Targets
         mTargetedPose = new Pose2d();
         mStartingPose = new Pose2d();
+        mGoalPose = new Pose2d();
 
         // Motion Control Init
         mXController.setTolerance(0.2);
@@ -76,11 +84,13 @@ public class VisionDriver {
         mOmegaController.enableContinuousInput(-Math.PI, Math.PI);
     }
 
+    // Set Target Pose to Drive To
     public void setTargetPose(Pose2d targPose)
     {
         mTargetedPose = targPose;
     }
 
+    // Set Pose to Drive From
     public void setStartingPose(Pose2d startPose)
     {
         mStartingPose = startPose;
@@ -108,6 +118,16 @@ public class VisionDriver {
             mTrajectoryFollower.Start();
         } else if(VisionDriveMode.MotionControl == mDriveMode)
         {
+            // TODO:
+            mGoalPose = mTargetedPose;
+
+            // Reset Pose to the Start Pose
+            mDrive.resetOdometry(mStartingPose);
+
+            // Set PID Controler Goals
+            mXController.setGoal(mGoalPose.getX());
+            mYController.setGoal(mGoalPose.getY());
+            mOmegaController.setGoal(mGoalPose.getRotation().getRadians());
 
         }
     }
@@ -120,8 +140,30 @@ public class VisionDriver {
             start();
         }
 
-        // Keep Following the Trajectory
-        mTrajectoryFollower.Update();
+        // Proceed based on Type
+        if(VisionDriveMode.TrajectoryFollower == mDriveMode)
+        {
+            // Keep Following the Trajectory
+            mTrajectoryFollower.Update();
+        } else if(VisionDriveMode.MotionControl == mDriveMode)
+        {
+            // Get Robots Current Pose and Calculate the Swerve Speeds
+            Pose2d currPose = mDrive.getPose();
+
+            // Calculate Speeds to Reach Goal
+            double xSpeed = !mXController.atGoal() ? mXController.calculate(currPose.getX()) : 0;
+            double ySpeed = !mYController.atGoal() ? mYController.calculate(currPose.getY()) : 0;
+            double omegaSpeed = !mOmegaController.atGoal() ? mOmegaController.calculate(currPose.getRotation().getRadians()) : 0;
+
+            // Set Speeds into Swerve System
+            ChassisSpeeds calculatedSpeeds = new ChassisSpeeds(xSpeed, ySpeed, omegaSpeed);
+
+            // Call Autonomous Chasis Speed 
+            var targetSwerveModuleStates = mDrive.getSwerveKinematics().toSwerveModuleStates(calculatedSpeeds);
+
+            // Set Swerve to those Module States
+            mDrive.setModuleStates(targetSwerveModuleStates);
+        }
     }
 
     public void stop()
@@ -129,8 +171,15 @@ public class VisionDriver {
         mRunning = false;
         mTrajectorySet = false;
 
-        // Stop the Trajectory Follower
-        mTrajectoryFollower.Stop();
+        // Proceed based on Type
+        if(VisionDriveMode.TrajectoryFollower == mDriveMode)
+        {
+            // Stop the Trajectory Follower
+            mTrajectoryFollower.Stop();
+        } else if(VisionDriveMode.MotionControl == mDriveMode)
+        {
+
+        }
     }
 
     public boolean getRunning()
@@ -154,5 +203,7 @@ public class VisionDriver {
         );
         SmartDashboard.putString(key + "Target Pose", mTargetedPose.toString());
         SmartDashboard.putString(key + "Starting Pose", mStartingPose.toString());
+        SmartDashboard.putString(key + "Goal Pose", mGoalPose.toString());
+        
     }
 }

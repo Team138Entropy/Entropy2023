@@ -8,6 +8,8 @@ import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -95,45 +97,69 @@ public final class FieldConstants {
     // April Tag Field Locations
     public static final AprilTagFieldLayout aprilTagField = new AprilTagFieldLayout(aprilTags, fieldLength, fieldWidth);
 
-    // Scoring Location (Each Grid Consists of 9 Nodes)
-    public static final class Node {
-        // Enum for Node Type
-        public Enums.GamePiece mNodeType;
+  // Dimensions for grids and nodes
+  public static final class Grids {
+    // X layout
+    public static final double outerX = Units.inchesToMeters(54.25);
+    public static final double lowX =
+        outerX - (Units.inchesToMeters(14.25) / 2.0); // Centered when under cube nodes
+    public static final double midX = outerX - Units.inchesToMeters(22.75);
+    public static final double highX = outerX - Units.inchesToMeters(39.75);
 
-        // Nodes 3D Pose
-        final Pose3d mNodeLocation = new Pose3d(0, 0, 0, new Rotation3d());
+    // Y layout
+    public static final int nodeRowCount = 9;
+    public static final double nodeFirstY = Units.inchesToMeters(20.19);
+    public static final double nodeSeparationY = Units.inchesToMeters(22.0);
 
-        public Node()
-        {
+    // Z layout
+    public static final double cubeEdgeHigh = Units.inchesToMeters(3.0);
+    public static final double highCubeZ = Units.inchesToMeters(35.5) - cubeEdgeHigh;
+    public static final double midCubeZ = Units.inchesToMeters(23.5) - cubeEdgeHigh;
+    public static final double highConeZ = Units.inchesToMeters(46.0);
+    public static final double midConeZ = Units.inchesToMeters(34.0);
 
-        }
+    // Translations (all nodes in the same column/row have the same X/Y coordinate)
+    public static final Translation2d[] lowTranslations = new Translation2d[nodeRowCount];
+    public static final Translation2d[] midTranslations = new Translation2d[nodeRowCount];
+    public static final Translation3d[] mid3dTranslations = new Translation3d[nodeRowCount];
+    public static final Translation2d[] highTranslations = new Translation2d[nodeRowCount];
+    public static final Translation3d[] high3dTranslations = new Translation3d[nodeRowCount];
+
+    static {
+      for (int i = 0; i < nodeRowCount; i++) {
+        boolean isCube = i == 1 || i == 4 || i == 7;
+        lowTranslations[i] = new Translation2d(lowX, nodeFirstY + nodeSeparationY * i);
+        midTranslations[i] = new Translation2d(midX, nodeFirstY + nodeSeparationY * i);
+        mid3dTranslations[i] =
+            new Translation3d(midX, nodeFirstY + nodeSeparationY * i, isCube ? midCubeZ : midConeZ);
+        high3dTranslations[i] =
+            new Translation3d(
+                highX, nodeFirstY + nodeSeparationY * i, isCube ? highCubeZ : highConeZ);
+        highTranslations[i] = new Translation2d(highX, nodeFirstY + nodeSeparationY * i);
+      }
     }
 
-    // 3 Grids on each Side of the Field, Each Made up of 9 Nodes
-    public static final class Grid {
-        public final Node mNodes[];
-        private final int nodeCount;
+    // Complex low layout (shifted to account for cube vs cone rows and wide edge nodes)
+    public static final double complexLowXCones =
+        outerX - Units.inchesToMeters(16.0) / 2.0; // Centered X under cone nodes
+    public static final double complexLowXCubes = lowX; // Centered X under cube nodes
+    public static final double complexLowOuterYOffset =
+        nodeFirstY - Units.inchesToMeters(3.0) - (Units.inchesToMeters(25.75) / 2.0);
 
-        public Grid()
-        {
-            nodeCount = 9;
-            mNodes = new Node[9];
-            for(int i = 0; i < 9; ++i)
-            {
-                mNodes[i] = new Node();
-            }
-        }
-    }
-
-    // TODO: Enum of Grid Locations
-    public static final Grid mGrids[] = {
-        new Grid(),
-        new Grid(),
-        new Grid(),
-        new Grid(), 
-        new Grid(), 
-        new Grid(),
-    };
+    public static final Translation2d[] complexLowTranslations =
+        new Translation2d[] {
+          new Translation2d(complexLowXCones, nodeFirstY - complexLowOuterYOffset),
+          new Translation2d(complexLowXCubes, nodeFirstY + nodeSeparationY * 1),
+          new Translation2d(complexLowXCones, nodeFirstY + nodeSeparationY * 2),
+          new Translation2d(complexLowXCones, nodeFirstY + nodeSeparationY * 3),
+          new Translation2d(complexLowXCubes, nodeFirstY + nodeSeparationY * 4),
+          new Translation2d(complexLowXCones, nodeFirstY + nodeSeparationY * 5),
+          new Translation2d(complexLowXCones, nodeFirstY + nodeSeparationY * 6),
+          new Translation2d(complexLowXCubes, nodeFirstY + nodeSeparationY * 7),
+          new Translation2d(
+              complexLowXCones, nodeFirstY + nodeSeparationY * 8 + complexLowOuterYOffset),
+        };
+  }
 
 
 }
