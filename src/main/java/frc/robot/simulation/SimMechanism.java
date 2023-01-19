@@ -37,7 +37,7 @@ public class SimMechanism {
         mTower = mArmRoot.append(new MechanismLigament2d("tower", .8, 90));
 
         // Arm which pivots on top of the tower
-        mArm = mArmRoot.append(new MechanismLigament2d("arm", 1, 0));
+        mArm = mArmRoot.append(new MechanismLigament2d("arm", 1, 45));
 
 
         // Useful Methods on mArm:

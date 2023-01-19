@@ -1,0 +1,20 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Autonomous Field": "Field2d",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/RobotState/Visual Field": "Field2d",
+      "/SmartDashboard/SendableChooser[0]": "String Chooser",
+      "/SmartDashboard/SimMechanism/Arm Mechanism": "Mechanism2d",
+      "/SmartDashboard/camera138 Sim Field": "Field2d"
+    },
+    "windows": {
+      "/SmartDashboard/SimMechanism/Arm Mechanism": {
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  }
+}
