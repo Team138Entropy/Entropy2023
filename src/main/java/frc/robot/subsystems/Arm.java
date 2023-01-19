@@ -10,6 +10,7 @@ import frc.robot.Constants;
 
 public class Arm {
     private static Arm mInstance;
+
     TalonSRX ShoulderMotor = new TalonSRX(5);
 
     TalonSRX ExtensionMotor = new TalonSRX(6);
@@ -48,8 +49,6 @@ public class Arm {
         double currentRadians = ShoulderMotor.getSelectedSensorPosition() * Constants.Misc.degreeToRadian;
         double feedForward = 0.2 * Math.cos(currentRadians);
             return feedForward;
-        
-
     }
 
     public void setArmAngle(double Degrees){
@@ -58,6 +57,7 @@ public class Arm {
     }
 
     public void updateSmartDashBoard(){
+        //Arm Positioning and Extension
         SmartDashboard.putNumber("ArmPosition", ShoulderMotor.getSelectedSensorPosition());
         SmartDashboard.putNumber("Arm Percent Output", ShoulderMotor.getMotorOutputPercent());
         SmartDashboard.putNumber("ExtensionPosition", ExtensionMotor.getSelectedSensorPosition());
@@ -65,7 +65,6 @@ public class Arm {
 
     public void setArmExtension(double Inches){
      ExtensionMotor.set(ControlMode.MotionMagic, Inches * 8600, DemandType.ArbitraryFeedForward, 0.3); 
-     //extension takes inches
     }
 
     public void setExtensionJog (double Percent){
@@ -74,6 +73,7 @@ public class Arm {
 
  public void setShoulderJog (double Percent){
      ShoulderMotor.set(ControlMode.PercentOutput, Percent);
+    }
  }
-}
 
+ 

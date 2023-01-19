@@ -291,10 +291,13 @@ public class OperatorInterface {
 
 
     public boolean getGrasperOpen() {
-        return mDriverController.getButton(Button.LB);
+        return mDriverController.getTrigger(Side.RIGHT);
     }
     public boolean getGrasperClosed() {
-        return mDriverController.getButton(Button.RB);
+        return mDriverController.getTrigger(Side.LEFT);
+    }
+    public boolean getGrasperWheelIntake() {
+        return mDriverController.getButton(Button.X);
     }
 
     public boolean getWristUp() {

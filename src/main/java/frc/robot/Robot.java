@@ -224,6 +224,22 @@ public class Robot extends TimedRobot {
     else {
       mArm.setShoulderJog(0);
     }
+
+    //Grasper Intake Wheels using X
+    if (mOperatorInterface.getGrasperWheelIntake()) {
+      mGrasper.setGrasperWheelIntake();
+    }
+    else {
+      mGrasper.cancelGrasperWheelIntake();
+    }
+    
+    //Grasper Open/Close using LT/RT
+    if (mOperatorInterface.getGrasperOpen()){
+      mGrasper.setGrasperOpen();
+    }
+    else if (mOperatorInterface.getGrasperClosed()){
+      mGrasper.setGrasperClosed();
+    }
   }
 
   
