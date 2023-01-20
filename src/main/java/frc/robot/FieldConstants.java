@@ -125,6 +125,21 @@ public final class FieldConstants {
     public static final Translation2d[] highTranslations = new Translation2d[nodeRowCount];
     public static final Translation3d[] high3dTranslations = new Translation3d[nodeRowCount];
 
+    // Blue Side Low Translation
+    public static final Translation2d[] oppLowTranslations = new Translation2d[nodeRowCount];
+
+    // Artifical Scoring Targets -> Target the Initial Scoring Position and then adjust to final scoring position
+    // Initial Scoring Positions
+    public static final Translation2d[] redInitScorePosition = new Translation2d[nodeRowCount];
+    public static final Translation2d[] blueInitScorePosition = new Translation2d[nodeRowCount];
+    public static final double scorePosOffset = 1;
+
+    // Final Scoring Positions
+    public static final Translation2d[] redFinalScorePosition = new Translation2d[nodeRowCount];
+    public static final Translation2d[] blueFinalScorePosition = new Translation2d[nodeRowCount];
+    public static final double scoreFinalPosOffset = .4;
+
+
     static {
       for (int i = 0; i < nodeRowCount; i++) {
         boolean isCube = i == 1 || i == 4 || i == 7;
@@ -136,6 +151,18 @@ public final class FieldConstants {
             new Translation3d(
                 highX, nodeFirstY + nodeSeparationY * i, isCube ? highCubeZ : highConeZ);
         highTranslations[i] = new Translation2d(highX, nodeFirstY + nodeSeparationY * i);
+
+        // create opposite end low translation (blue nodes)
+        oppLowTranslations[i] = new Translation2d(fieldLength - lowX, nodeFirstY + nodeSeparationY * i);
+
+        // Arificial Scoring Positions
+        // Initial Scoring Positions
+        redInitScorePosition[i] = lowTranslations[i].plus(new Translation2d(scorePosOffset, 0));
+        blueInitScorePosition[i] = oppLowTranslations[i].minus(new Translation2d(scorePosOffset, 0));
+
+        // Final Scoring Positions
+        redFinalScorePosition[i] = redInitScorePosition[i].minus(new Translation2d(scoreFinalPosOffset, 0));
+        blueFinalScorePosition[i] = blueInitScorePosition[i].plus(new Translation2d(scoreFinalPosOffset, 0));
       }
     }
 

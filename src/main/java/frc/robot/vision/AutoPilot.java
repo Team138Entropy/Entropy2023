@@ -9,6 +9,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -128,6 +129,7 @@ public class AutoPilot {
             mXController.setGoal(mGoalPose.getX());
             mYController.setGoal(mGoalPose.getY());
             mOmegaController.setGoal(mGoalPose.getRotation().getRadians());
+
 
         }
     }

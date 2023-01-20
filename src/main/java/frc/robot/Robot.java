@@ -393,6 +393,7 @@ public class Robot extends TimedRobot {
       // Auto Steering
       if(wantsAutoSteer)
       {
+
         // if not running, set up initial system
         if(!mVisionDriver.getRunning())
         {

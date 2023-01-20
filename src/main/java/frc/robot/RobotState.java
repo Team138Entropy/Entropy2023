@@ -162,10 +162,21 @@ public class RobotState {
         // Iterate Node Scoring Positions (In Front of the Lowest Node)
         for(int i = 0; i < FieldConstants.Grids.lowTranslations.length; i++)
         {
+            // Red Node
             Translation2d currTrans = FieldConstants.Grids.lowTranslations[i];
             Pose2d nodePose = new Pose2d(currTrans, new Rotation2d());
-            FieldObject2d nodePoseObj = mVisualField.getObject("Node " + i);
+            FieldObject2d nodePoseObj = mVisualField.getObject("Red Node " + i);
             nodePoseObj.setPose(nodePose);
+
+            // Blue Node
+            Translation2d currTransBlue = FieldConstants.Grids.oppLowTranslations[i];
+            Pose2d newPoseBlue = new Pose2d(currTransBlue, new Rotation2d());
+            FieldObject2d nodePoseBlueObj = mVisualField.getObject("Blue Node " + i);
+            nodePoseBlueObj.setPose(newPoseBlue);
+
+            // Score Nodes
+            
+
         }
 
         // Vision Estimated Robot Pose
