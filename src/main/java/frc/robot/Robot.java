@@ -57,15 +57,15 @@ public class Robot extends TimedRobot {
   private final photonVision mPhotonVision = photonVision.getInstance();
 
   // Vision Driver
-  private final AutoPilot mVisionDriver = AutoPilot.getInstance();
+  private final AutoPilot mAutoPilot = AutoPilot.getInstance();
 
   // Subsystem Manager
   private final SubsystemManager mSubsystemManager = SubsystemManager.getInstance();
   
   // Subsystems
+  private final Drive mDrive = Drive.getInstance();
   private final Arm mArm = Arm.getInstance();
   private final Grasper mGrasper = Grasper.getInstance();
-  private final Wrist mWrist = Wrist.getInstance();
 
   // Autonomous Execution Thread
   private AutoModeExecutor mAutoModeExecutor = null;
@@ -159,7 +159,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putString("Target Position", mTargetedPosition.toString());
 
     // Vision Based Driver
-    mVisionDriver.updateSmartDashBoard();
+    mAutoPilot.updateSmartDashBoard();
 
     // PhotonVision Smartdashboard
     mPhotonVision.updateSmartDashboard();
@@ -435,7 +435,7 @@ public class Robot extends TimedRobot {
       {
 
         // if not running, set up initial system
-        if(!mVisionDriver.getRunning())
+        if(!mAutoPilot.getRunning())
         {
           // test code
           Pose2d StartingPose = mField.getRobotPose();
@@ -461,21 +461,21 @@ public class Robot extends TimedRobot {
       
           // test code
 
-          mVisionDriver.setStartingPose(StartingPose);
-          mVisionDriver.setTargetPose(targetedTagPoseWithRotation);
+          mAutoPilot.setStartingPose(StartingPose);
+          mAutoPilot.setTargetPose(targetedTagPoseWithRotation);
         }
 
         // Constantly Feed the Vision Updated Pose
 
         // general vision driving update
-        mVisionDriver.update();
+        mAutoPilot.update();
       }
       else 
       {
         // Normal Swerve Operation
 
         // Do Not Vision Drive
-        mVisionDriver.stop();
+        mAutoPilot.stop();
         
         // Swerve Snap to a Direction (Button Press Quickly Moves Robot)
         SwerveCardinal snapCardinal = mOperatorInterface.getSwerveSnap();

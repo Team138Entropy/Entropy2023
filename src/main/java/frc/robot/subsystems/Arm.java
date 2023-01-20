@@ -21,28 +21,29 @@ public class Arm {
         }
         return mInstance;
       }
+
       private Arm () {
-     ShoulderMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
-     ShoulderMotor.setSensorPhase(true);
-     ShoulderMotor.setInverted(true);
-     ShoulderMotor.config_kF(0, 1);
-     ShoulderMotor.config_kP(0, 30);
-     ShoulderMotor.config_kI(0, .01);
-     ShoulderMotor.config_kD(0, 300);
-     ShoulderMotor.configSelectedFeedbackCoefficient(360.0/8192.0);
-     ShoulderMotor.configMotionAcceleration(5);
-     ShoulderMotor.configMotionCruiseVelocity(5, 10);
-     ShoulderMotor.setSelectedSensorPosition(90.0);
-     ExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
-     ExtensionMotor.setInverted(true);
-     ExtensionMotor.setSensorPhase(true);
-     ExtensionMotor.config_kF(0, 1);
-     ExtensionMotor.config_kP(0, 0.9);
-     ExtensionMotor.config_kI(0, 0);
-     ExtensionMotor.config_kD(0, 0);
-     ExtensionMotor.configMotionAcceleration(10000);
-     ExtensionMotor.configMotionCruiseVelocity(5000);
-     ExtensionMotor.setSelectedSensorPosition(0);
+            ShoulderMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
+            ShoulderMotor.setSensorPhase(true);
+            ShoulderMotor.setInverted(true);
+            ShoulderMotor.config_kF(0, 1);
+            ShoulderMotor.config_kP(0, 30);
+            ShoulderMotor.config_kI(0, .01);
+            ShoulderMotor.config_kD(0, 300);
+            ShoulderMotor.configSelectedFeedbackCoefficient(360.0/8192.0);
+            ShoulderMotor.configMotionAcceleration(5);
+            ShoulderMotor.configMotionCruiseVelocity(5, 10);
+            ShoulderMotor.setSelectedSensorPosition(90.0);
+            ExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
+            ExtensionMotor.setInverted(true);
+            ExtensionMotor.setSensorPhase(true);
+            ExtensionMotor.config_kF(0, 1);
+            ExtensionMotor.config_kP(0, 0.9);
+            ExtensionMotor.config_kI(0, 0);
+            ExtensionMotor.config_kD(0, 0);
+            ExtensionMotor.configMotionAcceleration(10000);
+            ExtensionMotor.configMotionCruiseVelocity(5000);
+            ExtensionMotor.setSelectedSensorPosition(0);
     }
 
     public double getGravity(){
