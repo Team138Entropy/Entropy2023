@@ -334,7 +334,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {
-
+    mDrive.updateDriveSim();
     // Update Pose on Virtual Field
 
     // Process Frame where the Robot currently is

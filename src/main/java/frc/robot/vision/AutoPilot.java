@@ -125,12 +125,16 @@ public class AutoPilot {
             // Reset Pose to the Start Pose
             mDrive.resetOdometry(mStartingPose);
 
+            // Reset Positions
+            mXController.reset(mStartingPose.getX());
+            mYController.reset(mStartingPose.getY());
+            mOmegaController.reset(mGoalPose.getRotation().getRadians());
+
+
             // Set PID Controler Goals
             mXController.setGoal(mGoalPose.getX());
             mYController.setGoal(mGoalPose.getY());
             mOmegaController.setGoal(mGoalPose.getRotation().getRadians());
-
-
         }
     }
 
