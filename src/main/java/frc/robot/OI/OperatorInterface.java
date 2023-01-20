@@ -182,10 +182,89 @@ public class OperatorInterface {
     }
 
     public boolean getArmRotateUp() {
+          return mArmRotateUp.update(mDriverController.getButton(Button.Y));
+    }
+    
+    public boolean getArmEject() {
+        return mOperatorController.getTrigger(Side.LEFT);
+    }
+
+    public boolean getGrasperIntakeManual() {
+        return mLeftBumper.update(mOperatorController.getTrigger(Side.RIGHT));
+    }
+
+    /**
+     * Switches the Robot Mode
+     * On the Start Button of the Operator Controller
+     * @return
+     */
+    public boolean getSwitchModePress(){
+        return mOperatorStartButton.update(mOperatorController.getButton(Button.START));
+    }
+
+    public boolean getSelectButtonPress(){
+        return mOperatorSelectButton.update(mOperatorController.getButton(Button.BACK));
+    }
+
+    public boolean getArmExtend() {
+        int input = mOperatorController.getDPad();
+        return input <= 45 && input >= 315;
+    }
+
+    public boolean getArmRetract() {
+        int input = mOperatorController.getDPad();
+        return input <= 225 && input >= 135;
+    }
+
+    public boolean getArmExtendManual() {
+        return mOperatorController.getButton(Button.B);
+    }
+
+    public boolean getArmRetractManual() {
+        return mOperatorController.getButton(Button.X);
+    }
+
+    public boolean getArmExtendPress(){
+        return mExtensionUp.update(mOperatorController.getButton(Button.B));
+    }
+
+    public boolean getArmRetractPress(){
+        return mExtensionDown.update(mOperatorController.getButton(Button.X));
+    }
+
+    public boolean getArmJogUp() {
+        return mOperatorController.getButton(Button.Y);
+    }
+
+    public boolean getArmJogDown() {
+        return mOperatorController.getButton(Button.A);
+    }
+
+    public boolean getArmJogMidUp() {
+        return mOperatorController.getButton(Button.X);
+    }
+    
+    public boolean getArmJogMidDown() {
+        return mOperatorController.getButton(Button.B);
+    }
+
+    public boolean getArmJogExtended5() {
+        return mOperatorController.getButton(Button.RB);
+    }
+
+    public boolean getArmJogExtended() {
+        return mOperatorController.getButton(Button.RB);
+    }
+
+    public boolean getArmJogRetracted() {
+        return mOperatorController.getButton(Button.LB);
+    }
+
+    public boolean getArmRotateForward() {
         return mArmRotateUp.update(mDriverController.getButton(Button.Y));
     }
 
-    public boolean getArmRotateDown() {
+    public boolean getArmRotateBackward() {
         return mArmRotateDown.update(mDriverController.getButton(Button.A));
     }
 
@@ -210,6 +289,24 @@ public class OperatorInterface {
 
     public boolean getFeedShooterDown() {
         return mDriverController.getButton(Button.B);
+    }
+
+
+    public boolean getGrasperOpen() {
+        return mDriverController.getTrigger(Side.RIGHT);
+    }
+    public boolean getGrasperClosed() {
+        return mDriverController.getTrigger(Side.LEFT);
+    }
+    public boolean getGrasperWheelIntake() {
+        return mDriverController.getButton(Button.X);
+    }
+
+    public boolean getWristUp() {
+        return mDriverController.getTrigger(Side.RIGHT);
+    }
+    public boolean getWristDown() {
+        return mDriverController.getTrigger(Side.LEFT);
     }
 
     public boolean getIntakeOpen() {

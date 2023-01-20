@@ -46,9 +46,9 @@ public class Constants {
         public static final int module0_Cancoder = 3;
 
         /* Module 1 */
-        public static final int module1_DriveMotor = 5;
+        public static final int module1_DriveMotor = 50;
         public static final int module1_RotationMotor = 4;
-        public static final int module1_Cancoder = 6;
+        public static final int module1_Cancoder = 66;
 
         /* Module 2 */
         public static final int module2_DriveMotor = 7;

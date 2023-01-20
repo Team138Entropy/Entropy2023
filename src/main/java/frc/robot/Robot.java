@@ -63,7 +63,9 @@ public class Robot extends TimedRobot {
   private final SubsystemManager mSubsystemManager = SubsystemManager.getInstance();
   
   // Subsystems
-  private final Drive mDrive = Drive.getInstance();
+  private final Arm mArm = Arm.getInstance();
+  private final Grasper mGrasper = Grasper.getInstance();
+  private final Wrist mWrist = Wrist.getInstance();
 
   // Autonomous Execution Thread
   private AutoModeExecutor mAutoModeExecutor = null;
@@ -123,10 +125,8 @@ public class Robot extends TimedRobot {
     TrajectoryGeneratorHelper.generateExampleTrajectories();
 
     // reset odometry
-    mDrive.resetOdometry(new Pose2d());
 
     // Reset Drive Sensors
-    mDrive.zeroSensors();
   }
 
 
@@ -280,7 +280,48 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
 
+    //manual extension of the arm using RB/LB
+      if (mOperatorInterface.getArmJogExtended()){
+        mArm.setExtensionJog(0.4);
+      } 
+      else if (mOperatorInterface.getArmJogRetracted()){
+        mArm.setExtensionJog(-0.4);
+      }      
+      else {
+        mArm.setExtensionJog(0);
+      }  
+
+    //Manual rotation of the arm using Y/A
+    if (mOperatorInterface.getArmRotateForward()){
+      mArm.setShoulderJog(0.2);  
+    } 
+    else if (mOperatorInterface.getArmRotateBackward()) {
+      mArm.setShoulderJog(-0.2);
+    }
+    else {
+      mArm.setShoulderJog(0);
+    }
+
+    //Grasper Intake Wheels using X
+    if (mOperatorInterface.getGrasperWheelIntake()) {
+      mGrasper.setGrasperWheelIntake();
+    }
+    else {
+      mGrasper.cancelGrasperWheelIntake();
+    }
+    
+    //Grasper Open/Close using LT/RT
+    if (mOperatorInterface.getGrasperOpen()){
+      mGrasper.setGrasperOpen();
+    }
+    else if (mOperatorInterface.getGrasperClosed()){
+      mGrasper.setGrasperClosed();
+    }
   }
+
+  
+  
+
 
   /** This function is called once when the robot is first started up. */
   @Override
@@ -293,7 +334,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {
-    mDrive.updateDriveSim();
 
     // Update Pose on Virtual Field
 
