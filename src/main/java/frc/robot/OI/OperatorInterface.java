@@ -9,6 +9,7 @@ import frc.robot.OI.XboxController.Axis;
 import frc.robot.OI.XboxController.Button;
 import frc.robot.OI.XboxController.Side;
 import frc.robot.util.LatchedBoolean;
+import frc.robot.vision.photonVision;
 
 public class OperatorInterface {
     private static OperatorInterface mInstance;
@@ -163,10 +164,22 @@ public class OperatorInterface {
         return mDriverController.getButton(Button.LB);
     }
 
+    public boolean getBalence(){
+        return mDriverController.getButton(Button.RB);
+    }
+
     public boolean getDriveAutoSteer(){
         //return mDriverController.getTrigger(Side.RIGHT);
         return mDriverController.getButton(Button.A);
 
+    }
+
+    public boolean getAutoPilotLeftStrafe(){
+        return mDriverController.getDPad() == 270;
+    }
+
+    public boolean getAutoPilotRightStrafe(){
+        return mDriverController.getDPad() == 90;
     }
 
     public boolean getDrivePrecisionSteer(){

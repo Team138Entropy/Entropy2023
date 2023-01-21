@@ -69,6 +69,12 @@ public class Enums {
         CUBE;
     }
 
+    public enum cameraType {
+        FRONT_CAMERA,
+        BACK_CAMERA,
+        GRASPER_CAMERA;
+      }
+
     // Swerve Cardinal Directions
     // These are SNAP Directions that will allow the swerve system
     // to auto turn to them

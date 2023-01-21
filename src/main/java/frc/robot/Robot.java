@@ -30,6 +30,7 @@ import frc.robot.subsystems.Drive.DriveStyle;
 import frc.robot.util.drivers.Pigeon;
 import edu.wpi.first.wpilibj.Relay;
 import frc.robot.vision.AutoPilot;
+import frc.robot.vision.chargingStationAutoPilot;
 import frc.robot.vision.photonVision;
 
 /**
@@ -67,6 +68,8 @@ public class Robot extends TimedRobot {
   private final Drive mDrive = Drive.getInstance();
   private final Arm mArm = Arm.getInstance();
   private final Grasper mGrasper = Grasper.getInstance();
+
+  private final chargingStationAutoPilot mChargingStationAutoPilot = chargingStationAutoPilot.getInstance();
 
   // Autonomous Execution Thread
   private AutoModeExecutor mAutoModeExecutor = null;
@@ -466,6 +469,11 @@ public class Robot extends TimedRobot {
       // Swerve Brake
       mDrive.setBrake(mOperatorInterface.getBrake());
 
+      // Auto balence
+      if(mOperatorInterface.getBalence()){
+        mChargingStationAutoPilot.update(mOperatorInterface.getAutoPilotLeftStrafe(), mOperatorInterface.getAutoPilotRightStrafe());
+      }
+
       // Auto Steering
       if(wantsAutoSteer)
       {
@@ -523,7 +531,11 @@ public class Robot extends TimedRobot {
         // general vision driving update
         mAutoPilot.update();
       }
-      else 
+      else if(mOperatorInterface.getBalence())
+      {
+        mChargingStationAutoPilot.update(mOperatorInterface.getAutoPilotLeftStrafe(), mOperatorInterface.getAutoPilotRightStrafe());
+      }
+      else
       {
         // Normal Swerve Operation
 

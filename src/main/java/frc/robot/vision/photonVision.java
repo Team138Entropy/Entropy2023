@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 //import frc.robot.Logger;
+import frc.robot.Enums.*;
 
 // PhotonVision Class
 //  Yaw is positive to the right. If an object is offset to your right, its a positive yaw
@@ -41,16 +42,30 @@ public class photonVision {
 
     // TODO - Likely two more camera to come to be a 3 camera system
     //      - this should be in an array with a corresponding transform3d, enums to index
-    public static final PhotonCamera camera = new PhotonCamera("camera138");
+    public static final PhotonCamera frontCamera = new PhotonCamera("frontApriltagCam");
+    public static final PhotonCamera backCamera = new PhotonCamera("backApriltagCam");
+    public static final PhotonCamera grasperCamera = new PhotonCamera("grasperCam");
     // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
-    public static final Transform3d robotToCam = 
+    public static final Transform3d robotToFrontCam = 
+                    new Transform3d(new Translation3d(0, 0.0, 0), 
+                    new Rotation3d(0.5,0,0.5)); 
+    public static final Transform3d robotToBackCam = 
+                    new Transform3d(new Translation3d(0, 0.0, 0), 
+                    new Rotation3d(0.5,0,0.5)); 
+    public static final Transform3d robotToGrasperCam = 
                     new Transform3d(new Translation3d(0, 0.0, 0), 
                     new Rotation3d(0.5,0,0.5)); 
 
     // TODO - Add Additional Cameras
     public static final List<Pair<PhotonCamera, Transform3d>> CameraList = List.of(
-      new Pair<PhotonCamera, Transform3d>(camera, robotToCam)
+      new Pair<PhotonCamera, Transform3d>(frontCamera, robotToFrontCam),
+      new Pair<PhotonCamera, Transform3d>(backCamera, robotToBackCam),
+      new Pair<PhotonCamera, Transform3d>(grasperCamera, robotToGrasperCam)
     );
+
+    
+
+
 
 
     // Simulated Test Code TEMP TEMP TEMP
@@ -69,7 +84,7 @@ public class photonVision {
             new SimVisionSystem(
                     "camera138",
                     camDiagFOV,
-                    robotToCam,
+                    robotToFrontCam,
                     maxLEDRange,
                     camResolutionWidth,
                     camResolutionHeight,
@@ -88,7 +103,10 @@ public class photonVision {
       return mInstance;
     }
   
-    public synchronized PhotonPipelineResult getPipeLine() {
+    public synchronized PhotonPipelineResult getPipeLine(cameraType cam) {
+
+      PhotonCamera camera = CameraList.get(cam.ordinal()).getFirst();
+
       PhotonPipelineResult result = null;
       try{
         result = camera.getLatestResult();
@@ -132,21 +150,23 @@ public class photonVision {
       return myIDString;
     }
   
-    public synchronized boolean seesTargets(){
+    public synchronized boolean seesTargets(cameraType cam){
+      PhotonCamera camera = CameraList.get(cam.ordinal()).getFirst();
       var result = camera.getLatestResult();
       boolean haveATarget = result.hasTargets();
       
       return haveATarget;
     }
   
-    public synchronized double getBestTargetYaw(){
+    public synchronized double getBestTargetYaw(cameraType cam){
+      PhotonCamera camera = CameraList.get(cam.ordinal()).getFirst();
   
       double targetYaw = Double.NaN;
       PhotonTrackedTarget myTarget = null;
   
   
       var result = camera.getLatestResult();
-      boolean seesTargets = seesTargets();
+      boolean seesTargets = seesTargets(cameraType.FRONT_CAMERA);
       //System.out.println("sees targets: " + seesTargets);
       
       if(seesTargets){
@@ -178,7 +198,7 @@ public class photonVision {
     public synchronized List<PhotonTrackedTarget> getTargetList() {
       try{
         //System.out.println("calling getTargetList");
-        PhotonPipelineResult pipeLine = getPipeLine();
+        PhotonPipelineResult pipeLine = getPipeLine(cameraType.FRONT_CAMERA);
         List<PhotonTrackedTarget> targets = pipeLine.getTargets();
   
         java.util.Iterator<PhotonTrackedTarget> it = targets.iterator();
@@ -218,11 +238,13 @@ public class photonVision {
       Largest, Smallest, Highest (towards the top of the image) , Lowest , Rightmost (Best target on the right, worst on left), Leftmost, Centermost
       */
       //System.out.println("calling bestTarget");
-      PhotonPipelineResult pipeLine = getPipeLine();
+      PhotonPipelineResult pipeLine = getPipeLine(cameraType.FRONT_CAMERA);
       return pipeLine.getBestTarget();
     }
   
-    public synchronized double targetDist(){
+    public synchronized double targetDist(cameraType cam){
+      PhotonCamera camera = CameraList.get(cam.ordinal()).getFirst();
+      
       try{
         //System.out.println("calling targetDist");
         //TODO input camera values
@@ -281,7 +303,7 @@ public class photonVision {
     {
       final String key = "Vision/";
       SmartDashboard.putNumber(key + "Target Count", getTargetIds().size());
-      SmartDashboard.putNumber(key + "Best Target Yaw", getBestTargetYaw());
+      SmartDashboard.putNumber(key + "Best Target Yaw", getBestTargetYaw(cameraType.FRONT_CAMERA));
 
       var targetList = getTargetList();
       for(int i = 0; i < targetList.size(); ++i)
