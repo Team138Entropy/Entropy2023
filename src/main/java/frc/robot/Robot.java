@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -74,6 +75,8 @@ public class Robot extends TimedRobot {
   // Autonomous Modes
   private SendableChooser<AutoModeBase> mAutoModes;
 
+  private SendableChooser<TargetedPositions> mTargetedPositionChooser;
+
   // Acceleratometer 
   private Accelerometer mAccelerometer = new BuiltInAccelerometer();
 
@@ -108,6 +111,26 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+
+
+    mTargetedPositionChooser = new SendableChooser<TargetedPositions>();
+    mTargetedPositionChooser.setDefaultOption("GRID_BOTTOM_1", TargetedPositions.GRID_BOTTOM_1);
+    mTargetedPositionChooser.addOption("NONE", TargetedPositions.NONE);
+    mTargetedPositionChooser.addOption("GRID_BOTTOM_1", TargetedPositions.GRID_BOTTOM_1);
+    mTargetedPositionChooser.addOption("GRID_BOTTOM_2", TargetedPositions.GRID_BOTTOM_2);
+    mTargetedPositionChooser.addOption("GRID_BOTTOM_3", TargetedPositions.GRID_BOTTOM_3);
+    mTargetedPositionChooser.addOption("GRID_MIDDLE_1", TargetedPositions.GRID_MIDDLE_1);
+    mTargetedPositionChooser.addOption("GRID_MIDDLE_2", TargetedPositions.GRID_MIDDLE_2);
+    mTargetedPositionChooser.addOption("GRID_MIDDLE_3", TargetedPositions.GRID_MIDDLE_3);
+    mTargetedPositionChooser.addOption("GRID_TOP_1", TargetedPositions.GRID_TOP_1);
+    mTargetedPositionChooser.addOption("GRID_TOP_2", TargetedPositions.GRID_TOP_2);
+    mTargetedPositionChooser.addOption("GRID_TOP_3", TargetedPositions.GRID_TOP_3);
+    mTargetedPositionChooser.addOption("RED_SUBSTATION_LEFT", TargetedPositions.RED_SUBSTATION_LEFT);
+    mTargetedPositionChooser.addOption("RED_SUBSTATION_RIGHT", TargetedPositions.RED_SUBSTATION_RIGHT);
+    mTargetedPositionChooser.addOption("BLUE_SUBSTATION_LEFT", TargetedPositions.BLUE_SUBSTATION_LEFT);
+    mTargetedPositionChooser.addOption("BLUE_SUBSTATION_RIGHT", TargetedPositions.BLUE_SUBSTATION_RIGHT);
+    SmartDashboard.putData(mTargetedPositionChooser);
+
     // Start Datalog Manager
     DataLogManager.start();
 
@@ -140,6 +163,8 @@ public class Robot extends TimedRobot {
 
     // Update Smartdashboard Overall and Subsystems
     updateSmartdashboard();
+
+    mTargetedPosition = mTargetedPositionChooser.getSelected();
   }
 
   private void updateSmartdashboard()
@@ -175,6 +200,8 @@ public class Robot extends TimedRobot {
 
     // Iterates each Subsystem 
     mSubsystemManager.updateSmartdashboard();
+
+
   }
 
   // Fill Autonomous Modes List
@@ -359,6 +386,15 @@ public class Robot extends TimedRobot {
     if(mOperatorInterface.getArmTarget() != ArmTargets.NONE){
       mCurrentArmTarget = mOperatorInterface.getArmTarget();
     }
+
+    mArm.setArmAngle(mCurrentArmTarget.armAngle);
+    mArm.setArmExtension(mCurrentArmTarget.armExtend);
+
+    if(mOperatorInterface.getGrasperOpen()){
+      mGrasper.setGrasperOpen();
+    }else if (mOperatorInterface.getGrasperClosed()){
+      mGrasper.setGrasperClosed();
+    }
   }
 
    /**
@@ -456,8 +492,25 @@ public class Robot extends TimedRobot {
           }
           Pose2d targetedTagPose = targetedTag.pose.toPose2d();
 
+          Translation2d selectedXY = new Translation2d();
+
+          Alliance color = DriverStation.getAlliance();
+
+          TargetedPositions pos = mTargetedPosition;
+          int index = pos.ordinal();
+
+          if(color == Alliance.Blue){
+            selectedXY = FieldConstants.Grids.blueFinalScorePosition[index-1];
+          }else if(color == Alliance.Red){
+            selectedXY = FieldConstants.Grids.redFinalScorePosition[index-1];
+          }
+          
+          //
+          //FieldConstants.Grids.redFinalScorePosition[]
+          //FieldConstants.Grids.blueFinalScorePosition[]
+
           // 
-          Pose2d targetedTagPoseWithRotation = new Pose2d(targetedTagPose.getTranslation(), StartingPose.getRotation());
+          Pose2d targetedTagPoseWithRotation = new Pose2d(selectedXY, StartingPose.getRotation());
       
           // test code
 

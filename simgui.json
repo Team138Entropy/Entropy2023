@@ -6,10 +6,21 @@
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/RobotState/Visual Field": "Field2d",
       "/SmartDashboard/SendableChooser[0]": "String Chooser",
+      "/SmartDashboard/SendableChooser[1]": "String Chooser",
       "/SmartDashboard/SimMechanism/Arm Mechanism": "Mechanism2d",
       "/SmartDashboard/camera138 Sim Field": "Field2d"
     },
     "windows": {
+      "/SmartDashboard/RobotState/Visual Field": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/SendableChooser[0]": {
+        "window": {
+          "visible": true
+        }
+      },
       "/SmartDashboard/SimMechanism/Arm Mechanism": {
         "window": {
           "visible": true

@@ -34,13 +34,9 @@ public abstract class SuperStructure extends Subsystem{
     //placeholder update fucntions
     //armTargetAngle = Arm.getAngleTarget();
     //armExtension = Arm.getExtension
-
-
   }
 
-
-
-
+  
 
   public abstract void updateSmartDashBoard();
 }
