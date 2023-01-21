@@ -128,6 +128,5 @@ public class EntropyTalonFX extends TalonFX {
        SmartDashboard.putNumber(deviceInfo + "/MotorOutputVoltage", getMotorOutputVoltage());
        SmartDashboard.putNumber(deviceInfo + "/FiremwareVersion", getFirmwareVersion());
        SmartDashboard.putNumber(deviceInfo + "/SelectedSensorPosition", getSelectedSensorPosition());
-
     }
 }
