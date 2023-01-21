@@ -12,6 +12,7 @@ public class Arm {
     private static Arm mInstance;
 
     TalonSRX ShoulderMotor = new TalonSRX(5);
+    //TalonSRX SecondaryShoulderMotor = new TalonSRX();
 
     TalonSRX ExtensionMotor = new TalonSRX(6);
 

@@ -41,24 +41,24 @@ public class Constants {
       /* Swerve Module IDs */
       public static class SwerveModules {
         /* Module 0 */
-        public static final int module0_DriveMotor = 1;
-        public static final int module0_RotationMotor = 2;
-        public static final int module0_Cancoder = 3;
+        public static final int module0_DriveMotor = 61;
+        public static final int module0_RotationMotor = 62;
+        public static final int module0_Cancoder = 63;
 
         /* Module 1 */
-        public static final int module1_DriveMotor = 50;
-        public static final int module1_RotationMotor = 4;
-        public static final int module1_Cancoder = 66;
+        public static final int module1_DriveMotor = 650;
+        public static final int module1_RotationMotor = 64;
+        public static final int module1_Cancoder = 666;
 
         /* Module 2 */
-        public static final int module2_DriveMotor = 7;
-        public static final int module2_RotationMotor = 8;
-        public static final int module2_Cancoder = 9;
+        public static final int module2_DriveMotor = 67;
+        public static final int module2_RotationMotor = 68;
+        public static final int module2_Cancoder = 69;
 
         /* Module 3 */
-        public static final int module3_DriveMotor = 10;
-        public static final int module3_RotationMotor = 11;
-        public static final int module3_Cancoder = 12;
+        public static final int module3_DriveMotor = 610;
+        public static final int module3_RotationMotor = 611;
+        public static final int module3_Cancoder = 612;
       }
 
     }
