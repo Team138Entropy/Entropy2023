@@ -94,6 +94,11 @@ public class Robot extends TimedRobot {
   // Various Variables
   int mRumbleTimer = 0;
 
+  //test controls
+  private boolean mJogMode = true;
+  private boolean mPositionMode = false;
+  private boolean mGrasperOpen = true;
+
   public ArmTargets mCurrentArmTarget = ArmTargets.NONE;
 
   public TargetedPositions mTargetedPosition = TargetedPositions.NONE;
@@ -185,6 +190,9 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Pigeon Degrees", mPigeon.getYaw().getDegrees());
     SmartDashboard.putNumber("Pigeon Radians", mPigeon.getYaw().getRadians());
     SmartDashboard.putString("Target Position", mTargetedPosition.toString());
+
+    SmartDashboard.putBoolean("Jog Mode", mJogMode);
+    SmartDashboard.putBoolean("Automatic Mode", mPositionMode);
 
     // Vision Based Driver
     mAutoPilot.updateSmartDashBoard();
@@ -310,7 +318,27 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
 
-    //manual extension of the arm using RB/LB
+      //Allows the operator to swap freely between both test modes by pressing START
+    if (mJogMode == true && mOperatorInterface.getModeSwitch()){
+        mJogMode = false;
+        mPositionMode = true;
+      }
+    else if (mPositionMode == true && mOperatorInterface.getModeSwitch()){
+        mJogMode = true;
+        mPositionMode = false;
+      }
+
+      if (mGrasperOpen == true && mOperatorInterface.getGrasperModeSwap()){
+        mGrasperOpen = false;
+      }
+      else if (mGrasperOpen == false && mOperatorInterface.getGrasperModeSwap()){
+        mGrasperOpen = true;
+      }
+
+    //Manual Functions
+    if (mJogMode == true){
+
+      //Manual extension of the arm using RB/LB
       if (mOperatorInterface.getArmJogExtended()){
         mArm.setExtensionJog(0.4);
       } 
@@ -321,32 +349,71 @@ public class Robot extends TimedRobot {
         mArm.setExtensionJog(0);
       }  
 
-    //Manual rotation of the arm using Y/A
+
+      //Manual rotation of the arm using Y/A
     if (mOperatorInterface.getArmRotateForward()){
-      mArm.setShoulderJog(0.2);  
+      mArm.setShoulderJog(0.3);  
     } 
     else if (mOperatorInterface.getArmRotateBackward()) {
-      mArm.setShoulderJog(-0.2);
+      mArm.setShoulderJog(-0.3);
     }
     else {
       mArm.setShoulderJog(0);
     }
 
-    //Grasper Intake Wheels using X
-    if (mOperatorInterface.getGrasperWheelIntake()) {
-      mGrasper.setGrasperWheelIntake();
-    }
-    else {
-      mGrasper.cancelGrasperWheelIntake();
-    }
-    
-    //Grasper Open/Close using LT/RT
-    if (mOperatorInterface.getGrasperOpen()){
-      mGrasper.setGrasperOpen();
-    }
-    else if (mOperatorInterface.getGrasperClosed()){
+     //Grasper Open/Close using RT
+     if (mGrasperOpen == true && mOperatorInterface.getGrasperModeSwap()){
       mGrasper.setGrasperClosed();
     }
+    else if (mGrasperOpen == false && mOperatorInterface.getGrasperModeSwap()){
+      mGrasper.setGrasperOpen();
+    }
+    }  
+    
+    //Automatic functions
+    if (mPositionMode == true) {
+
+      //preset arm positions
+      if (mOperatorInterface.getArmJogForward()){
+        mArm.setArmAngle(135);
+      }
+      else if (mOperatorInterface.getArmJogMidForward()){
+        mArm.setArmAngle(115);
+      }
+      else if (mOperatorInterface.getArmJogMidBackward()){
+        mArm.setArmAngle(65);
+      }
+      else if (mOperatorInterface.getArmJogBackward()){
+        mArm.setArmAngle(45);
+      }
+      else {
+        mArm.setArmAngle(90);
+      }
+
+      //Automatic closing of the grasper
+      if (mGrasper.getBeamSensorBroken() == true){
+        mGrasper.setGrasperClosed();
+      }
+      else if (mGrasperOpen == false && mOperatorInterface.getGrasperModeSwap()){
+        mGrasper.setGrasperOpen();
+      }
+      
+      //Automatic extension positions 
+      if (mOperatorInterface.getArmExtended2()){
+        mArm.setArmExtension(2);
+      }
+      else if (mOperatorInterface.getArmExtended4()){
+        mArm.setArmExtension(4);
+      }
+      else if (mOperatorInterface.getArmExtended6()){
+        mArm.setArmExtension(6);
+      }
+      else if (mOperatorInterface.getArmExtended0()){
+        mArm.setArmExtension(0);
+      }
+
+    }
+
   }
 
   
