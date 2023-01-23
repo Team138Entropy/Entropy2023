@@ -12,8 +12,9 @@ import frc.robot.util.drivers.EntropyTalonSRX;
 public class Arm {
     private static Arm mInstance;
 
-    TalonSRX ShoulderMotor = new TalonSRX(5);
-    //TalonSRX SecondaryShoulderMotor = new TalonSRX();
+    EntropyTalonSRX MasterShoulderMotor;
+    EntropyTalonSRX SecondaryShoulderMotor;
+    EntropyTalonSRX ExtensionMotor;
 
     public static synchronized Arm getInstance() {
         if (mInstance == null) {
@@ -23,18 +24,25 @@ public class Arm {
       }
 
       private Arm () {
+        // Init Talons
+        MasterShoulderMotor = new EntropyTalonSRX(Constants.Talons.Arm.ShoulderMasterId);
+        SecondaryShoulderMotor = new EntropyTalonSRX(Constants.Talons.Arm.ShoulderSlaveId);
+        ExtensionMotor = new EntropyTalonSRX(Constants.Talons.Arm.ExtensionId);
+
         // Shoulder Motor Configuration
-        ShoulderMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
-        ShoulderMotor.setSensorPhase(true);
-        ShoulderMotor.setInverted(true);
-        ShoulderMotor.config_kF(0, 1);
-        ShoulderMotor.config_kP(0, 30);
-        ShoulderMotor.config_kI(0, .01);
-        ShoulderMotor.config_kD(0, 300);
-        ShoulderMotor.configSelectedFeedbackCoefficient(360.0/8192.0);
-        ShoulderMotor.configMotionAcceleration(5);
-        ShoulderMotor.configMotionCruiseVelocity(5, 10);
-        ShoulderMotor.setSelectedSensorPosition(90.0);
+        MasterShoulderMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
+        MasterShoulderMotor.setSensorPhase(true);
+        MasterShoulderMotor.setInverted(true);
+        MasterShoulderMotor.config_kF(0, 1);
+        MasterShoulderMotor.config_kP(0, 30);
+        MasterShoulderMotor.config_kI(0, .01);
+        MasterShoulderMotor.config_kD(0, 300);
+        MasterShoulderMotor.configSelectedFeedbackCoefficient(360.0/8192.0);
+        MasterShoulderMotor.configMotionAcceleration(5);
+        MasterShoulderMotor.configMotionCruiseVelocity(5, 10);
+        MasterShoulderMotor.setSelectedSensorPosition(90.0);
+        SecondaryShoulderMotor.follow(MasterShoulderMotor); // Secondary Motor will follow Primary Motor
+        SecondaryShoulderMotor.setInverted(false); // Secondary Motor is Inverted
 
         // Extension Motor Configuration
         ExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
@@ -50,36 +58,40 @@ public class Arm {
     }
 
     public double getGravity(){
-        double currentRadians = ShoulderMotor.getSelectedSensorPosition() * Constants.Misc.degreeToRadian;
+        double currentRadians = MasterShoulderMotor.getSelectedSensorPosition() * Constants.Misc.degreeToRadian;
         double feedForward = 0.2 * Math.cos(currentRadians);
             return feedForward;
     }
 
+    // Set the Arm Angle in Position Mode
     public void setArmAngle(double Degrees){
         double feedForward = getGravity();
-     ShoulderMotor.set(ControlMode.MotionMagic, Degrees, DemandType.ArbitraryFeedForward, feedForward);
+        MasterShoulderMotor.set(ControlMode.MotionMagic, Degrees, DemandType.ArbitraryFeedForward, feedForward);
     }
 
     public void updateSmartDashBoard(){
         //Arm Positioning and Extension
         final String key = "Arm/";
-        SmartDashboard.putNumber(key + "ArmPosition", ShoulderMotor.getSelectedSensorPosition());
-        SmartDashboard.putNumber(key + "Arm Percent Output", ShoulderMotor.getMotorOutputPercent());
+        SmartDashboard.putNumber(key + "Shoulder Position", MasterShoulderMotor.getSelectedSensorPosition());
+        SmartDashboard.putNumber(key + "Shoulder Percent Output", MasterShoulderMotor.getMotorOutputPercent());
         SmartDashboard.putNumber(key + "Extension Position", ExtensionMotor.getSelectedSensorPosition());
-        ShoulderMotor.updateSmartdashboard();
+        SmartDashboard.putNumber(key + "Extension Percent Output", ExtensionMotor.getMotorOutputPercent());
+        MasterShoulderMotor.updateSmartdashboard();
+        SecondaryShoulderMotor.updateSmartdashboard();
         ExtensionMotor.updateSmartdashboard();
     }
 
     public void setArmExtension(double Inches){
-     ExtensionMotor.set(ControlMode.MotionMagic, Inches * 8600, DemandType.ArbitraryFeedForward, 0.3); 
+        // TODO: Figure out Scaling Value
+        ExtensionMotor.set(ControlMode.MotionMagic, Inches, DemandType.ArbitraryFeedForward, 0.3); 
     }
 
     public void setExtensionJog (double Percent){
         ExtensionMotor.set(ControlMode.PercentOutput, Percent);
     }
 
- public void setShoulderJog (double Percent){
-     ShoulderMotor.set(ControlMode.PercentOutput, Percent);
+    public void setShoulderJog (double Percent){
+        MasterShoulderMotor.set(ControlMode.PercentOutput, Percent);
     }
  }
 

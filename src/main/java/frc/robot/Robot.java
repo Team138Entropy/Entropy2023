@@ -94,13 +94,15 @@ public class Robot extends TimedRobot {
   // Various Variables
   int mRumbleTimer = 0;
 
-  //test controls
+  // Test Controls
   private boolean mJogMode = true;
   private boolean mPositionMode = false;
   private boolean mGrasperOpen = true;
 
-  public ArmTargets mCurrentArmTarget = ArmTargets.NONE;
+  // Arm Target
+  public ArmTargets mCurrentArmTarget = ArmTargets.HOME_BACKSIDE;
 
+  // Position the Auto Pilot System Wants to Drive to
   public TargetedPositions mTargetedPosition = TargetedPositions.NONE;
 
   //relay channel is temp
@@ -111,16 +113,13 @@ public class Robot extends TimedRobot {
   public TargetedObject mCurrentTargetedObject = TargetedObject.CONE;
 
 
-
-
-
   /**
    * On Robot Startup
    */
   @Override
   public void robotInit() {
 
-
+    // Temp Target Position Chooser - Eventually this will be by button!
     mTargetedPositionChooser = new SendableChooser<TargetedPositions>();
     mTargetedPositionChooser.setDefaultOption("GRID_BOTTOM_1", TargetedPositions.GRID_BOTTOM_1);
     mTargetedPositionChooser.addOption("NONE", TargetedPositions.NONE);
@@ -177,12 +176,6 @@ public class Robot extends TimedRobot {
 
   private void updateSmartdashboard()
   {
-    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
-    SmartDashboard.putData("power panel",Constants.Grasper.globelPowerDistribution);
-    SmartDashboard.putNumber("accel X", mAccelerometer.getX());
-    SmartDashboard.putNumber("accel Y", mAccelerometer.getY());
-    SmartDashboard.putNumber("accel Z", mAccelerometer.getZ());
-    //SmartDashboard.putBoolean("isTipping", robotTippingCheck());
     SmartDashboard.putNumber("Drive Throttle", mOperatorInterface.getDriveThrottle());
     SmartDashboard.putNumber("Drive Turn", mOperatorInterface.getDriveTurn());
     SmartDashboard.putData("Field", mField);
@@ -190,7 +183,9 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Pigeon Degrees", mPigeon.getYaw().getDegrees());
     SmartDashboard.putNumber("Pigeon Radians", mPigeon.getYaw().getRadians());
     SmartDashboard.putString("Target Position", mTargetedPosition.toString());
-
+    SmartDashboard.putString("Target Arm Position", mCurrentArmTarget.toString());
+    SmartDashboard.putNumber("Target Arm Angle", mCurrentArmTarget.armAngle);
+    SmartDashboard.putNumber("Target Arm Extension", mCurrentArmTarget.armExtend);
     SmartDashboard.putBoolean("Jog Mode", mJogMode);
     SmartDashboard.putBoolean("Automatic Mode", mPositionMode);
 
@@ -253,7 +248,7 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-    // dsable operator rumble    
+    // disable operator rumble    
     mOperatorInterface.setOperatorRumble(false);
         
     // zero sensors (if not zero'ed prior on this powerup)
@@ -275,6 +270,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+    // Indicator Lights
     if(mOperatorInterface.getIntakeOpen() && mCurrentTargetedObject == TargetedObject.CONE){
       gamerLightsRelayCone.set(Relay.Value.kOn);
       gamerLightsRelayCone.set(Relay.Value.kForward);
@@ -283,6 +279,7 @@ public class Robot extends TimedRobot {
       gamerLightsRelayCube.set(Relay.Value.kForward);
     }
     
+    // Main Robot Loop!
     RobotLoop();
   }
 
@@ -434,6 +431,14 @@ public class Robot extends TimedRobot {
     mDrive.updateDriveSim();
     // Update Pose on Virtual Field
 
+    // Simulate Swerve Rotation
+    double sRotation = mOperatorInterface.getSwerveRotation();
+    mPigeon.rotateSimYaw(sRotation);
+
+    // Current Targeted Arm into Mechanism Sim
+    mSimMechanism.setArmAngle(mCurrentArmTarget.armAngle);
+    mSimMechanism.setArmLength(mCurrentArmTarget.armExtend);
+
     // Process Frame where the Robot currently is
     mPhotonVision.simVision.processFrame(mField.getRobotPose());  
   }
@@ -448,7 +453,7 @@ public class Robot extends TimedRobot {
     mField.setRobotPose(robotPose);
     mRobotState.setRobotPose(robotPose);
 
-    // Operator Commands
+    // Operator Arm Commands
     if(mOperatorInterface.getScoringCommand() != TargetedPositions.NONE){
       mTargetedPosition = mOperatorInterface.getScoringCommand();
     }
@@ -457,14 +462,20 @@ public class Robot extends TimedRobot {
       mCurrentArmTarget = mOperatorInterface.getArmTarget();
     }
 
+    // Constantly tell the Arm where to go
     mArm.setArmAngle(mCurrentArmTarget.armAngle);
     mArm.setArmExtension(mCurrentArmTarget.armExtend);
 
+    // Grasper Functionality
     if(mOperatorInterface.getGrasperOpen()){
       mGrasper.setGrasperOpen();
-    }else if (mOperatorInterface.getGrasperClosed()){
+    }else if (
+      mOperatorInterface.getGrasperClosed() || mGrasper.getBeamSensorBroken()
+    ){
+      // Close Grasper by close press or by beam
       mGrasper.setGrasperClosed();
     }
+    mGrasper.update();
   }
 
    /**
@@ -498,25 +509,6 @@ public class Robot extends TimedRobot {
     }
     SmartDashboard.putBoolean("Valid Target", validTarget);
     SmartDashboard.putNumber("Target Angle", errorAngle);
-    
-    /*
-    if(wantsAutoSteer && validTargetInfo){        
-      if(ti.isValid()){ //only allow if valud packet
-        // autonomously steering robot towards cargo
-        // todo: only allow drive in a certain direction? 
-       //mDrive.autoSteer(driveThrottle * .4, ti.getErrorAngle());
-       mDrive.driveErrorAngle(driveThrottle * .4, ti.getErrorAngle());
-      }else{
-        System.out.println("Invalid Packet!");
-      }
-    }else if(wantsAutoSteer){
-      // wants auto steer, but invalid target info
-      // TODO: vibrate controller so driver knows
-    }else{
-      //manual drive
-      mDrive.setDrive(driveThrottle, driveTurn, false);
-    }
-    */
 
     // Procced based on Drive Style
     Drive.DriveStyle driveStyle = mDrive.getDriveStyle();
@@ -536,15 +528,9 @@ public class Robot extends TimedRobot {
       // Swerve Brake
       mDrive.setBrake(mOperatorInterface.getBrake());
 
-      // Auto balence
-      if(mOperatorInterface.getBalence()){
-        mChargingStationAutoPilot.update(mOperatorInterface.getAutoPilotLeftStrafe(), mOperatorInterface.getAutoPilotRightStrafe());
-      }
-
-      // Auto Steering
-      if(wantsAutoSteer)
+      // Auto Pilot (and has Valid Vision Pose)
+      if(wantsAutoSteer && mRobotState.getVisionEstimatedPoseValid())
       {
-
         // if not running, set up initial system
         if(!mAutoPilot.getRunning())
         {
@@ -606,7 +592,7 @@ public class Robot extends TimedRobot {
       {
         // Normal Swerve Operation
 
-        // Do Not Vision Drive
+        // Do Not AutoPilot Drive
         mAutoPilot.stop();
         
         // Swerve Snap to a Direction (Button Press Quickly Moves Robot)
@@ -618,8 +604,9 @@ public class Robot extends TimedRobot {
 
         // Swerve Drive
         Translation2d sTrans = mOperatorInterface.getSwerveTranslation();
+        if(precisionSteer) sTrans = sTrans.times(.5); // slow down the speed by 50%!
         double sRotation = mOperatorInterface.getSwerveRotation();
-        mDrive.setSwerveDrive(sTrans, sRotation, true, true);
+        mDrive.setSwerveDrive(sTrans, sRotation, true, true, precisionSteer);
 
         // Log Inputs
         SmartDashboard.putString("Swerve Input Translation", sTrans.toString());

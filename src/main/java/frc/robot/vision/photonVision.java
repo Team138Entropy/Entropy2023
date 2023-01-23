@@ -47,11 +47,11 @@ public class photonVision {
     public static final PhotonCamera grasperCamera = new PhotonCamera("grasperCam");
     // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
     public static final Transform3d robotToFrontCam = 
-                    new Transform3d(new Translation3d(0, 0.0, 0), 
-                    new Rotation3d(0.5,0,0.5)); 
+                    new Transform3d(new Translation3d(0, .1, 0), //Camera is slightly offset to right side
+                    new Rotation3d(0,0,0)); 
     public static final Transform3d robotToBackCam = 
                     new Transform3d(new Translation3d(0, 0.0, 0), 
-                    new Rotation3d(0.5,0,0.5)); 
+                    new Rotation3d(0,0,0)); //TODO this one might be rolled
     public static final Transform3d robotToGrasperCam = 
                     new Transform3d(new Translation3d(0, 0.0, 0), 
                     new Rotation3d(0.5,0,0.5)); 
@@ -64,11 +64,7 @@ public class photonVision {
     );
 
     
-
-
-
-
-    // Simulated Test Code TEMP TEMP TEMP
+     // Simulated Test Code TEMP TEMP TEMP
         // Simulated Vision System.
     // Configure these to match your PhotonVision Camera,
     // pipeline, and LED setup.
@@ -82,7 +78,7 @@ public class photonVision {
 
     public SimVisionSystem simVision =
             new SimVisionSystem(
-                    "camera138",
+                    "frontApriltagCam",
                     camDiagFOV,
                     robotToFrontCam,
                     maxLEDRange,

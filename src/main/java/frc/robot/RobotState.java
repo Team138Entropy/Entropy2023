@@ -52,6 +52,9 @@ public class RobotState {
     // Robots Vision Estimated Pose2d Latency
     double mVisionBasedRobotPoseLatencySeconds;
 
+    // Valid Target 
+    boolean mIsValidVisionPose;
+
     // Simulation or Real
     boolean mRealRobot;
 
@@ -79,7 +82,8 @@ public class RobotState {
 
         // Robot Pose Calculated off of Vision
         mVisionBasedRobotPose = new Pose2d();
-        mVisionBasedRobotPoseLatencySeconds = 0;
+        mVisionBasedRobotPoseLatencySeconds = -1;
+        mIsValidVisionPose = false;
 
         // Visulation Field
         mVisualField = new Field2d();
@@ -109,6 +113,24 @@ public class RobotState {
         }
     }
 
+    // Get Vision Estimated Pose Latency (Seconds)
+    public double getVisionEstimatedPoseLatency()
+    {
+        return mVisionBasedRobotPoseLatencySeconds;
+    }
+
+    // Get Vision Estimated Pose
+    public Pose2d getVisionEstimatedPose()
+    {
+        return mVisionBasedRobotPose;
+    }
+
+    // Get if Vision Estimated Pose is Valid
+    public boolean getVisionEstimatedPoseValid()
+    {
+        return mIsValidVisionPose;
+    }
+
     // Update Robotstate
     // Called from Robot Periodic
     public void update()
@@ -124,6 +146,17 @@ public class RobotState {
             // Valid Pose2D
             mVisionBasedRobotPose = VisionBasedEstimate.getFirst();
             mVisionBasedRobotPoseLatencySeconds = VisionBasedEstimate.getSecond();
+        }
+
+        // Evaluate if Latency is within Range
+        if(mVisionBasedRobotPoseLatencySeconds != -1
+            && Constants.Vision.kAllowedSecondsThreshold <= mVisionBasedRobotPoseLatencySeconds)
+        {
+            // Has a Vision Based Robot Pose and it is within acceptable latency
+            mIsValidVisionPose = true;
+        }else {
+            // Either no Robot Pose or Outside of Latency
+            mIsValidVisionPose = false;
         }
 
         // Simulation Only
@@ -200,6 +233,7 @@ public class RobotState {
         final String key = "RobotState/";
         SmartDashboard.putString(key + "Vision Pose", mVisionBasedRobotPose.toString());
         SmartDashboard.putNumber(key + "Vision Pose Latency", mVisionBasedRobotPoseLatencySeconds);
+        SmartDashboard.putBoolean(key + "Vision Pose Valid", mIsValidVisionPose);
         SmartDashboard.putData(key + "Visual Field", mVisualField);
     }
 

@@ -460,7 +460,9 @@ public class Drive extends Subsystem {
   }
 
   /* Swerve Drive */
-  public void setSwerveDrive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
+  public void setSwerveDrive(Translation2d translation, double rotation, 
+    boolean fieldRelative, boolean isOpenLoop, boolean isPrecisionMode
+  ) {
     // Continue Snapping if Needed
     if (mIsSnapping) {
       if (Math.abs(rotation) == 0.0) {
@@ -512,7 +514,7 @@ public class Drive extends Subsystem {
                               translation.getX(), 
                               translation.getY(), 
                               rotation, 
-                              mPigeon.getYaw().getWPIRotation2d()
+                              mRealRobot ? mPigeon.getYaw().getWPIRotation2d() : mPigeon.getSimYaw().getWPIRotation2d()
                           )
                           : new ChassisSpeeds(
                               translation.getX(), 
@@ -753,7 +755,7 @@ public class Drive extends Subsystem {
         mDriveSimSystem.updateDrive(getLastDriveSignal());
       break;
       case SWERVE_DRIVE:
-        mSimSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), getDesiredSwerveModuleStates());
+        mSimSwerveOdometry.update(mPigeon.getSimYaw().getWPIRotation2d(), getDesiredSwerveModuleStates());
         //mSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), mSwerveModulePositions);
       break;
     }

@@ -32,6 +32,7 @@ public class Constants {
   // Talon Can IDs
   // CAN IDs
   public static class Talons {
+    public static final String auxCanBus = "canivore";
     public static class Drive {
       public static final int leftMaster = 4;
       public static final int leftSlave = 3;
@@ -46,9 +47,9 @@ public class Constants {
         public static final int module0_Cancoder = 3;
 
         /* Module 1 */
-        public static final int module1_DriveMotor = 50;
+        public static final int module1_DriveMotor = 5;
         public static final int module1_RotationMotor = 4;
-        public static final int module1_Cancoder = 66;
+        public static final int module1_Cancoder = 6;
 
         /* Module 2 */
         public static final int module2_DriveMotor = 7;
@@ -63,25 +64,20 @@ public class Constants {
 
     }
 
-    public static class Shooter {
-      public static final int leftMaster = 50;
-      public static final int rightMaster = 61;
+    public static class Arm {
+      public static final int ShoulderMasterId = 16;
+      public static final int ShoulderSlaveId = 17;
+      public static final int ExtensionId = 18;
     }
 
-    public static class Feeder {
-      public static final int shooterInput = 72;
-      public static final int feeder1 = 92;
-      public static final int feeder2 = 82;
+    public static class Grasper {
+      public static final int IntakeMotor = 19;
+      public static final int PCMId = 0;
     }
 
     public static class Sensors {
-      public static final int pigeonCan = 15;
+      public static final int pigeonCan = 13;
     }
-  }
-
-  public static class CanIDs {
-    // Power dist. panel
-    // public static final int PDPid = 25;
   }
 
   public static class Vision {
@@ -98,7 +94,7 @@ public class Constants {
       Rotation2d.fromDegrees(0);
 
     // Allowed Seconds Threshold
-    public static final double kAllowedSecondsThreshold = .25; //seconds
+    public static final double kAllowedSecondsThreshold = 2; //seconds
   }
 
   // Subsystems
@@ -182,6 +178,7 @@ public class Constants {
             Talons.Drive.SwerveModules.module0_DriveMotor,
             Talons.Drive.SwerveModules.module0_RotationMotor,
             Talons.Drive.SwerveModules.module0_Cancoder,
+            Talons.auxCanBus,
             AngleOffset
           );
         }
@@ -196,6 +193,7 @@ public class Constants {
             Talons.Drive.SwerveModules.module1_DriveMotor,
             Talons.Drive.SwerveModules.module1_RotationMotor,
             Talons.Drive.SwerveModules.module1_Cancoder,
+            Talons.auxCanBus,
             AngleOffset
           );
         }
@@ -210,6 +208,7 @@ public class Constants {
             Talons.Drive.SwerveModules.module2_DriveMotor,
             Talons.Drive.SwerveModules.module2_RotationMotor,
             Talons.Drive.SwerveModules.module2_Cancoder,
+            Talons.auxCanBus,
             AngleOffset
           );
         }
@@ -224,14 +223,12 @@ public class Constants {
             Talons.Drive.SwerveModules.module3_DriveMotor,
             Talons.Drive.SwerveModules.module3_RotationMotor,
             Talons.Drive.SwerveModules.module3_Cancoder,
+            Talons.auxCanBus,
             AngleOffset
           );
         }
       }
     }
-
-
-    
 
 
   } // End Drive
@@ -314,10 +311,8 @@ public class Constants {
   }
 
   public static class Grasper {
-    public static final int maxBallsStored = 1;
-    public static final int pwmChannel = 0;
-    public static final int powerDistributionNumber = 3;
-    public static final PowerDistribution globelPowerDistribution = new PowerDistribution(0, PowerDistribution.ModuleType.kCTRE);
+   public static final int GrasperMotorId = 3;
+   
   }
 
   public static class Climber {

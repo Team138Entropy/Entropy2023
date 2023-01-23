@@ -210,7 +210,7 @@ public class TrajectoryFollower {
         }
         else if(DriveStyle.SWERVE_DRIVE == mDrive.getDriveStyle())
         {
-            mDrive.setSwerveDrive(new Translation2d(), 0, true, true);
+            mDrive.setSwerveDrive(new Translation2d(), 0, true, true, false);
         }
     }
 

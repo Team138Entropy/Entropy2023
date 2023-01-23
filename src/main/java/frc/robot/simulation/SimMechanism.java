@@ -47,6 +47,16 @@ public class SimMechanism {
         // unsure how to control where it pivots
     }
 
+    public void setArmAngle(double degrees)
+    {
+
+    }
+
+    public void setArmLength(double length)
+    {
+        
+    }
+
 
     public void updateSmartDashboard() {
         final String key = "SimMechanism/";

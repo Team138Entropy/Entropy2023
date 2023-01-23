@@ -42,6 +42,9 @@ public class Enums {
         LOW_SCORING_BACK(50,40),
         INTAKE_BACK(80,0),
         SAFE(90,0),
+        START(200, 0),
+        HOME_BACKSIDE(190, 0),
+        HOME_FRONTSIDE(0, 0),
         NONE(0,0);
 
 

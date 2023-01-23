@@ -12,7 +12,7 @@ public class Pigeon {
 
     public static Pigeon getInstance() {
         if (mInstance == null) {
-            mInstance = new Pigeon(15);
+            mInstance = new Pigeon(Constants.Talons.Sensors.pigeonCan, Constants.Talons.auxCanBus);
         }
         return mInstance;
     }
@@ -25,8 +25,16 @@ public class Pigeon {
     private Rotation2d yawAdjustmentAngle = Rotation2d.identity();
     private Rotation2d rollAdjustmentAngle = Rotation2d.identity();
 
-    private Pigeon(int port) {        
-        mGyro = new Pigeon2(port);
+    // Simulation 
+    private Rotation2d mSimYawAngle = Rotation2d.identity();
+
+    private Pigeon(int port)
+    {
+        this(port, "");
+    }
+
+    private Pigeon(int port, String busId) {        
+        mGyro = new Pigeon2(port, busId);
         mGyro.configFactoryDefault();
     }
 
@@ -70,5 +78,15 @@ public class Pigeon {
 
     public Rotation2d getUnadjustedRoll() {
         return Rotation2d.fromDegrees(mGyro.getRoll());
+    }
+
+    // Simulation Only
+    public void rotateSimYaw(double degrees)
+    {
+        mSimYawAngle = mSimYawAngle.rotateBy(Rotation2d.fromDegrees(degrees).inverse());
+    }
+
+    public Rotation2d getSimYaw() {
+        return mSimYawAngle;
     }
 }

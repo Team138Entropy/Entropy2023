@@ -8,7 +8,12 @@ public class EntropyCANCoder extends CANCoder {
     private String deviceInfo;
 
     public EntropyCANCoder(int deviceNumber) {
-        super(deviceNumber);
+        this(deviceNumber, "");
+    }
+
+    public EntropyCANCoder(int deviceNumber, String canBusId)
+    {
+        super(deviceNumber, canBusId);
         setDeviceInfo(deviceNumber);
     }
 

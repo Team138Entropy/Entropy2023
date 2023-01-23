@@ -33,7 +33,12 @@ public class EntropyTalonFX extends TalonFX {
     }
 
     public EntropyTalonFX(int deviceNumber){
-        super(deviceNumber);
+        this(deviceNumber, "");
+    }
+
+    public EntropyTalonFX(int deviceNumber, String canBusName)
+    {
+        super(deviceNumber, canBusName);
         this.ticksPerMeter = Constants.Drive.Encoders.ticksPerMeters;
         this.velocitySlotIdx = MotorConfigUtils.VELOCITY_SLOT_IDX;
         this.positionSlotIdx = MotorConfigUtils.POSITION_SLOT_IDX;

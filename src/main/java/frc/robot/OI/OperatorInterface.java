@@ -69,7 +69,6 @@ public class OperatorInterface {
         SmartDashboard.putNumber("Swerve Forward Axis", forwardAxis);
         SmartDashboard.putNumber("Swerve Strafe Axis", strafeAxis);
 
-
         forwardAxis = Constants.SwerveConstants.invertYAxis ? forwardAxis : -forwardAxis;
         strafeAxis = Constants.SwerveConstants.invertXAxis ? strafeAxis :-strafeAxis;
 
@@ -169,9 +168,7 @@ public class OperatorInterface {
     }
 
     public boolean getDriveAutoSteer(){
-        //return mDriverController.getTrigger(Side.RIGHT);
-        return mDriverController.getButton(Button.A);
-
+        return mDriverController.getTrigger(Side.RIGHT);
     }
 
     public boolean getAutoPilotLeftStrafe(){
@@ -297,30 +294,6 @@ public class OperatorInterface {
         return mDriverController.getButton(Button.A);
     }
 
-    public boolean getRunShooterForward() {
-        return mDriverController.getTrigger(Side.RIGHT);
-    }
-  
-    public boolean getRunShooterBackward() {
-        return mDriverController.getTrigger(Side.LEFT);
-    }
-    public boolean getFeedUp() {
-        return mDriverController.getButton(Button.X);
-    }
-  
-    public boolean getFeedDown() {
-        return mDriverController.getButton(Button.A);
-    }
-
-    public boolean getFeedShooterUp() {
-        return mDriverController.getButton(Button.Y);
-    }
-
-    public boolean getFeedShooterDown() {
-        return mDriverController.getButton(Button.B);
-    }
-
-
     public boolean getGrasperModeSwap() {
         return mDriverController.getTrigger(Side.RIGHT);
     }
@@ -351,7 +324,6 @@ public class OperatorInterface {
         return mDriverController.getButton(Button.START);
     }
 
-
     public ArmTargets getArmTarget() {
         ArmTargets target = ArmTargets.NONE;
 
@@ -376,6 +348,15 @@ public class OperatorInterface {
             target = ArmTargets.LOW_SCORING_BACK;
         }
         return target;
+    }
+
+    // TODO?
+    public boolean getGrasperOpen() {
+        return false;
+    }
+
+    public boolean getGrasperClosed() {
+        return false;
     }
 }
 

@@ -66,8 +66,8 @@ public class SwerveModule  {
         mModuleName = "Module " + moduleNumber;
         mModuleString = swerveConstants.moduleName;
         mAngleOffset = swerveConstants.angleOffset;
-        mDriveMotor = new EntropyTalonFX(swerveConstants.driveMotorID);
-        mAngleMotor = new EntropyTalonFX(swerveConstants.angleMotorID);
+        mDriveMotor = new EntropyTalonFX(swerveConstants.driveMotorID, swerveConstants.CanBusID);
+        mAngleMotor = new EntropyTalonFX(swerveConstants.angleMotorID, swerveConstants.CanBusID);
         mDesiredState = new SwerveModuleState(0, new Rotation2d()); // zero desired state
 
         // Feedforward Controller for non open loop
@@ -80,7 +80,7 @@ public class SwerveModule  {
         mAngleMotor.setDescription(mModuleName + " Angle Motor");
 
         // Angle Encoder
-        mAngleEncoder = new EntropyCANCoder(swerveConstants.cancoderID);
+        mAngleEncoder = new EntropyCANCoder(swerveConstants.cancoderID, swerveConstants.CanBusID);
         configAngleEncoder();
         mAngleEncoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 255);
         mAngleEncoder.setStatusFramePeriod(CANCoderStatusFrame.VbatAndFaults, 255);

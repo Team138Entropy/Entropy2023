@@ -120,14 +120,13 @@ public class XboxController {
   }
 
   public void setRumble(boolean toggle) {
-    // Check to see if we are already on
-    if (toggle){
-      mController.setRumble(RumbleType.kLeftRumble, 0.5);
-      mController.setRumble(RumbleType.kRightRumble, 0.5);
-    } else {
-      mController.setRumble(RumbleType.kLeftRumble, 0);
-      mController.setRumble(RumbleType.kRightRumble, 0);
-    }
+    setRumble(toggle, .5);
+  }
+
+  public void setRumble(boolean toggle, double value)
+  {
+    mController.setRumble(RumbleType.kLeftRumble, toggle ? value : 0);
+    mController.setRumble(RumbleType.kRightRumble, toggle ? value : 0);
   }
 
   private double handleDeadband(double value, double deadband) {
