@@ -27,6 +27,9 @@ public final class FieldConstants {
     public static final double fieldLength = Units.inchesToMeters(54.0 * 12.0);
     public static final double fieldWidth = Units.inchesToMeters(27.0 * 12.0);
 
+    // Width of Tape used throughout the field
+    public static final double tapeWidth = Units.inchesToMeters(2.0);
+
     // AprilTag IDs & Locations (do not flip for red alliance)
     public static final List<AprilTag> aprilTags = List.of(
       new AprilTag(1, new Pose3d(
@@ -96,6 +99,45 @@ public final class FieldConstants {
 
     // April Tag Field Locations
     public static final AprilTagFieldLayout aprilTagField = new AprilTagFieldLayout(aprilTags, fieldLength, fieldWidth);
+
+  // Dimensions for Community 
+  public static final class Community {
+        // Region dimensions
+        public static final double innerX = 0.0;
+        public static final double midX =
+            Units.inchesToMeters(132.375); // Tape to the left of charging station
+        public static final double outerX =
+            Units.inchesToMeters(193.25); // Tape to the right of charging station
+        public static final double leftY = Units.feetToMeters(18.0);
+        public static final double midY = leftY - Units.inchesToMeters(59.39) + tapeWidth;
+        public static final double rightY = 0.0;
+        public static final Translation2d[] regionCorners =
+            new Translation2d[] {
+              new Translation2d(innerX, rightY),
+              new Translation2d(innerX, leftY),
+              new Translation2d(midX, leftY),
+              new Translation2d(midX, midY),
+              new Translation2d(outerX, midY),
+              new Translation2d(outerX, rightY),
+            };
+
+        // Charging station dimensions
+        public static final double chargingStationLength = Units.inchesToMeters(76.125);
+        public static final double chargingStationWidth = Units.inchesToMeters(97.25);
+        public static final double chargingStationOuterX = outerX - tapeWidth;
+        public static final double chargingStationInnerX =
+            chargingStationOuterX - chargingStationLength;
+        public static final double chargingStationLeftY = midY - tapeWidth;
+        public static final double chargingStationRightY = chargingStationLeftY - chargingStationWidth;
+        public static final Translation2d[] chargingStationCorners =
+            new Translation2d[] {
+              new Translation2d(chargingStationInnerX, chargingStationRightY),
+              new Translation2d(chargingStationInnerX, chargingStationLeftY),
+              new Translation2d(chargingStationOuterX, chargingStationRightY),
+              new Translation2d(chargingStationOuterX, chargingStationLeftY)
+            };
+    
+  }
 
   // Dimensions for grids and nodes
   public static final class Grids {

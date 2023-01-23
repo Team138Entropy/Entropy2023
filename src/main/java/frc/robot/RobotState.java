@@ -208,9 +208,19 @@ public class RobotState {
             nodePoseBlueObj.setPose(newPoseBlue);
 
             // Score Nodes
-            
+                   
 
         }
+
+        // Charging Station Corners
+        for(int i = 0; i < FieldConstants.Community.chargingStationCorners.length; i++)
+        {
+            Translation2d corner = FieldConstants.Community.chargingStationCorners[i];
+            Pose2d cornerPose = new Pose2d(corner, new Rotation2d());
+            FieldObject2d cornerPoseObj = mVisualField.getObject("CS Corner " + i);
+            cornerPoseObj.setPose(cornerPose);
+        }
+        
 
         // Vision Estimated Robot Pose
         FieldObject2d simVisionPose = mVisualField.getObject("VisionEstimatedPose");

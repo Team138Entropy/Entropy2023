@@ -22,7 +22,8 @@ import frc.robot.subsystems.Drive;
 //      https://github.com/STMARobotics/swerve-test/blob/main/src/main/java/frc/robot/commands/ChaseTagCommand.java
 //      Todo: Need to figure out how to allow constraints in this system.. path solving variables maybe A*
 //      Todo: Regineration of Path, especially if noin new Latent vision targets
-//      Todo: 
+//     
+//      https://www.geeksforgeeks.org/a-search-algorithm/ ? Gray Zones?
 public class AutoPilot {
     private static AutoPilot mInstance;
 
@@ -136,6 +137,12 @@ public class AutoPilot {
             mXController.setGoal(mGoalPose.getX());
             mYController.setGoal(mGoalPose.getY());
             mOmegaController.setGoal(mGoalPose.getRotation().getRadians());
+
+            /*
+             TODO: Need to generate a list of Poses to Drive
+              
+             
+             */
         }
     }
 
