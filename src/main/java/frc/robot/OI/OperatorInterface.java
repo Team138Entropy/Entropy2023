@@ -305,11 +305,10 @@ public class OperatorInterface {
     public boolean getWristUp() {
         return mDriverController.getTrigger(Side.RIGHT);
     }
-<<<<<<< Updated upstream
   
     public boolean getFeedDown() {
         return mDriverController.getButton(Button.A);
-=======
+    }
 
     public ArmTargets getArmTarget() {
         ArmTargets target = ArmTargets.NONE;
@@ -334,7 +333,6 @@ public class OperatorInterface {
             target = ArmTargets.LOW_SCORING_BACK;
         }
         return target;
->>>>>>> Stashed changes
     }
 
     public boolean getIntakeOpen() {
@@ -351,32 +349,6 @@ public class OperatorInterface {
 
     public boolean getModeSwitch() {
         return mDriverController.getButton(Button.START);
-    }
-
-    public ArmTargets getArmTarget() {
-        ArmTargets target = ArmTargets.NONE;
-
-        if(mOperatorController.getButton(Button.LB)){
-            target = ArmTargets.INTAKE_FRONT;
-        }else if(mOperatorController.getButton(Button.RB)){
-            target = ArmTargets.INTAKE_BACK;
-        }else if(mOperatorController.getButton(Button.Y)){
-            target = ArmTargets.SAFE;
-        }else if(mOperatorController.getButton(Button.A)){
-            target = ArmTargets.TOP_SCORING_FRONT;
-        }else if(mOperatorController.getButton(Button.B)){
-            target = ArmTargets.MID_SCORING_FRONT;
-        }else if(mOperatorController.getButton(Button.X)){
-            target = ArmTargets.LOW_SCORING_FRONT;
-        //all buttons for the back targets are placeholder
-        }else if(mOperatorController.getButton(Button.A)){
-            target = ArmTargets.TOP_SCORING_BACK;
-        }else if(mOperatorController.getButton(Button.B)){
-            target = ArmTargets.MID_SCORING_BACK;
-        }else if(mOperatorController.getButton(Button.X)){
-            target = ArmTargets.LOW_SCORING_BACK;
-        }
-        return target;
     }
 
     // TODO?
