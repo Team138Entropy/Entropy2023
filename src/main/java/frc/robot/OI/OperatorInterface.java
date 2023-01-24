@@ -17,7 +17,7 @@ public class OperatorInterface {
     // Instances of the Driver and Operator Controller
     private XboxController mDriverController;
     private XboxController mOperatorController;
-
+    private XboxController mOperatorController2;
     // Latched Booleans
     private LatchedBoolean mOperatorSelectButton = new LatchedBoolean();
     private LatchedBoolean mOperatorStartButton = new LatchedBoolean();
@@ -41,6 +41,7 @@ public class OperatorInterface {
     private OperatorInterface() {
         mDriverController = new XboxController(Constants.Controllers.Driver.port);
         mOperatorController = new XboxController(Constants.Controllers.Operator.port);
+        mOperatorController2 = new XboxController(Constants.Controllers.Operator2.port);
     }
 
     public boolean getClimberTest(){
@@ -304,8 +305,36 @@ public class OperatorInterface {
     public boolean getWristUp() {
         return mDriverController.getTrigger(Side.RIGHT);
     }
-    public boolean getWristDown() {
-        return mDriverController.getTrigger(Side.LEFT);
+<<<<<<< Updated upstream
+  
+    public boolean getFeedDown() {
+        return mDriverController.getButton(Button.A);
+=======
+
+    public ArmTargets getArmTarget() {
+        ArmTargets target = ArmTargets.NONE;
+
+        if(mOperatorController2.getButton(Button.LB)){
+            target = ArmTargets.INTAKE_FRONT;
+        }else if(mOperatorController2.getButton(Button.RB)){
+            target = ArmTargets.INTAKE_BACK;
+        }else if(mOperatorController2.getButton(Button.Y)){
+            target = ArmTargets.SAFE;
+        }else if(mOperatorController2.getButton(Button.A)){
+            target = ArmTargets.TOP_SCORING_FRONT;
+        }else if(mOperatorController2.getButton(Button.B)){
+            target = ArmTargets.MID_SCORING_FRONT;
+        }else if(mOperatorController2.getButton(Button.X)){
+            target = ArmTargets.LOW_SCORING_FRONT;
+        }else if(mOperatorController2.getButton(Button.BACK)){
+            target = ArmTargets.TOP_SCORING_BACK;
+        }else if(mOperatorController2.getButton(Button.L_JOYSTICK)){
+            target = ArmTargets.MID_SCORING_BACK;
+        }else if(mOperatorController2.getButton(Button.START)){
+            target = ArmTargets.LOW_SCORING_BACK;
+        }
+        return target;
+>>>>>>> Stashed changes
     }
 
     public boolean getIntakeOpen() {

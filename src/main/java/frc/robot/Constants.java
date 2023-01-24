@@ -248,6 +248,11 @@ public class Constants {
       public static final int port = 1;
       public static final String name = "AIRFLO";
     }
+
+    public static class Operator2 {
+      public static final int port = 2;
+      public static final String name = "AIRFLO";
+    }
   }
 
   public static class RobotDimensions {
