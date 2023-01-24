@@ -436,8 +436,8 @@ public class Robot extends TimedRobot {
     mPigeon.rotateSimYaw(sRotation);
 
     // Current Targeted Arm into Mechanism Sim
-    mSimMechanism.setArmAngle(mCurrentArmTarget.armAngle);
-    mSimMechanism.setArmLength(mCurrentArmTarget.armExtend);
+    mSimMechanism.SetArmAngle(mCurrentArmTarget.armAngle);
+    mSimMechanism.SetArmLength(mCurrentArmTarget.armExtend);
 
     // Process Frame where the Robot currently is
     mPhotonVision.simVision.processFrame(mField.getRobotPose());  
