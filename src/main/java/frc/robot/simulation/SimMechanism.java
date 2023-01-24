@@ -32,9 +32,9 @@ public class SimMechanism {
         mArmMech = new Mechanism2d(3, 3); //Canvas Size (3,3)
 
         // Arm Mechanism Root
-        mArmRoot = mArmMech.getRoot("arm", 1.5, 0);
+        mArmRoot = mArmMech.getRoot("arm", 1.5, 1.5);
         // Tower of the Mechanism
-        mTower = mArmRoot.append(new MechanismLigament2d("tower", .8, 90));
+        mTower = mArmRoot.append(new MechanismLigament2d("tower", .8, 270));
 
         // Arm which pivots on top of the tower
         mArm = mArmRoot.append(new MechanismLigament2d("arm", 1, 45));
@@ -44,19 +44,24 @@ public class SimMechanism {
         //mArm.setAngle(0);
         //mArm.setLength(0);
 
-        // unsure how to control where it pivots
     }
-
-    public void setArmAngle(double degrees)
-    {
+public void SetArmAngle (double angle ){
+    if(angle <= 0 && angle >= -360){
+        angle = angle +360;
 
     }
-
-    public void setArmLength(double length)
-    {
         
+    if(angle <= 230 || angle >= 310){
+        mArm.setAngle(angle);
     }
 
+}
+
+public void SetArmLength (double length){
+    if(length <= 1.5 && length >= 1 ){
+            mArm.setLength(length);
+        }
+    }
 
     public void updateSmartDashboard() {
         final String key = "SimMechanism/";
