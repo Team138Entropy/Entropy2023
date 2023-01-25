@@ -20,6 +20,14 @@ public class SimMechanism {
     private MechanismLigament2d mTower;
     private MechanismLigament2d mArm;
 
+    private Mechanism2d mGrasperMech;
+    private MechanismRoot2d mGrasperRoot;
+    private MechanismLigament2d mGrasperConnection;
+    private MechanismLigament2d mLeftClaw;
+    private MechanismLigament2d mRightClaw;
+
+    //ligaments X 2 right and left, then bottom can set angle and length
+
     private SimMechanism()
     {
         // Init Mechanism 
@@ -38,7 +46,24 @@ public class SimMechanism {
 
         // Arm which pivots on top of the tower
         mArm = mArmRoot.append(new MechanismLigament2d("arm", 1, 45));
+        
 
+        // Grasper Mechanism Canvas
+        mGrasperMech = new Mechanism2d(10, 10); //Canvas Size (10,10)
+
+        //does canvas size matter
+        //what is root,  is connection point?
+
+        // Grasper Mechanism Root
+        mGrasperRoot = mGrasperMech.getRoot("grasper", 1.5, 1.5); 
+
+        // Grasper Connection Ligament
+        mGrasperConnection = mGrasperRoot.append(new MechanismLigament2d("tower", .8, 270));
+        // Left Grasper Ligament
+        mLeftClaw = mGrasperRoot.append(new MechanismLigament2d("arm", 1, 90));
+        // Right Grasper Ligament
+        mRightClaw = mGrasperRoot.append(new MechanismLigament2d("arm", 1, 90));
+        
 
         // Useful Methods on mArm:
         //mArm.setAngle(0);

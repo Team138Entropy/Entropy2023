@@ -25,15 +25,18 @@ public class Grasper {
     private final EntropyCANSparkMax GrasperWheelMotor;
     //Beam Sensor
     private final DigitalInput BeamSensor;
-    //timer
+    //Beam Timer
     private final Timer beamActivationTimer;
-
     private boolean BeamSensorOn = true;
+    //Wheel Timer
+    private final Timer wheelCancellationTimer;
+    //Grasper Open/Closed
+    private boolean mGrasperOpen = false;
 
     // Grasper State
     private enum GrasperState {
+      FullyClosed,
       Closed,
-      Closing,
       Open
     };
     private GrasperState mGrasperState;
@@ -52,7 +55,8 @@ public class Grasper {
       GrasperWheelMotor = new EntropyCANSparkMax(Constants.Talons.Grasper.IntakeMotor, MotorType.kBrushless);
       BeamSensor = new DigitalInput(0);
       beamActivationTimer = new Timer();
-      mGrasperState = GrasperState.Closed;
+      wheelCancellationTimer = new Timer();
+      mGrasperState = GrasperState.FullyClosed;
     }
   
    // Open the Grasper
@@ -88,17 +92,34 @@ public class Grasper {
   public void update(){
     // Perform Logic based on the Grasper State
     switch(mGrasperState) {
-      case Closed:
-        // TODO - Grasper is Closed. Do we need to do anything?
+      case FullyClosed:
 
+      if (mGrasperOpen == true) {
+        setGrasperClosed();
+        mGrasperOpen = false;
+      }
       break;
-      case Closing:
-        // TODO - Grasper is closing (air is pushing cylinders out)..what do we do
+
+      case Closed:
+
+        setGrasperWheelIntake();
+
+        if (mGrasperOpen == true) {
+          GrasperSolenoid.set(true);
+          beamActivationTimer.stop();
+          mGrasperOpen = false;
+        }
+        
+        if (getGrasperTimeElapsed1() == true){
+          cancelGrasperWheelIntake();
+          mGrasperState = GrasperState.FullyClosed;
+        }
 
       break;
       case Open:
         // TODO - Do we need to do anything here?
-
+      setGrasperOpen();
+      mGrasperOpen = true;
       break;
       default:
       break;
@@ -106,14 +127,18 @@ public class Grasper {
   }
 
   // Has the Grasper been open long enough to use beam sensor
-  public boolean getGrasperTimeElapsed(){
+  public boolean getGrasperTimeElapsed3(){
     return beamActivationTimer.hasElapsed(3);
+  }
+  // Timer for the wheels when closing the Grasper
+  public boolean getGrasperTimeElapsed1(){
+    return wheelCancellationTimer.hasElapsed(1);
   }
 
   public boolean getBeamSensorBroken(){
     // if disabled, return false ... beam is never broken
     if (BeamSensorOn == false){
-      if (getGrasperTimeElapsed() == true){
+      if (getGrasperTimeElapsed3() == true){
         BeamSensorOn = true;
       }
     }

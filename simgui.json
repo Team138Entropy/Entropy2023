@@ -12,11 +12,6 @@
       "/SmartDashboard/frontApriltagCam Sim Field": "Field2d"
     },
     "windows": {
-      "/SmartDashboard/RobotState/Visual Field": {
-        "window": {
-          "visible": true
-        }
-      },
       "/SmartDashboard/SendableChooser[0]": {
         "window": {
           "visible": true
@@ -26,6 +21,13 @@
         "window": {
           "visible": true
         }
+      }
+    }
+  },
+  "NetworkTables": {
+    "transitory": {
+      "SmartDashboard": {
+        "open": true
       }
     }
   }
