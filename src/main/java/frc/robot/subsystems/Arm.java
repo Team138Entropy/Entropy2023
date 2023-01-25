@@ -30,6 +30,11 @@ public class Arm {
         ExtensionMotor = new EntropyTalonSRX(Constants.Talons.Arm.ExtensionId);
 
         // Shoulder Motor Configuration
+        // Primary Motor -> Positive Percent Output should increase position -> 0:360
+        //                  Negative Percent Output should decrease position -> 360:0
+        // Secondary Motor -> Is physically inverted and should simply follow the Primary Motor
+        MasterShoulderMotor.configFactoryDefault();
+        SecondaryShoulderMotor.configFactoryDefault();
         MasterShoulderMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
         MasterShoulderMotor.setSensorPhase(true);
         MasterShoulderMotor.setInverted(true);
@@ -42,9 +47,9 @@ public class Arm {
         MasterShoulderMotor.configMotionCruiseVelocity(5, 10);
         MasterShoulderMotor.setSelectedSensorPosition(90.0);
         SecondaryShoulderMotor.follow(MasterShoulderMotor); // Secondary Motor will follow Primary Motor
-        SecondaryShoulderMotor.setInverted(false); // Secondary Motor is Inverted
 
         // Extension Motor Configuration
+        ExtensionMotor.configFactoryDefault();
         ExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
         ExtensionMotor.setInverted(true);
         ExtensionMotor.setSensorPhase(true);
@@ -57,10 +62,13 @@ public class Arm {
         ExtensionMotor.setSelectedSensorPosition(0);
     }
 
+    // Gets the Feed Forward Value based on Gravity
+    //      90 & 270 are straight up and straight down. No KF
+    //      0 & 180 are completely horizontal. Maximum KF
     public double getGravity(){
         double currentRadians = MasterShoulderMotor.getSelectedSensorPosition() * Constants.Misc.degreeToRadian;
         double feedForward = 0.2 * Math.cos(currentRadians);
-            return feedForward;
+        return feedForward;
     }
 
     // Set the Arm Angle in Position Mode
@@ -69,29 +77,46 @@ public class Arm {
         MasterShoulderMotor.set(ControlMode.MotionMagic, Degrees, DemandType.ArbitraryFeedForward, feedForward);
     }
 
-    public void updateSmartDashBoard(){
-        //Arm Positioning and Extension
-        final String key = "Arm/";
-        SmartDashboard.putNumber(key + "Shoulder Position", MasterShoulderMotor.getSelectedSensorPosition());
-        SmartDashboard.putNumber(key + "Shoulder Percent Output", MasterShoulderMotor.getMotorOutputPercent());
-        SmartDashboard.putNumber(key + "Extension Position", ExtensionMotor.getSelectedSensorPosition());
-        SmartDashboard.putNumber(key + "Extension Percent Output", ExtensionMotor.getMotorOutputPercent());
-        MasterShoulderMotor.updateSmartdashboard();
-        SecondaryShoulderMotor.updateSmartdashboard();
-        ExtensionMotor.updateSmartdashboard();
-    }
-
+    // Se the Extension Postion in Position Mode
     public void setArmExtension(double Inches){
         // TODO: Figure out Scaling Value
+        // TODO: arm extension should factor angle?
         ExtensionMotor.set(ControlMode.MotionMagic, Inches, DemandType.ArbitraryFeedForward, 0.3); 
     }
 
+    // Get the current arm angle
+    public double getArmAngle()
+    {
+        return MasterShoulderMotor.getSelectedSensorPosition();
+    }
+
+    // Get the current arm extension
+    public double getArmExtension()
+    {
+        return ExtensionMotor.getSelectedSensorPosition();
+    }
+
+    // Test method to jog extension
     public void setExtensionJog (double Percent){
         ExtensionMotor.set(ControlMode.PercentOutput, Percent);
     }
 
+    // Test method to shoulder jog
     public void setShoulderJog (double Percent){
         MasterShoulderMotor.set(ControlMode.PercentOutput, Percent);
+    }
+
+    public void updateSmartDashBoard(){
+        //Arm Positioning and Extension
+        final String key = "Arm/";
+        SmartDashboard.putNumber(key + "Shoulder Position", getArmAngle());
+        SmartDashboard.putNumber(key + "Shoulder Percent Output", MasterShoulderMotor.getMotorOutputPercent());
+        SmartDashboard.putNumber(key + "Shoulder Secondary Percent Output", SecondaryShoulderMotor.getMotorOutputPercent());
+        SmartDashboard.putNumber(key + "Extension Position", getArmExtension());
+        SmartDashboard.putNumber(key + "Extension Percent Output", ExtensionMotor.getMotorOutputPercent());
+        MasterShoulderMotor.updateSmartdashboard();
+        SecondaryShoulderMotor.updateSmartdashboard();
+        ExtensionMotor.updateSmartdashboard();
     }
  }
 

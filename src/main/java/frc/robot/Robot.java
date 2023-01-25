@@ -588,7 +588,7 @@ public class Robot extends TimedRobot {
         // general vision driving update
         mAutoPilot.update();
       }
-      else if(mOperatorInterface.getBalence())
+      else if(mOperatorInterface.getBalence()) //GEORGE UPDATE THIS SPELLING PLS
       {
         mChargingStationAutoPilot.update(mOperatorInterface.getAutoPilotLeftStrafe(), mOperatorInterface.getAutoPilotRightStrafe());
       }
