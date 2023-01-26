@@ -1,0 +1,29 @@
+<html>
+  <head>
+    <title>My Robot Dashboard!</title>
+  </head>
+  <body>
+    <frc-dashboard onload="ntLoaded()">
+      <nt-string key="/robotName" value="138 Bot"></nt-string>
+      <nt-number key="/angle" value="135"></nt-number>
+      <nt-number key="/photonvision/camera138/latencyMillis"></nt-number>
+      <h1>
+        <frc-label source-key="/robotName"></frc-label>
+      </h1>
+      <frc-differential-drivebase
+        source-key="/LiveWindow/Ungrouped/DifferentialDrive[1]"
+      ></frc-differential-drivebase>
+      <frc-gyro source-key="/angle" precision="2"></frc-gyro>
+      <frc-number source-key="/photonvision/camera138/latencyMillis"></frc-number>
+    </frc-dashboard>
+    <script src="./frc-web-components.js"></script>
+    <script>
+        function ntLoaded(){
+            NetworkTables.addGlobalListener(function(key, value, isNew){
+
+            }, true);
+            NetworkTables.putValue('networktablesLoaded', true);
+        }
+    </script>
+  </body>
+</html>
