@@ -7,9 +7,10 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.Enums.ArmTargets;
 import frc.robot.util.drivers.EntropyTalonSRX;
 
-public class Arm {
+public class Arm extends Subsystem {
     private static Arm mInstance;
 
     EntropyTalonSRX MasterShoulderMotor;
@@ -45,7 +46,7 @@ public class Arm {
         MasterShoulderMotor.configSelectedFeedbackCoefficient(360.0/8192.0);
         MasterShoulderMotor.configMotionAcceleration(5);
         MasterShoulderMotor.configMotionCruiseVelocity(5, 10);
-        MasterShoulderMotor.setSelectedSensorPosition(90.0);
+        MasterShoulderMotor.setSelectedSensorPosition(ArmTargets.HOME_BACKSIDE.armAngle);
         SecondaryShoulderMotor.follow(MasterShoulderMotor); // Secondary Motor will follow Primary Motor
 
         // Extension Motor Configuration
@@ -59,7 +60,7 @@ public class Arm {
         ExtensionMotor.config_kD(0, 0);
         ExtensionMotor.configMotionAcceleration(10000);
         ExtensionMotor.configMotionCruiseVelocity(5000);
-        ExtensionMotor.setSelectedSensorPosition(0);
+        ExtensionMotor.setSelectedSensorPosition(ArmTargets.HOME_BACKSIDE.armExtend);
     }
 
     // Gets the Feed Forward Value based on Gravity
@@ -117,6 +118,19 @@ public class Arm {
         MasterShoulderMotor.updateSmartdashboard();
         SecondaryShoulderMotor.updateSmartdashboard();
         ExtensionMotor.updateSmartdashboard();
+    }
+
+    @Override
+    public void zeroSensors() {
+        // TODO Auto-generated method stub
+        MasterShoulderMotor.setSelectedSensorPosition(ArmTargets.HOME_BACKSIDE.armAngle);
+        ExtensionMotor.setSelectedSensorPosition(ArmTargets.HOME_BACKSIDE.armExtend);
+    }
+
+    @Override
+    public void checkSubsystem() {
+        // TODO Auto-generated method stub
+        
     }
  }
 

@@ -334,6 +334,13 @@ public class Robot extends TimedRobot {
 
     //Manual Functions
     if (mJogMode == true){
+      //Zero encoders on the arm using the right stick button
+      if(mOperatorInterface.getArmEncoderZero()){
+        mArm.zeroSensors();
+        mArm.setArmAngle(ArmTargets.HOME_BACKSIDE.armAngle);
+        mArm.setArmExtension(ArmTargets.HOME_FRONTSIDE.armExtend);
+        System.out.println("Arm set to zero");
+      }
 
       //Manual extension of the arm using RB/LB
       if (mOperatorInterface.getArmJogExtended()){
@@ -588,7 +595,7 @@ public class Robot extends TimedRobot {
         // general vision driving update
         mAutoPilot.update();
       }
-      else if(mOperatorInterface.getBalence()) //GEORGE UPDATE THIS SPELLING PLS
+      else if(mOperatorInterface.getBalance())
       {
         mChargingStationAutoPilot.update(mOperatorInterface.getAutoPilotLeftStrafe(), mOperatorInterface.getAutoPilotRightStrafe());
       }

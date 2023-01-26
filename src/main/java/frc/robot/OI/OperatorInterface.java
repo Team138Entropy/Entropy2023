@@ -164,7 +164,7 @@ public class OperatorInterface {
         return mDriverController.getButton(Button.LB);
     }
 
-    public boolean getBalence(){
+    public boolean getBalance(){
         return mDriverController.getButton(Button.RB);
     }
 
@@ -215,6 +215,10 @@ public class OperatorInterface {
 
     public boolean getSelectButtonPress(){
         return mOperatorSelectButton.update(mOperatorController.getButton(Button.BACK));
+    }
+
+    public boolean getArmEncoderZero(){
+        return mOperatorController.getButton(Button.R_JOYSTICK);
     }
 
     public boolean getArmExtend() {
