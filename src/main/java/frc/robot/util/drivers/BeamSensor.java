@@ -29,7 +29,8 @@ public class BeamSensor {
 
     // Continuous Update Loop
     // Evalutes the current DIO State
-    public void update()
+    // This will get called automatically from isBeamBroken
+    private void update()
     {
         // get() of DIO returns true if sees other beam, and false if not
         if(!mInput.get())
@@ -47,6 +48,7 @@ public class BeamSensor {
     // Returns True if the Beam is Broken
     public boolean isBeamBroken()
     {
+        update();
         return (mCurrentPositiveSamples >= mTargetPositiveSampleCount);
     }
 }

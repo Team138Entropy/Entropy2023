@@ -335,8 +335,10 @@ public class Robot extends TimedRobot {
     //Manual Functions
     if (mJogMode == true){
       //Zero encoders on the arm using the right stick button
+      // JOES COMMENT FOR GEORGE: why do i have to be in jog mode to zero?
       if(mOperatorInterface.getArmEncoderZero()){
         mArm.zeroSensors();
+        // JOES COMMENT FOR GEORGE: don't think you want this?
         mArm.setArmAngle(ArmTargets.HOME_BACKSIDE.armAngle);
         mArm.setArmExtension(ArmTargets.HOME_FRONTSIDE.armExtend);
         System.out.println("Arm set to zero");
