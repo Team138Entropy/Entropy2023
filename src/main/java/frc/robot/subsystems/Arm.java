@@ -46,7 +46,6 @@ public class Arm extends Subsystem {
         MasterShoulderMotor.configSelectedFeedbackCoefficient(360.0/8192.0);
         MasterShoulderMotor.configMotionAcceleration(5);
         MasterShoulderMotor.configMotionCruiseVelocity(5, 10);
-        MasterShoulderMotor.setSelectedSensorPosition(ArmTargets.HOME_BACKSIDE.armAngle);
         SecondaryShoulderMotor.follow(MasterShoulderMotor); // Secondary Motor will follow Primary Motor
 
         // Extension Motor Configuration
@@ -60,7 +59,6 @@ public class Arm extends Subsystem {
         ExtensionMotor.config_kD(0, 0);
         ExtensionMotor.configMotionAcceleration(10000);
         ExtensionMotor.configMotionCruiseVelocity(5000);
-        ExtensionMotor.setSelectedSensorPosition(ArmTargets.HOME_BACKSIDE.armExtend);
     }
 
     // Gets the Feed Forward Value based on Gravity

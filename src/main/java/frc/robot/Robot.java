@@ -11,8 +11,11 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -91,6 +94,10 @@ public class Robot extends TimedRobot {
   // Real Robot Indicator
   private final boolean mRealRobot = Robot.isReal();
 
+  private final PowerDistribution powerPanle = new PowerDistribution(1, ModuleType.kRev);
+
+  private final AnalogInput mAnalogInput = new AnalogInput(0);
+
   // Various Variables
   int mRumbleTimer = 0;
 
@@ -104,11 +111,6 @@ public class Robot extends TimedRobot {
 
   // Position the Auto Pilot System Wants to Drive to
   public TargetedPositions mTargetedPosition = TargetedPositions.NONE;
-
-  //relay channel is temp
-  public Relay gamerLightsRelayCone = new Relay(0);
-
-  public Relay gamerLightsRelayCube = new Relay(1);
 
   public TargetedObject mCurrentTargetedObject = TargetedObject.CONE;
 
@@ -157,6 +159,8 @@ public class Robot extends TimedRobot {
     // reset odometry
 
     // Reset Drive Sensors
+
+    powerPanle.setSwitchableChannel(true);
   }
 
 
@@ -188,6 +192,9 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Target Arm Extension", mCurrentArmTarget.armExtend);
     SmartDashboard.putBoolean("Jog Mode", mJogMode);
     SmartDashboard.putBoolean("Automatic Mode", mPositionMode);
+    //formula to convert to PSI
+    SmartDashboard.putNumber("pressure sensor", 250.0 * mAnalogInput.getVoltage() / 5.0 - 25.0);
+    SmartDashboard.putData(powerPanle);
 
     // Vision Based Driver
     mAutoPilot.updateSmartDashBoard();
@@ -270,15 +277,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    // Indicator Lights
-    if(mOperatorInterface.getIntakeOpen() && mCurrentTargetedObject == TargetedObject.CONE){
-      gamerLightsRelayCone.set(Relay.Value.kOn);
-      gamerLightsRelayCone.set(Relay.Value.kForward);
-    }else if(mOperatorInterface.getIntakeOpen() && mCurrentTargetedObject == TargetedObject.CUBE){
-      gamerLightsRelayCube.set(Relay.Value.kOn);
-      gamerLightsRelayCube.set(Relay.Value.kForward);
-    }
-    
     // Main Robot Loop!
     RobotLoop();
   }
@@ -332,17 +330,15 @@ public class Robot extends TimedRobot {
         mGrasperOpen = true;
       }
 
-    //Manual Functions
-    if (mJogMode == true){
       //Zero encoders on the arm using the right stick button
-      // JOES COMMENT FOR GEORGE: why do i have to be in jog mode to zero?
       if(mOperatorInterface.getArmEncoderZero()){
         mArm.zeroSensors();
-        // JOES COMMENT FOR GEORGE: don't think you want this?
-        mArm.setArmAngle(ArmTargets.HOME_BACKSIDE.armAngle);
-        mArm.setArmExtension(ArmTargets.HOME_FRONTSIDE.armExtend);
         System.out.println("Arm set to zero");
       }
+
+    //Manual Functions
+    if (mJogMode == true){
+      
 
       //Manual extension of the arm using RB/LB
       if (mOperatorInterface.getArmJogExtended()){
