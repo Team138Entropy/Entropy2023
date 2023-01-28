@@ -20,7 +20,6 @@ public class Constants {
   // Used for tuneable numbers
   public static final boolean tuningMode = true;
 
-  
   // Potential Targets
   public enum TargetType {
     CAMERA_1_RED_CARGO,
@@ -72,11 +71,15 @@ public class Constants {
 
     public static class Grasper {
       public static final int IntakeMotor = 19;
-      public static final int PCMId = 0;
+      public static final int PCMId = 21;
     }
 
     public static class Sensors {
       public static final int pigeonCan = 13;
+    }
+
+    public static class PowerDistribution {
+      public static final int pdpCan = 20;
     }
   }
 
@@ -335,6 +338,7 @@ public class Constants {
     // Timeout constants
     public static final int kLongCANTimeoutMs = 100;
     public static final int kCANTimeoutMs = 10;
+
   }
 
   public static class SwerveConstants { // constants related to swerve system

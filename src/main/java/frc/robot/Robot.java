@@ -83,20 +83,22 @@ public class Robot extends TimedRobot {
 
   private SendableChooser<TargetedPositions> mTargetedPositionChooser;
 
-  // Acceleratometer 
-  private Accelerometer mAccelerometer = new BuiltInAccelerometer();
 
   // Field Object
   private final Field2d mField = new Field2d();
 
+  // Pigeon Reference
   private final Pigeon mPigeon = Pigeon.getInstance();
 
   // Real Robot Indicator
   private final boolean mRealRobot = Robot.isReal();
 
-  private final PowerDistribution powerPanle = new PowerDistribution(1, ModuleType.kRev);
+  // Reference to the Power Distrubtion Panel
+  private final PowerDistribution mPowerPanel = new PowerDistribution(Constants.Talons.PowerDistribution.pdpCan, 
+                                                                                                  ModuleType.kRev);
 
-  private final AnalogInput mAnalogInput = new AnalogInput(0);
+  // DIO Based Analog Input
+  private final AnalogInput mPressureSensor = new AnalogInput(0);
 
   // Various Variables
   int mRumbleTimer = 0;
@@ -160,7 +162,8 @@ public class Robot extends TimedRobot {
 
     // Reset Drive Sensors
 
-    powerPanle.setSwitchableChannel(true);
+    // Controllable Panel
+    mPowerPanel.setSwitchableChannel(true);
   }
 
 
@@ -193,8 +196,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Jog Mode", mJogMode);
     SmartDashboard.putBoolean("Automatic Mode", mPositionMode);
     //formula to convert to PSI
-    SmartDashboard.putNumber("pressure sensor", 250.0 * mAnalogInput.getVoltage() / 5.0 - 25.0);
-    SmartDashboard.putData(powerPanle);
+    SmartDashboard.putNumber("pressure sensor", 250.0 * mPressureSensor.getVoltage() / 5.0 - 25.0);
+    SmartDashboard.putData(mPowerPanel);
 
     // Vision Based Driver
     mAutoPilot.updateSmartDashBoard();
