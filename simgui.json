@@ -28,5 +28,28 @@
         }
       }
     }
+  },
+  "NetworkTables": {
+    "Persistent Values": {
+      "open": false
+    }
+  },
+  "NetworkTables Info": {
+    "Clients": {
+      "open": true
+    },
+    "Connections": {
+      "open": true
+    },
+    "NT3@127.0.0.1:49175": {
+      "open": true
+    },
+    "NT3@127.0.0.1:49176": {
+      "open": true
+    },
+    "Server": {
+      "open": true
+    },
+    "visible": true
   }
 }

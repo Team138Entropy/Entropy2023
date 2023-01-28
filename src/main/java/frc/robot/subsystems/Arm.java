@@ -13,9 +13,9 @@ import frc.robot.util.drivers.EntropyTalonSRX;
 public class Arm extends Subsystem {
     private static Arm mInstance;
 
-    EntropyTalonSRX MasterShoulderMotor;
-    EntropyTalonSRX SecondaryShoulderMotor;
-    EntropyTalonSRX ExtensionMotor;
+    private final EntropyTalonSRX MasterShoulderMotor;
+    private final EntropyTalonSRX SecondaryShoulderMotor;
+    private final EntropyTalonSRX ExtensionMotor;
 
     public static synchronized Arm getInstance() {
         if (mInstance == null) {

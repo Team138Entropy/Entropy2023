@@ -9,6 +9,7 @@ import org.photonvision.RobotPoseEstimator.PoseStrategy;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,6 +21,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.Vision;
+import frc.robot.subsystems.Drive;
+import frc.robot.util.drivers.Pigeon;
 import frc.robot.vision.AutoPilot;
 import frc.robot.vision.photonVision;
 
@@ -40,11 +43,34 @@ public class RobotState {
     // Reference to Photonvision
     photonVision mPhotonVision = photonVision.getInstance();
 
+    // Pigeon
+    Pigeon mPigeon = Pigeon.getInstance();
+
+    // Drive
+    Drive mDrive = Drive.getInstance();
+
     // Robots Pose2d
     Pose2d mRobotPose;
 
     // Photon Vision Class to Estimate RobotPose based on last seen vision 
     RobotPoseEstimator mRobotPoseEstimator;
+
+    // Overall Drive Pose Estimator
+    /*
+    * Adds a vision measurement to the Kalman Filter. This will correct the odometry pose estimate
+    * while still accounting for measurement noise.
+    *
+    * <p>This method can be called as infrequently as you want, as long as you are calling {@link
+    * SwerveDrivePoseEstimator#update} every loop.
+    *
+    * <p>To promote stability of the pose estimate and make it robust to bad vision data, we
+    * recommend only adding vision measurements that are already within one meter or so of the
+    * current pose estimate.
+    */
+    SwerveDrivePoseEstimator mSwerveDrivePoseEstimator;
+
+    // Pose Estimator Based Pose
+    Pose2d mDrivePoseEstimator;
 
     // Robots Estimated Pose2d based 
     Pose2d mVisionBasedRobotPose;
@@ -84,6 +110,13 @@ public class RobotState {
         mVisionBasedRobotPose = new Pose2d();
         mVisionBasedRobotPoseLatencySeconds = -1;
         mIsValidVisionPose = false;
+
+        // Swerve Drive Pose Estimator
+        mSwerveDrivePoseEstimator = new SwerveDrivePoseEstimator(mDrive.getSwerveKinematics(), 
+                mPigeon.getYaw().getWPIRotation2d(), mDrive.getModulePositions(), 
+                new Pose2d()
+        );
+        mDrivePoseEstimator = new Pose2d();
 
         // Visulation Field
         mVisualField = new Field2d();
@@ -135,6 +168,10 @@ public class RobotState {
     // Called from Robot Periodic
     public void update()
     {
+        // Update with Robot Odometry
+        mSwerveDrivePoseEstimator.update(mPigeon.getYaw().getWPIRotation2d(), mDrive.getModulePositions());
+        mDrivePoseEstimator = mSwerveDrivePoseEstimator.getEstimatedPosition();
+        
         // Update Pose2D based off of Vision
         Pair<Pose2d, Double> VisionBasedEstimate = getVisionEstimatedPose(mVisionBasedRobotPose);
         if(VisionBasedEstimate.getFirst() == null)
@@ -233,8 +270,10 @@ public class RobotState {
             mVisualField.getObject("Trajectory").setTrajectory(driveTraj);
         }
 
+        // WPILIB Pose Estimator
+        FieldObject2d wpiLibPoseObject = mVisualField.getObject("WpilibPose");
+        wpiLibPoseObject.setPose(mDrivePoseEstimator);
     }
-
 
 
     // Update Robot State Related Smart Dashboard
@@ -245,6 +284,10 @@ public class RobotState {
         SmartDashboard.putNumber(key + "Vision Pose Latency", mVisionBasedRobotPoseLatencySeconds);
         SmartDashboard.putBoolean(key + "Vision Pose Valid", mIsValidVisionPose);
         SmartDashboard.putData(key + "Visual Field", mVisualField);
+        SmartDashboard.putString(key + "WPI Pose Estimator", mDrivePoseEstimator.toString());
+
+
+
     }
 
 

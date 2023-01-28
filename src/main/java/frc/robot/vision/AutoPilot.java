@@ -24,6 +24,8 @@ import frc.robot.subsystems.Drive;
 //      Todo: Regineration of Path, especially if noin new Latent vision targets
 //     
 //      https://www.geeksforgeeks.org/a-search-algorithm/ ? Gray Zones?
+//      https://github.com/Mechanical-Advantage/RobotCode2023/blob/main/src/main/java/org/littletonrobotics/frc2023/commands/HoldPose.java
+//      https://github.com/Mechanical-Advantage/RobotCode2023/blob/main/src/main/java/org/littletonrobotics/frc2023/util/PoseEstimator.java
 public class AutoPilot {
     private static AutoPilot mInstance;
 

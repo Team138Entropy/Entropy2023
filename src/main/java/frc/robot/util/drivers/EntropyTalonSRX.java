@@ -11,6 +11,7 @@ public class EntropyTalonSRX extends TalonSRX{
     public EntropyTalonSRX(int deviceNumber) {
         super(deviceNumber);
         setDeviceInfo(deviceNumber);
+        setDescription("");
     }
 
     // Talon Name
