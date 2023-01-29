@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -36,20 +38,26 @@ public class Arm extends Subsystem {
         // Secondary Motor -> Is physically inverted and should simply follow the Primary Motor
         MasterShoulderMotor.configFactoryDefault();
         SecondaryShoulderMotor.configFactoryDefault();
+        MasterShoulderMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,LimitSwitchNormal.NormallyClosed);
+        MasterShoulderMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,LimitSwitchNormal.NormallyClosed);
         MasterShoulderMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
-        MasterShoulderMotor.setSensorPhase(true);
+        MasterShoulderMotor.setSensorPhase(false);
         MasterShoulderMotor.setInverted(true);
         MasterShoulderMotor.config_kF(0, 1);
         MasterShoulderMotor.config_kP(0, 30);
         MasterShoulderMotor.config_kI(0, .01);
         MasterShoulderMotor.config_kD(0, 300);
         MasterShoulderMotor.configSelectedFeedbackCoefficient(360.0/8192.0);
-        MasterShoulderMotor.configMotionAcceleration(5);
-        MasterShoulderMotor.configMotionCruiseVelocity(5, 10);
+        MasterShoulderMotor.configMotionAcceleration(20);
+        MasterShoulderMotor.configMotionCruiseVelocity(20, 10);
         SecondaryShoulderMotor.follow(MasterShoulderMotor); // Secondary Motor will follow Primary Motor
+        SecondaryShoulderMotor.setInverted(true);
+
 
         // Extension Motor Configuration
         ExtensionMotor.configFactoryDefault();
+        ExtensionMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,LimitSwitchNormal.NormallyClosed);
+        ExtensionMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,LimitSwitchNormal.NormallyClosed);
         ExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
         ExtensionMotor.setInverted(true);
         ExtensionMotor.setSensorPhase(true);
@@ -80,7 +88,7 @@ public class Arm extends Subsystem {
     public void setArmExtension(double Inches){
         // TODO: Figure out Scaling Value
         // TODO: arm extension should factor angle?
-        ExtensionMotor.set(ControlMode.MotionMagic, Inches, DemandType.ArbitraryFeedForward, 0.3); 
+        //ExtensionMotor.set(ControlMode.MotionMagic, Inches, DemandType.ArbitraryFeedForward, 0.3); 
     }
 
     // Get the current arm angle
@@ -106,6 +114,7 @@ public class Arm extends Subsystem {
     }
 
     public void updateSmartDashBoard(){
+
         //Arm Positioning and Extension
         final String key = "Arm/";
         SmartDashboard.putNumber(key + "Shoulder Position", getArmAngle());
@@ -113,6 +122,7 @@ public class Arm extends Subsystem {
         SmartDashboard.putNumber(key + "Shoulder Secondary Percent Output", SecondaryShoulderMotor.getMotorOutputPercent());
         SmartDashboard.putNumber(key + "Extension Position", getArmExtension());
         SmartDashboard.putNumber(key + "Extension Percent Output", ExtensionMotor.getMotorOutputPercent());
+        SmartDashboard.putNumber(key + "Extension Per Output", ExtensionMotor.getMotorOutputPercent());
         MasterShoulderMotor.updateSmartdashboard();
         SecondaryShoulderMotor.updateSmartdashboard();
         ExtensionMotor.updateSmartdashboard();
@@ -121,8 +131,8 @@ public class Arm extends Subsystem {
     @Override
     public void zeroSensors() {
         // TODO Auto-generated method stub
-        MasterShoulderMotor.setSelectedSensorPosition(ArmTargets.HOME_BACKSIDE.armAngle);
-        ExtensionMotor.setSelectedSensorPosition(ArmTargets.HOME_BACKSIDE.armExtend);
+        MasterShoulderMotor.setSelectedSensorPosition(ArmTargets.START.armAngle);
+        ExtensionMotor.setSelectedSensorPosition(ArmTargets.START.armExtend);
     }
 
     @Override

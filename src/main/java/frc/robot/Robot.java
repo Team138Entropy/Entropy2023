@@ -164,6 +164,7 @@ public class Robot extends TimedRobot {
 
     // Controllable Panel
     mPowerPanel.setSwitchableChannel(true);
+    mArm.zeroSensors();
   }
 
 
@@ -216,6 +217,8 @@ public class Robot extends TimedRobot {
 
     // Iterates each Subsystem 
     mSubsystemManager.updateSmartdashboard();
+
+    mGrasper.updateSmartDashBoard();
 
 
   }
@@ -315,6 +318,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
+    mGrasper.setGrasperWheelIntake();
 
       //Allows the operator to swap freely between both test modes by pressing START
     if (mJogMode == true && mOperatorInterface.getModeSwitch()){
@@ -367,10 +371,10 @@ public class Robot extends TimedRobot {
     }
 
      //Grasper Open/Close using RT
-     if (mGrasperOpen == true && mOperatorInterface.getGrasperModeSwap()){
+     if (mOperatorInterface.getGrasperModeSwap()){
       mGrasper.setGrasperClosed();
     }
-    else if (mGrasperOpen == false && mOperatorInterface.getGrasperModeSwap()){
+    else if (mOperatorInterface.getGrasperWheelIntake()){
       mGrasper.setGrasperOpen();
     }
     }  

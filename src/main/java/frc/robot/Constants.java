@@ -67,11 +67,12 @@ public class Constants {
       public static final int ShoulderMasterId = 16;
       public static final int ShoulderSlaveId = 17;
       public static final int ExtensionId = 18;
+      public static final TuneableNumber jogSpeed = new TuneableNumber("armShoulderJogSpeed",.4);
     }
 
     public static class Grasper {
       public static final int IntakeMotor = 19;
-      public static final int PCMId = 21;
+      public static final int PCMId = 0;
     }
 
     public static class Sensors {
@@ -173,7 +174,7 @@ public class Constants {
     // More information detailed in the Swerve Module Class 
     public static class SwerveModules {
       public static class Module0 {
-        public static double AngleOffset = 114.7;
+        public static double AngleOffset = 202;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
@@ -188,7 +189,7 @@ public class Constants {
       }
 
       public static class Module1 {
-        public static double AngleOffset = 133.6;
+        public static double AngleOffset = 224;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
@@ -203,7 +204,7 @@ public class Constants {
       }
 
       public static class Module2 {
-        public static double AngleOffset = 66.4;
+        public static double AngleOffset = 156;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
@@ -218,7 +219,7 @@ public class Constants {
       }
 
       public static class Module3 {
-        public static double AngleOffset = 309.46;
+        public static double AngleOffset = 40;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(

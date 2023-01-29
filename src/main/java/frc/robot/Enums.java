@@ -33,20 +33,20 @@ public class Enums {
     public enum ArmTargets {
         //NAME_OF_POSITION(armAngle, armExtension),
         //THESE ARE PLACEHOLDER VALUES
-        TOP_SCORING_FRONT(15,100),
-        MID_SCORING_FRONT(345,60),
-        LOW_SCORING_FRONT(320,0),
+        TOP_SCORING_FRONT(15,0),
+        MID_SCORING_FRONT(0,0),
+        LOW_SCORING_FRONT(-10,0),
         INTAKE_FRONT(10,0),
-        TOP_SCORING_BACK(170,100),
-        MID_SCORING_BACK(195,60),
+        TOP_SCORING_BACK(170,0),
+        MID_SCORING_BACK(195,0),
         LOW_SCORING_BACK(220,0),
         INTAKE_BACK(170,0),
         INTAKE_GROUND_FRONT(320,0),
         INTAKE_GROUND_BACK(230,0),
         SAFE(90,0),
-        START(315, 0),
-        HOME_BACKSIDE(235, 0),
-        HOME_FRONTSIDE(315, 0),
+        START(233, 0),
+        HOME_BACKSIDE(215, 0),
+        HOME_FRONTSIDE(0, 0),
         NONE(315,0);
 
 

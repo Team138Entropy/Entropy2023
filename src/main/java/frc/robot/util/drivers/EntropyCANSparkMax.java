@@ -30,7 +30,7 @@ public class EntropyCANSparkMax extends CANSparkMax {
 
     public void updateSmartdashboard()
     {    
-       SmartDashboard.putString(deviceInfo + "/Description", description);
+      // SmartDashboard.putString(deviceInfo + "/Description", description);
        SmartDashboard.putNumber(deviceInfo + "/Voltage", getBusVoltage());
        SmartDashboard.putNumber(deviceInfo + "/Applied Output", getAppliedOutput());
        SmartDashboard.putBoolean(deviceInfo + "/Inverted", getInverted()); 

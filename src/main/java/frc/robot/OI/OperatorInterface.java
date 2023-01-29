@@ -322,7 +322,7 @@ public class OperatorInterface {
         }else if(mOperatorController2.getButton(Button.RB)){
             target = ArmTargets.INTAKE_BACK;
         }else if(mOperatorController2.getButton(Button.Y)){
-            target = ArmTargets.SAFE;
+            target = ArmTargets.HOME_BACKSIDE;
         }else if(mOperatorController2.getButton(Button.A)){
             target = ArmTargets.TOP_SCORING_FRONT;
         }else if(mOperatorController2.getButton(Button.B)){
