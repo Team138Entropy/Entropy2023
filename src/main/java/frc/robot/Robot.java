@@ -111,6 +111,12 @@ public class Robot extends TimedRobot {
   // Arm Target
   public ArmTargets mCurrentArmTarget = ArmTargets.HOME_BACKSIDE;
 
+  public int mManualTargetOffset = 0;
+
+  public int mManualExtendOffset = 0;
+
+  public boolean mBalanceMode = false;
+
   // Position the Auto Pilot System Wants to Drive to
   public TargetedPositions mTargetedPosition = TargetedPositions.NONE;
 
@@ -167,7 +173,6 @@ public class Robot extends TimedRobot {
     mArm.zeroSensors();
   }
 
-
   /**
    * Robot Periodic - Called Constantly throughout Robot Operation
    */
@@ -196,6 +201,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Target Arm Extension", mCurrentArmTarget.armExtend);
     SmartDashboard.putBoolean("Jog Mode", mJogMode);
     SmartDashboard.putBoolean("Automatic Mode", mPositionMode);
+    SmartDashboard.putNumber("rotate offset", mManualTargetOffset);
+    SmartDashboard.putNumber("extend offset", mManualExtendOffset);
     //formula to convert to PSI
     SmartDashboard.putNumber("pressure sensor", 250.0 * mPressureSensor.getVoltage() / 5.0 - 25.0);
     SmartDashboard.putData(mPowerPanel);
@@ -261,6 +268,7 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
+    
     // disable operator rumble    
     mOperatorInterface.setOperatorRumble(false);
         
@@ -274,15 +282,12 @@ public class Robot extends TimedRobot {
 
     // Zero Drive Sensors
     mDrive.zeroSensors();
-
-    
-
-
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+    mOperatorInterface.setDriverRumble(mBalanceMode, mBalanceMode ? .2 : 0);
     // Main Robot Loop!
     RobotLoop();
   }
@@ -425,10 +430,6 @@ public class Robot extends TimedRobot {
 
   }
 
-  
-  
-
-
   /** This function is called once when the robot is first started up. */
   @Override
   public void simulationInit() {
@@ -441,9 +442,6 @@ public class Robot extends TimedRobot {
   @Override
   public void simulationPeriodic() {
     
-
-
-
     mDrive.updateDriveSim();
     // Update Pose on Virtual Field
 
@@ -452,8 +450,8 @@ public class Robot extends TimedRobot {
     mPigeon.rotateSimYaw(sRotation);
 
     // Current Targeted Arm into Mechanism Sim
-    mSimMechanism.SetArmAngle(mCurrentArmTarget.armAngle);
-    mSimMechanism.SetArmLength(mCurrentArmTarget.armExtend);
+    mSimMechanism.SetArmAngle(mCurrentArmTarget.armAngle + mManualTargetOffset);
+    mSimMechanism.SetArmLength(mCurrentArmTarget.armExtend + mManualExtendOffset);
 
     // Process Frame where the Robot currently is
     mPhotonVision.simVision.processFrame(mField.getRobotPose());  
@@ -476,11 +474,25 @@ public class Robot extends TimedRobot {
     
     if(mOperatorInterface.getArmTarget() != ArmTargets.NONE){
       mCurrentArmTarget = mOperatorInterface.getArmTarget();
+      mManualExtendOffset = 0;
+      mManualTargetOffset = 0;
+    }
+
+    if(mOperatorInterface.getManualArmExtendUp()){
+      mManualExtendOffset += 1;
+    }else if(mOperatorInterface.getManualArmExtendDown()){
+      mManualExtendOffset -= 1;
+    }
+
+    if(mOperatorInterface.getManualArmRotateUp()){
+      mManualTargetOffset += 1;
+    }else if(mOperatorInterface.getManualArmRotateDown()){
+      mManualTargetOffset -= 1;
     }
 
     // Constantly tell the Arm where to go
-    mArm.setArmAngle(mCurrentArmTarget.armAngle);
-    mArm.setArmExtension(mCurrentArmTarget.armExtend);
+    mArm.setArmAngle(mCurrentArmTarget.armAngle + mManualTargetOffset);
+    mArm.setArmExtension(mCurrentArmTarget.armExtend + mManualExtendOffset);
 
     // Grasper Functionality
     if(mOperatorInterface.getGrasperOpen()){
@@ -509,6 +521,11 @@ public class Robot extends TimedRobot {
    if(precisionSteer) driveThrottle *= .3;
 
     boolean wantsAutoSteer = mOperatorInterface.getDriveAutoSteer();
+    if(mOperatorInterface.getBalanceMode() && mBalanceMode == false){
+      mBalanceMode = true;
+    }else if(mOperatorInterface.getBalanceMode() && mBalanceMode == true){
+      mBalanceMode = false;
+    }
     //wantsAutoSteer &= allowAutoSteer; //disable if autosteer isn't allowed
     SmartDashboard.putBoolean("Autosteer", wantsAutoSteer);
 
@@ -542,7 +559,7 @@ public class Robot extends TimedRobot {
       }
 
       // Swerve Brake
-      mDrive.setBrake(mOperatorInterface.getBrake());
+      //mDrive.setBrake(mOperatorInterface.getBrake());
 
       // Auto Pilot (and has Valid Vision Pose)
       if(wantsAutoSteer && mRobotState.getVisionEstimatedPoseValid())
@@ -600,9 +617,15 @@ public class Robot extends TimedRobot {
         // general vision driving update
         mAutoPilot.update();
       }
-      else if(mOperatorInterface.getBalance())
+      else if(mBalanceMode)
       {
-        mChargingStationAutoPilot.update(mOperatorInterface.getAutoPilotLeftStrafe(), mOperatorInterface.getAutoPilotRightStrafe());
+        if(mOperatorInterface.getFastBalance())
+          mChargingStationAutoPilot.update(false, mOperatorInterface.getAutoPilotLeftStrafe(), mOperatorInterface.getAutoPilotRightStrafe());
+        else if(mOperatorInterface.getSlowBalance()){
+          mChargingStationAutoPilot.update(true, mOperatorInterface.getAutoPilotLeftStrafe(), mOperatorInterface.getAutoPilotRightStrafe());
+        }else{
+          mDrive.setBrake(true);
+        }
       }
       else
       {

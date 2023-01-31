@@ -31,6 +31,14 @@ public class OperatorInterface {
     private LatchedBoolean mExtensionDown = new LatchedBoolean();
     private LatchedBoolean mExtensionSwitchMode = new LatchedBoolean();
 
+    private LatchedBoolean manualRotationUp = new LatchedBoolean();
+    private LatchedBoolean manualRotationDown = new LatchedBoolean();
+    private LatchedBoolean manualExtensionup = new LatchedBoolean();
+    private LatchedBoolean manualExtensionDown = new LatchedBoolean();
+
+    private LatchedBoolean balanceDrive = new LatchedBoolean();
+
+
     public static synchronized OperatorInterface getInstance() {
         if (mInstance == null) {
             mInstance = new OperatorInterface();
@@ -160,17 +168,22 @@ public class OperatorInterface {
         return mDriverController.getButton(Button.START);
     }
 
-    public boolean getBrake(){
+    public boolean getSlowBalance(){
         return mDriverController.getButton(Button.LB);
     }
 
-    public boolean getBalance(){
+    public boolean getFastBalance(){
         return mDriverController.getButton(Button.RB);
+    }
+
+    public boolean getBalanceMode(){
+        return balanceDrive.update(mDriverController.getButton(Button.START));
     }
 
     public boolean getDriveAutoSteer(){
         return mDriverController.getTrigger(Side.RIGHT);
     }
+
 
     public boolean getAutoPilotLeftStrafe(){
         return mDriverController.getDPad() == 270;
@@ -188,8 +201,8 @@ public class OperatorInterface {
         mOperatorController.setRumble(a);
     }
 
-    public void setDriverRumble(boolean a){ 
-        mDriverController.setRumble(a);
+    public void setDriverRumble(boolean rumbleOn, double rumbleValue){ 
+        mDriverController.setRumble(rumbleOn, rumbleValue);
     }
 
     public boolean getArmRotateUp() {
@@ -337,6 +350,21 @@ public class OperatorInterface {
             target = ArmTargets.LOW_SCORING_BACK;
         }
         return target;
+    }
+
+    public boolean getManualArmExtendUp() {
+        return manualExtensionup.update(mOperatorController2.getDPad() == 0);
+    }
+    public boolean getManualArmExtendDown() {
+        return manualExtensionDown.update(mOperatorController2.getDPad() == 180);
+    }
+
+    public boolean getManualArmRotateUp() {
+        return manualRotationUp.update(mOperatorController2.getDPad() == 90);
+    }
+
+    public boolean getManualArmRotateDown() {
+        return manualRotationDown.update(mOperatorController2.getDPad() == 270);
     }
 
     public boolean getIntakeOpen() {

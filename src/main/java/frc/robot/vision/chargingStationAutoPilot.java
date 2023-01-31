@@ -44,7 +44,7 @@ public class chargingStationAutoPilot {
         
     }
 
-    public void update(boolean leftStrafe, boolean rightStrafe) {
+    public void update(Boolean slowDrive,boolean leftStrafe, boolean rightStrafe) {
         
 
         if (!autoBalanceXMode && (Math.abs(pitchAngleDegrees) >= Math.abs(chargingStationDegreeThreshold))) {
@@ -73,7 +73,9 @@ public class chargingStationAutoPilot {
         }
 
         
-
+        if(slowDrive){
+            xAxisRate = xAxisRate*.5;
+        }
 
         // Set Speeds into Swerve System
         ChassisSpeeds calculatedSpeeds = new ChassisSpeeds(xAxisRate, yAxisRate, 0);
