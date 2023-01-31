@@ -1,5 +1,7 @@
 package frc.robot;
 
+import frc.robot.Constants.Grasper;
+
 public class Enums {
     
     // Type of Jogging
@@ -67,6 +69,18 @@ public class Enums {
             return armExtend;
         }
 
+    }
+
+    public enum GrasperSimState {
+        RIGHT_CLOSED(120),
+        LEFT_CLOSED(60),
+        OPEN(90);
+
+        public final double ClawAngle;
+
+        private GrasperSimState(double angle) {
+            this.ClawAngle = angle;
+        }
     }
 
     public enum TargetedObject {

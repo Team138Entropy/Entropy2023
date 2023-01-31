@@ -335,6 +335,26 @@ public class OperatorInterface {
         return target;
     }
 
+
+    public GrasperSimState getCurrentGrasperState() {
+        GrasperSimState state = GrasperSimState.OPEN;
+
+        if(mOperatorController2.getButton(Button.X)){
+            state = GrasperSimState.LEFT_CLOSED;
+        }
+        else if(mOperatorController2.getButton(Button.B)){
+            state = GrasperSimState.RIGHT_CLOSED;
+        }
+        else if(mOperatorController2.getButton(Button.RB)){
+            state = GrasperSimState.OPEN;
+        }
+        else if(mOperatorController2.getButton(Button.LB)){
+            state = GrasperSimState.OPEN;
+        }
+        return state;
+    }
+
+
     public boolean getIntakeOpen() {
         return mOperatorController.getTrigger(Side.LEFT);
     }
@@ -353,13 +373,11 @@ public class OperatorInterface {
 
     // TODO?
     public boolean getGrasperOpen() {
-        return false;
+        return mDriverController.getTrigger(Side.RIGHT);
     }
 
     public boolean getGrasperClosed() {
-        return false;
+        return mDriverController.getTrigger(Side.LEFT);
     }
 }
-
-
 

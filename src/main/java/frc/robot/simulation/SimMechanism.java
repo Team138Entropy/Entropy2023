@@ -21,12 +21,11 @@ public class SimMechanism {
     private MechanismLigament2d mArm;
 
     private Mechanism2d mGrasperMech;
-    private MechanismRoot2d mGrasperRoot;
+    private MechanismRoot2d mGrasperRootRight;
+    private MechanismRoot2d mGrasperRootLeft;
     private MechanismLigament2d mGrasperConnection;
     private MechanismLigament2d mLeftClaw;
     private MechanismLigament2d mRightClaw;
-
-    //ligaments X 2 right and left, then bottom can set angle and length
 
     private SimMechanism()
     {
@@ -49,20 +48,19 @@ public class SimMechanism {
         
 
         // Grasper Mechanism Canvas
-        mGrasperMech = new Mechanism2d(10, 10); //Canvas Size (10,10)
+        mGrasperMech = new Mechanism2d(9, 9); //Canvas Size (10,10)
 
-        //does canvas size matter
-        //what is root,  is connection point?
+        // Grasper Mechanism Root (Right Side)
+        mGrasperRootRight = mGrasperMech.getRoot("grasper root right", 7, 2); 
+        // Grasper Mechanism Root (Left Side)
+        mGrasperRootLeft = mGrasperMech.getRoot("grasper root left", 2, 2); 
 
-        // Grasper Mechanism Root
-        mGrasperRoot = mGrasperMech.getRoot("grasper", 1.5, 1.5); 
-
-        // Grasper Connection Ligament
-        mGrasperConnection = mGrasperRoot.append(new MechanismLigament2d("tower", .8, 270));
+        // Grasper Connection Ligament (Left Side)
+        mGrasperConnection = mGrasperRootLeft.append(new MechanismLigament2d("Grasper Connection", 5, 0));
         // Left Grasper Ligament
-        mLeftClaw = mGrasperRoot.append(new MechanismLigament2d("arm", 1, 90));
+        mLeftClaw = mGrasperRootLeft.append(new MechanismLigament2d("Left Claw", 5, 90));
         // Right Grasper Ligament
-        mRightClaw = mGrasperRoot.append(new MechanismLigament2d("arm", 1, 90));
+        mRightClaw = mGrasperRootRight.append(new MechanismLigament2d("Right Claw", 5, 90));
         
 
         // Useful Methods on mArm:
@@ -88,8 +86,24 @@ public void SetArmLength (double length){
         }
     }
 
+    
+public void simGrasperState (double angle){
+    if(angle <= 0 && angle >= -360){
+        angle = angle +360;
+
+    }
+        
+    if(angle <= 230 || angle >= 310){
+        mArm.setAngle(angle);
+    }
+}
+
+
     public void updateSmartDashboard() {
         final String key = "SimMechanism/";
         SmartDashboard.putData(key + "Arm Mechanism", mArmMech);
+
+        final String grasper = "SimMechanism/";
+        SmartDashboard.putData(grasper + "Grasper Mechanism", mGrasperMech);
     }
 }

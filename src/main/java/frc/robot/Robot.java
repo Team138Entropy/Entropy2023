@@ -102,6 +102,9 @@ public class Robot extends TimedRobot {
   // Arm Target
   public ArmTargets mCurrentArmTarget = ArmTargets.HOME_BACKSIDE;
 
+  // Grasper Open/Closed
+  public GrasperSimState mCurrentGrasperState = GrasperSimState.OPEN;
+
   // Position the Auto Pilot System Wants to Drive to
   public TargetedPositions mTargetedPosition = TargetedPositions.NONE;
 
@@ -325,13 +328,6 @@ public class Robot extends TimedRobot {
         mPositionMode = false;
       }
 
-      if (mGrasperOpen == true && mOperatorInterface.getGrasperModeSwap()){
-        mGrasperOpen = false;
-      }
-      else if (mGrasperOpen == false && mOperatorInterface.getGrasperModeSwap()){
-        mGrasperOpen = true;
-      }
-
     //Manual Functions
     if (mJogMode == true){
 
@@ -358,13 +354,14 @@ public class Robot extends TimedRobot {
       mArm.setShoulderJog(0);
     }
 
-     //Grasper Open/Close using RT
-     if (mGrasperOpen == true && mOperatorInterface.getGrasperModeSwap()){
-      mGrasper.setGrasperClosed();
-    }
-    else if (mGrasperOpen == false && mOperatorInterface.getGrasperModeSwap()){
+     //Grasper Open/Close using RT/LT
+     if (mOperatorInterface.getGrasperOpen()){
       mGrasper.setGrasperOpen();
     }
+    else if (mOperatorInterface.getGrasperClosed()){
+      mGrasper.setGrasperClosed();
+      }
+      
     }  
     
     //Automatic functions
@@ -387,13 +384,7 @@ public class Robot extends TimedRobot {
         mArm.setArmAngle(90);
       }
 
-      //Automatic closing of the grasper
-      if (mGrasper.getBeamSensorBroken() == true){
-        mGrasper.setGrasperClosed();
-      }
-      else if (mGrasperOpen == false && mOperatorInterface.getGrasperModeSwap()){
-        mGrasper.setGrasperOpen();
-      }
+      //Grasper closes automatically in any mode
       
       //Automatic extension positions 
       if (mOperatorInterface.getArmExtended2()){
@@ -410,7 +401,7 @@ public class Robot extends TimedRobot {
       }
 
     }
-
+    mGrasper.update();
   }
 
   
@@ -428,7 +419,11 @@ public class Robot extends TimedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {
-    
+
+    if(mOperatorInterface.getGrasperOpen()){
+    //  mGrasper.setGrasperOpen();
+    }
+  
 
 
 
@@ -442,6 +437,9 @@ public class Robot extends TimedRobot {
     // Current Targeted Arm into Mechanism Sim
     mSimMechanism.SetArmAngle(mCurrentArmTarget.armAngle);
     mSimMechanism.SetArmLength(mCurrentArmTarget.armExtend);
+
+    // Current Targeted Grasper State into Mech Sim
+    mSimMechanism.simGrasperState(mCurrentGrasperState.ClawAngle);
 
     // Process Frame where the Robot currently is
     mPhotonVision.simVision.processFrame(mField.getRobotPose());  

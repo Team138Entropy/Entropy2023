@@ -2,12 +2,26 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/LiveWindow/Ungrouped/ADXRS450_Gyro[0]": "Gyro",
+      "/LiveWindow/Ungrouped/DigitalInput[0]": "Digital Input",
+      "/LiveWindow/Ungrouped/PIDController[10]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[4]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[5]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[6]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[7]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[8]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[9]": "PIDController",
       "/SmartDashboard/Autonomous Field": "Field2d",
       "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Grasper SimGrasper Mechanism": "Mechanism2d",
       "/SmartDashboard/RobotState/Visual Field": "Field2d",
       "/SmartDashboard/SendableChooser[0]": "String Chooser",
       "/SmartDashboard/SendableChooser[1]": "String Chooser",
       "/SmartDashboard/SimMechanism/Arm Mechanism": "Mechanism2d",
+      "/SmartDashboard/SimMechanism/Grasper Mechanism": "Mechanism2d",
       "/SmartDashboard/camera138 Sim Field": "Field2d",
       "/SmartDashboard/frontApriltagCam Sim Field": "Field2d"
     },
@@ -18,6 +32,11 @@
         }
       },
       "/SmartDashboard/SimMechanism/Arm Mechanism": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/SimMechanism/Grasper Mechanism": {
         "window": {
           "visible": true
         }

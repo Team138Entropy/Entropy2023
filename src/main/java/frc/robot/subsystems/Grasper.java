@@ -62,10 +62,9 @@ public class Grasper {
    // Open the Grasper
    // Restart Beam Activation Timer
    public void setGrasperOpen(){
-    GrasperSolenoid.set(false);
+    mGrasperState = GrasperState.Open;
     beamActivationTimer.reset();
     beamActivationTimer.start();
-    setGrasperWheelIntake();
     BeamSensorOn = false;
    }
 
@@ -73,8 +72,7 @@ public class Grasper {
    // Stop the Beam Activiation Timer
    // Allow the Grasper Motor to run for 1 Second to help pull in!
    public void setGrasperClosed(){
-    GrasperSolenoid.set(true);
-    cancelGrasperWheelIntake();
+    mGrasperState = GrasperState.Closed;
     beamActivationTimer.stop();
    }
 
@@ -92,12 +90,13 @@ public class Grasper {
   public void update(){
     // Perform Logic based on the Grasper State
     switch(mGrasperState) {
+
       case FullyClosed:
 
-      if (mGrasperOpen == true) {
-        setGrasperClosed();
+        GrasperSolenoid.set(true);
+        cancelGrasperWheelIntake();
         mGrasperOpen = false;
-      }
+
       break;
 
       case Closed:
@@ -106,27 +105,31 @@ public class Grasper {
 
         if (mGrasperOpen == true) {
           GrasperSolenoid.set(true);
-          beamActivationTimer.stop();
           mGrasperOpen = false;
         }
         
         if (getGrasperTimeElapsed1() == true){
-          cancelGrasperWheelIntake();
           mGrasperState = GrasperState.FullyClosed;
         }
 
       break;
       case Open:
         // TODO - Do we need to do anything here?
-      setGrasperOpen();
+      GrasperSolenoid.set(false);
+      setGrasperWheelIntake();
       mGrasperOpen = true;
+
+      if (getBeamSensorBroken() == true){
+        mGrasperState = GrasperState.Closed;
+      }
+
       break;
       default:
       break;
     }
   }
 
-  // Has the Grasper been open long enough to use beam sensor
+  // Has the Grasper stay open long enough to use beam sensor
   public boolean getGrasperTimeElapsed3(){
     return beamActivationTimer.hasElapsed(3);
   }
@@ -136,7 +139,6 @@ public class Grasper {
   }
 
   public boolean getBeamSensorBroken(){
-    // if disabled, return false ... beam is never broken
     if (BeamSensorOn == false){
       if (getGrasperTimeElapsed3() == true){
         BeamSensorOn = true;
