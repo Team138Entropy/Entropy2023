@@ -16,6 +16,8 @@ public abstract class Subsystem {
   public abstract void zeroSensors();
 
   public abstract void checkSubsystem();
+
+  public abstract void testSubsystem();
   
   public abstract void updateSmartDashBoard();
 

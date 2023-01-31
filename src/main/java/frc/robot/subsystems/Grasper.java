@@ -15,7 +15,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-public class Grasper {
+public class Grasper extends Subsystem{
     private static Grasper mInstance;
 
 
@@ -140,6 +140,24 @@ public class Grasper {
 
     // Update Grasper Motor Smartdashboard
     GrasperWheelMotor.updateSmartdashboard();
+  }
+
+  @Override
+  public void zeroSensors() {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void checkSubsystem() {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void testSubsystem() {
+    // TODO Auto-generated method stub
+    
   }
 } 
 

@@ -140,6 +140,12 @@ public class Arm extends Subsystem {
         // TODO Auto-generated method stub
         
     }
+
+    @Override
+    public void testSubsystem() {
+        // TODO Auto-generated method stub
+        
+    }
  }
 
  

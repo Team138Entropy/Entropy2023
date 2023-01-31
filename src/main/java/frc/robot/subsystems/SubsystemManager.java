@@ -129,4 +129,6 @@ public class SubsystemManager implements ILooper {
       mSubsystems.get(i).updateSmartDashBoard();
     }
   }
+
+  //TODO add a call for testSubsystem of each subsystem
 }
