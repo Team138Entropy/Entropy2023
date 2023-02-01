@@ -57,11 +57,12 @@ public class AutoPilot {
     private final ProfiledPIDController mOmegaController = new ProfiledPIDController(2, 0, 0, mOMEGA_CONSTRAINTS);
 
     // Type of System being used to Drive
-    enum VisionDriveMode {
+    enum AutoPilotMode {
         TrajectoryFollower,
-        MotionControl
+        MotionControl,
+        HoldPose
     };
-    private VisionDriveMode mDriveMode;
+    private AutoPilotMode mDriveMode;
 
     private AutoPilot()
     {
@@ -75,7 +76,7 @@ public class AutoPilot {
         mTrajectorySet = false;
 
         // Drive Style
-        mDriveMode = VisionDriveMode.MotionControl;
+        mDriveMode = AutoPilotMode.HoldPose;
 
         // Placeholder Pose Targets
         mTargetedPose = new Pose2d();
@@ -107,7 +108,7 @@ public class AutoPilot {
         mRunning = true;
 
         // Proceed based on Type
-        if(VisionDriveMode.TrajectoryFollower == mDriveMode)
+        if(AutoPilotMode.TrajectoryFollower == mDriveMode)
         {
             // Generate a Trajectory to Drive
             mTrajectory = TrajectoryGenerator.generateTrajectory(
@@ -121,7 +122,7 @@ public class AutoPilot {
 
             // Start Trajectory Folling
             mTrajectoryFollower.Start();
-        } else if(VisionDriveMode.MotionControl == mDriveMode)
+        } else if(AutoPilotMode.MotionControl == mDriveMode)
         {
             // TODO:
             mGoalPose = mTargetedPose;
@@ -157,11 +158,11 @@ public class AutoPilot {
         }
 
         // Proceed based on Type
-        if(VisionDriveMode.TrajectoryFollower == mDriveMode)
+        if(AutoPilotMode.TrajectoryFollower == mDriveMode)
         {
             // Keep Following the Trajectory
             mTrajectoryFollower.Update();
-        } else if(VisionDriveMode.MotionControl == mDriveMode)
+        } else if(AutoPilotMode.MotionControl == mDriveMode)
         {
             // Get Robots Current Pose and Calculate the Swerve Speeds
             Pose2d currPose = mDrive.getPose();
@@ -188,11 +189,11 @@ public class AutoPilot {
         mTrajectorySet = false;
 
         // Proceed based on Type
-        if(VisionDriveMode.TrajectoryFollower == mDriveMode)
+        if(AutoPilotMode.TrajectoryFollower == mDriveMode)
         {
             // Stop the Trajectory Follower
             mTrajectoryFollower.Stop();
-        } else if(VisionDriveMode.MotionControl == mDriveMode)
+        } else if(AutoPilotMode.MotionControl == mDriveMode)
         {
 
         }

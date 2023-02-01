@@ -76,8 +76,19 @@ public class photonVision {
     int camResolutionHeight = 480; // pixels
     double minTargetArea = 10; // square pixels
 
+    /*
     public SimVisionSystem simVision =
             new SimVisionSystem(
+                    "frontApriltagCam",
+                    camDiagFOV,
+                    robotToFrontCam,
+                    maxLEDRange,
+                    camResolutionWidth,
+                    camResolutionHeight,
+                    minTargetArea);
+    */
+    public EntropyVisionSim simVision =
+            new EntropyVisionSim(
                     "frontApriltagCam",
                     camDiagFOV,
                     robotToFrontCam,

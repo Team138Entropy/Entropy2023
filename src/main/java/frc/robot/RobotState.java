@@ -174,10 +174,10 @@ public class RobotState {
             mRealRobot ? mPigeon.getYaw().getWPIRotation2d() : mPigeon.getSimYaw().getWPIRotation2d(), 
             mRealRobot ? mDrive.getModulePositions() : mDrive.getSimSwerveModulePositions()
         );
-        mDrivePoseEstimator = mSwerveDrivePoseEstimator.getEstimatedPosition();
+        Pose2d currentSwervePose = mSwerveDrivePoseEstimator.getEstimatedPosition();
         
         // Update Pose2D based off of Vision
-        Pair<Pose2d, Double> VisionBasedEstimate = getVisionEstimatedPose(mVisionBasedRobotPose);
+        Pair<Pose2d, Double> VisionBasedEstimate = getVisionEstimatedPose(currentSwervePose);
         if(VisionBasedEstimate.getFirst() == null)
         {
             // No Pose2d Able to be found, zero the vision pose
@@ -199,6 +199,17 @@ public class RobotState {
             // Either no Robot Pose or Outside of Latency
             mIsValidVisionPose = false;
         }
+
+        // Feed Valid Pose into System
+        // Todo: Recomended to only feed vision pose within 1 meter or so of robot
+        if(mIsValidVisionPose)
+        {
+            mSwerveDrivePoseEstimator.addVisionMeasurement(mVisionBasedRobotPose, mVisionBasedRobotPoseLatencySeconds);
+        }
+
+        // Get Overall System Pose Estimate
+        // Accounts for Swerve System Odometry and Vision Poses
+        mDrivePoseEstimator = mSwerveDrivePoseEstimator.getEstimatedPosition();
 
         // Simulation Only
         if(!mRealRobot)
