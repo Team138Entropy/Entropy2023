@@ -98,6 +98,13 @@ public void simGrasperState (double angle){
     }
 }
 
+/*
+if (mOperatorInterface.getSimGrasperClosed()){
+    mGrasper.setSimGrasperClosed();
+}
+*/
+
+// make it so the mode changes stuff not buttons
 
     public void updateSmartDashboard() {
         final String key = "SimMechanism/";

@@ -27,6 +27,7 @@ import frc.robot.auto.modes.*;
 import frc.robot.simulation.SimMechanism;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.Drive.DriveStyle;
+import frc.robot.subsystems.Grasper.GrasperState;
 import frc.robot.util.drivers.Pigeon;
 import edu.wpi.first.wpilibj.Relay;
 import frc.robot.vision.AutoPilot;
@@ -368,16 +369,16 @@ public class Robot extends TimedRobot {
     if (mPositionMode == true) {
 
       //preset arm positions
-      if (mOperatorInterface.getArmJogForward()){
+      if (mOperatorInterface.setArmForward()){
         mArm.setArmAngle(135);
       }
-      else if (mOperatorInterface.getArmJogMidForward()){
+      else if (mOperatorInterface.setArmMidForward()){
         mArm.setArmAngle(115);
       }
-      else if (mOperatorInterface.getArmJogMidBackward()){
+      else if (mOperatorInterface.setArmMidBackward()){
         mArm.setArmAngle(65);
       }
-      else if (mOperatorInterface.getArmJogBackward()){
+      else if (mOperatorInterface.setArmBackward()){
         mArm.setArmAngle(45);
       }
       else {
@@ -403,8 +404,6 @@ public class Robot extends TimedRobot {
     }
     mGrasper.update();
   }
-
-  
   
 
 
@@ -440,9 +439,18 @@ public class Robot extends TimedRobot {
 
     // Current Targeted Grasper State into Mech Sim
     mSimMechanism.simGrasperState(mCurrentGrasperState.ClawAngle);
+    mGrasper.getGrasperState();
 
     // Process Frame where the Robot currently is
     mPhotonVision.simVision.processFrame(mField.getRobotPose());  
+
+    //Closes/opens the sim grasper
+    if (mGrasper.getGrasperState() ==  GrasperState.Open){
+      mCurrentGrasperState = GrasperSimState.OPEN;
+    }
+    else if (mGrasper.getGrasperState() ==  GrasperState.Closed){
+      mCurrentGrasperState = GrasperSimState.LEFT_CLOSED;
+    }
   }
 
   /** Called Throughout Teleop Periodic */

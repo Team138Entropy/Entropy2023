@@ -34,12 +34,12 @@ public class Grasper {
     private boolean mGrasperOpen = false;
 
     // Grasper State
-    private enum GrasperState {
+    public enum GrasperState {
       FullyClosed,
       Closed,
       Open
     };
-    private GrasperState mGrasperState;
+    public GrasperState mGrasperState;
 
 
     public static synchronized Grasper getInstance() {
@@ -59,32 +59,7 @@ public class Grasper {
       mGrasperState = GrasperState.FullyClosed;
     }
   
-   // Open the Grasper
-   // Restart Beam Activation Timer
-   public void setGrasperOpen(){
-    mGrasperState = GrasperState.Open;
-    beamActivationTimer.reset();
-    beamActivationTimer.start();
-    BeamSensorOn = false;
-   }
-
-   // Close the Grasper
-   // Stop the Beam Activiation Timer
-   // Allow the Grasper Motor to run for 1 Second to help pull in!
-   public void setGrasperClosed(){
-    mGrasperState = GrasperState.Closed;
-    beamActivationTimer.stop();
-   }
-
-  // Start the Intake Motor
-  public void setGrasperWheelIntake(){
-    GrasperWheelMotor.set(0.2);
-  }
-
-  // Stop the Intake Motor
-  public void cancelGrasperWheelIntake(){
-    GrasperWheelMotor.set(0);
-  }
+   
 
   // Constant Update Function 
   public void update(){
@@ -129,6 +104,35 @@ public class Grasper {
     }
   }
 
+  // Open the Grasper
+   // Restart Beam Activation Timer
+   public void setGrasperOpen(){
+    mGrasperState = GrasperState.Open;
+    beamActivationTimer.reset();
+    beamActivationTimer.start();
+    BeamSensorOn = false;
+   }
+
+
+   // Close the Grasper
+   // Stop the Beam Activiation Timer
+   // Allow the Grasper Motor to run for 1 Second to help pull in!
+   public void setGrasperClosed(){
+    mGrasperState = GrasperState.Closed;
+    beamActivationTimer.stop();
+   }
+
+  // Start the Intake Motor
+  public void setGrasperWheelIntake(){
+    GrasperWheelMotor.set(0.2);
+  }
+
+  // Stop the Intake Motor
+  public void cancelGrasperWheelIntake(){
+    GrasperWheelMotor.set(0);
+  }
+
+
   // Has the Grasper stay open long enough to use beam sensor
   public boolean getGrasperTimeElapsed3(){
     return beamActivationTimer.hasElapsed(3);
@@ -150,6 +154,42 @@ public class Grasper {
     }
     return false;
 }
+
+
+// Boolean made for Sim Code
+public boolean grasperIsClosed(){
+  if (mGrasperState == GrasperState.FullyClosed){
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
+public boolean grasperIsOpen(){
+  if (mGrasperState == GrasperState.Open){
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
+//commands for sim code
+public void setSimGrasperClosed(){
+  mGrasperState = GrasperState.FullyClosed;
+}
+
+public void setSimGrasperOpen(){
+  mGrasperState = GrasperState.Open;
+}
+
+
+//gets the current grasper state
+public GrasperState getGrasperState(){
+  return mGrasperState;
+}
+
 
   public void updateSmartDashBoard(){
     final String key = "Grasper/";
