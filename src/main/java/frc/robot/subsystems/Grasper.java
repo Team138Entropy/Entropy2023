@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.util.drivers.BeamSensor;
 import frc.robot.util.drivers.EntropyCANSparkMax;
 
 import com.revrobotics.REVLibError;
@@ -24,7 +25,7 @@ public class Grasper {
     //NEO Motor 
     private final EntropyCANSparkMax GrasperWheelMotor;
     //Beam Sensor
-    private final DigitalInput BeamSensor;
+    private final BeamSensor mBeamSensor;
     //Beam Timer
     private final Timer beamActivationTimer;
     private boolean BeamSensorOn = true;
@@ -53,7 +54,7 @@ public class Grasper {
     {
       GrasperSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.Talons.Grasper.PCMId);
       GrasperWheelMotor = new EntropyCANSparkMax(Constants.Talons.Grasper.IntakeMotor, MotorType.kBrushless);
-      BeamSensor = new DigitalInput(0);
+      mBeamSensor = new BeamSensor(0);
       beamActivationTimer = new Timer();
       wheelCancellationTimer = new Timer();
       mGrasperState = GrasperState.FullyClosed;
@@ -146,7 +147,7 @@ public class Grasper {
     }
 
     if (BeamSensorOn == true) {
-      return !BeamSensor.get();
+      return !mBeamSensor.get();
     }
     return false;
 }
@@ -158,7 +159,7 @@ public class Grasper {
     SmartDashboard.putNumber(key + "Temperature", GrasperWheelMotor.getMotorTemperature());
     SmartDashboard.putNumber(key + "Output", GrasperWheelMotor.getAppliedOutput());
     //IR Beam Sensor 
-    SmartDashboard.putBoolean(key + "IR Beam Sensor", BeamSensor.get());
+    SmartDashboard.putBoolean(key + "IR Beam Sensor", mBeamSensor.get());
     //Solenoid
     SmartDashboard.putBoolean(key + "Solenoid State", GrasperSolenoid.get());
     SmartDashboard.putNumber(key + "Solenoid Channel", GrasperSolenoid.getChannel());

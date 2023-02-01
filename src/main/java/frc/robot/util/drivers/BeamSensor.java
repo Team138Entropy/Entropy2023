@@ -51,4 +51,11 @@ public class BeamSensor {
         update();
         return (mCurrentPositiveSamples >= mTargetPositiveSampleCount);
     }
+
+    // Returns Tue if the Beam is Not Broken
+    // Intended to be similar to how the beam sensor would work if in DIO
+    public boolean get()
+    {
+        return !isBeamBroken();
+    }
 }
