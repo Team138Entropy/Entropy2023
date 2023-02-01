@@ -225,9 +225,6 @@ public class Robot extends TimedRobot {
     // Iterates each Subsystem 
     mSubsystemManager.updateSmartdashboard();
 
-    mGrasper.updateSmartDashBoard();
-
-
   }
 
   // Fill Autonomous Modes List
@@ -340,6 +337,10 @@ public class Robot extends TimedRobot {
       }
       else if (mGrasperOpen == false && mOperatorInterface.getGrasperModeSwap()){
         mGrasperOpen = true;
+      }
+
+      if(mOperatorInterface.getTestSubsystem()){
+       // mSubsystemManager.testSubsystems();
       }
 
       //Zero encoders on the arm using the right stick button

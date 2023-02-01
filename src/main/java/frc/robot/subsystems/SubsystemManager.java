@@ -8,6 +8,8 @@ import java.util.List;
 public class SubsystemManager implements ILooper {
   public static SubsystemManager mInstance = null;
 
+  private SubsystemTestManager mSubsystemTestManager = SubsystemTestManager.getInstance();
+
   private List<Subsystem> mSubsystems;
 
   // If sensors are zero'ed on this power up
@@ -130,5 +132,8 @@ public class SubsystemManager implements ILooper {
     }
   }
 
-  //TODO add a call for testSubsystem of each subsystem
+  public void testSubsystems(){
+    mSubsystemTestManager.testStart();
+    mSubsystemTestManager.testUpdate();
+  }
 }

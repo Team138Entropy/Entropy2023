@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import edu.wpi.first.wpilibj.Timer;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -19,6 +20,13 @@ public class Arm extends Subsystem {
     private final EntropyTalonSRX SecondaryShoulderMotor;
     private final EntropyTalonSRX ExtensionMotor;
 
+    private final Timer SystemsTestTimer;
+
+    private final int ExpectedArmEncoderValue = 0;
+    private final int ExpectedExtensionEncoderValue = 0;
+
+    
+
     public static synchronized Arm getInstance() {
         if (mInstance == null) {
           mInstance = new Arm();
@@ -26,11 +34,14 @@ public class Arm extends Subsystem {
         return mInstance;
       }
 
-      private Arm () {
+      private Arm() {
         // Init Talons
         MasterShoulderMotor = new EntropyTalonSRX(Constants.Talons.Arm.ShoulderMasterId);
         SecondaryShoulderMotor = new EntropyTalonSRX(Constants.Talons.Arm.ShoulderSlaveId);
         ExtensionMotor = new EntropyTalonSRX(Constants.Talons.Arm.ExtensionId);
+
+        SystemsTestTimer = new Timer();
+
 
         // Shoulder Motor Configuration
         // Primary Motor -> Positive Percent Output should increase position -> 0:360
@@ -140,12 +151,29 @@ public class Arm extends Subsystem {
         // TODO Auto-generated method stub
         
     }
+    /* 
+    public Boolean testSubsystem() {
 
-    @Override
-    public void testSubsystem() {
-        // TODO Auto-generated method stub
+        SystemsTestTimer.reset();
+        zeroSensors();
+        SystemsTestTimer.start();
         
+        MasterShoulderMotor.set(ControlMode.PercentOutput, .3);
+        ExtensionMotor.set(ControlMode.PercentOutput, .3);
+
+        if(SystemsTestTimer.hasElapsed(2)){
+            SystemsTestTimer.stop();
+            MasterShoulderMotor.set(ControlMode.Disabled, 0);
+            ExtensionMotor.set(ControlMode.Disabled, 0);
+        }
+
+        if(MasterShoulderMotor.getSelectedSensorPosition() > ExpectedArmEncoderValue 
+        && ExtensionMotor.getSelectedSensorPosition() > ExpectedExtensionEncoderValue){
+            return true;
+        }
+        return false;
     }
+    */
  }
 
  

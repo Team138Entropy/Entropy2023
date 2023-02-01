@@ -30,11 +30,13 @@ public class OperatorInterface {
     private LatchedBoolean mExtensionUp = new LatchedBoolean();
     private LatchedBoolean mExtensionDown = new LatchedBoolean();
     private LatchedBoolean mExtensionSwitchMode = new LatchedBoolean();
+    private LatchedBoolean mtestSubsystem = new LatchedBoolean();
 
     private LatchedBoolean manualRotationUp = new LatchedBoolean();
     private LatchedBoolean manualRotationDown = new LatchedBoolean();
     private LatchedBoolean manualExtensionup = new LatchedBoolean();
     private LatchedBoolean manualExtensionDown = new LatchedBoolean();
+
 
     private LatchedBoolean balanceDrive = new LatchedBoolean();
 
@@ -230,6 +232,10 @@ public class OperatorInterface {
         return mOperatorSelectButton.update(mOperatorController.getButton(Button.BACK));
     }
 
+    public boolean getTestSubsystem(){
+        return mtestSubsystem.update(mOperatorController.getButton(Button.BACK));
+    }
+
     public boolean getArmEncoderZero(){
         return mOperatorController.getButton(Button.R_JOYSTICK);
     }
@@ -392,6 +398,3 @@ public class OperatorInterface {
         return false;
     }
 }
-
-
-
