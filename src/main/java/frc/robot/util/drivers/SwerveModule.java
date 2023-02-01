@@ -53,13 +53,15 @@ public class SwerveModule  {
     private final EntropyTalonFX mDriveMotor;
     private final EntropyTalonFX mAngleMotor;
 
-    // Simulation Motors
-
     // PID
     private double mAngleKp;
     private double mAngleKi;
     private double mAngleKd;
     private SimpleMotorFeedforward mFeedforward;
+
+    // Simulation Only
+    private SwerveModulePosition mSimPosition;
+
 
     public SwerveModule(int moduleNumber, SwerveModuleConstants swerveConstants) {
         mModuleNumber = moduleNumber;
@@ -94,6 +96,9 @@ public class SwerveModule  {
 
         // Drive Motor
         configDriveMotor();
+
+        // Simulation
+        mSimPosition = new SwerveModulePosition();
 
         mLastAngle = getState().angle.getDegrees();
     }
@@ -213,6 +218,17 @@ public class SwerveModule  {
         
     }
 
+    public void updateSimPosition(double dt)
+    {
+        mSimPosition.distanceMeters += (mDesiredState.speedMetersPerSecond * dt);
+        mSimPosition.angle = mDesiredState.angle;
+    }
+
+    public SwerveModulePosition getSimPosition()
+    {
+        return mSimPosition;
+    }
+
     public void updateSmartDashBoard()
     { 
         String BaseKey = "Swerve Modules/" + mModuleName + "/";
@@ -222,6 +238,7 @@ public class SwerveModule  {
         SmartDashboard.putNumber(BaseKey + "CANCoderID", mAngleEncoder.getDeviceID());
         SmartDashboard.putNumber(BaseKey + "Last Angle", mLastAngle);
         SmartDashboard.putString(BaseKey + "Desired State", mDesiredState.toString());
+        SmartDashboard.putString(BaseKey + "Sim Position", mSimPosition.toString());
         SmartDashboard.putNumber(BaseKey + "Drive Motor M/S", getDriveMetersPerSecond());
         SmartDashboard.putNumber(BaseKey + "Drive Motor Meters", getDriveMeters());
         SmartDashboard.putNumber(BaseKey + "CanCoder Position", getCanCoder().getDegrees());

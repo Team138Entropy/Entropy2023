@@ -113,8 +113,9 @@ public class RobotState {
 
         // Swerve Drive Pose Estimator
         mSwerveDrivePoseEstimator = new SwerveDrivePoseEstimator(mDrive.getSwerveKinematics(), 
-                mPigeon.getYaw().getWPIRotation2d(), mDrive.getModulePositions(), 
-                new Pose2d()
+            mRealRobot ? mPigeon.getYaw().getWPIRotation2d() : mPigeon.getSimYaw().getWPIRotation2d(), 
+            mRealRobot ? mDrive.getModulePositions() : mDrive.getSimSwerveModulePositions(),
+            new Pose2d()
         );
         mDrivePoseEstimator = new Pose2d();
 
@@ -169,7 +170,10 @@ public class RobotState {
     public void update()
     {
         // Update with Robot Odometry
-        mSwerveDrivePoseEstimator.update(mPigeon.getYaw().getWPIRotation2d(), mDrive.getModulePositions());
+        mSwerveDrivePoseEstimator.update(
+            mRealRobot ? mPigeon.getYaw().getWPIRotation2d() : mPigeon.getSimYaw().getWPIRotation2d(), 
+            mRealRobot ? mDrive.getModulePositions() : mDrive.getSimSwerveModulePositions()
+        );
         mDrivePoseEstimator = mSwerveDrivePoseEstimator.getEstimatedPosition();
         
         // Update Pose2D based off of Vision

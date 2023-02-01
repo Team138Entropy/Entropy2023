@@ -118,6 +118,7 @@ public class Drive extends Subsystem {
   // Other Variables
   private boolean mBrakeEnabled;
   private boolean mIsSnapping;
+  private boolean mIsButtonCorrecting;
 
   private ProfiledPIDController mSnapPidController;
   private PIDController mVisionPIDController;
@@ -153,6 +154,7 @@ public class Drive extends Subsystem {
     // Common Init
     mBrakeEnabled =  false;
     mIsSnapping = false;
+    mIsButtonCorrecting = false;
 
     // Setup Snap Pid Controller
     mSnapPidController = new ProfiledPIDController(
@@ -755,6 +757,7 @@ public class Drive extends Subsystem {
         mDriveSimSystem.updateDrive(getLastDriveSignal());
       break;
       case SWERVE_DRIVE:
+        updateSwerveSimPositions(.02);
         mSimSwerveOdometry.update(mPigeon.getSimYaw().getWPIRotation2d(), getDesiredSwerveModuleStates());
         //mSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), mSwerveModulePositions);
       break;
@@ -940,4 +943,23 @@ public class Drive extends Subsystem {
   {
     return mRealRobot;
   }
+
+  public void updateSwerveSimPositions(double dt)
+  {
+    for(SwerveModule mod : mSwerveModules){
+      mod.updateSimPosition(dt);
+    }
+  }
+
+
+  public SwerveModulePosition[] getSimSwerveModulePositions()
+  {
+    SwerveModulePosition[] positions = new SwerveModulePosition[4];
+    for(SwerveModule mod : mSwerveModules){
+        positions[mod.getModuleNumber()] = mod.getSimPosition();
+    }
+    return positions;
+  }
+
+
 }
