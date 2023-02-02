@@ -36,6 +36,8 @@ public class AutoPilot {
         return mInstance;
     }
 
+    
+
     private final Drive mDrive = Drive.getInstance();
     private final TrajectoryFollower mTrajectoryFollower = TrajectoryFollower.getInstance();
     private boolean mRunning;
@@ -44,6 +46,9 @@ public class AutoPilot {
     private Pose2d mStartingPose;
     private Pose2d mTargetedPose;
     private Pose2d mGoalPose;
+
+    // Current Robot Pose
+    private Pose2d mRobotPose;
 
     // Motion Control
     private static final TrapezoidProfile.Constraints mX_CONSTRAINTS = 
@@ -82,6 +87,7 @@ public class AutoPilot {
         mTargetedPose = new Pose2d();
         mStartingPose = new Pose2d();
         mGoalPose = new Pose2d();
+        mRobotPose = new Pose2d();
 
         // Motion Control Init
         mXController.setTolerance(0.2);
@@ -100,6 +106,12 @@ public class AutoPilot {
     public void setStartingPose(Pose2d startPose)
     {
         mStartingPose = startPose;
+    }
+
+    // Set Current Robot Pose
+    public void setRobotPose(Pose2d currentRobotPose)
+    {
+        mRobotPose = currentRobotPose;
     }
 
     private void start()
@@ -146,6 +158,9 @@ public class AutoPilot {
               
              
              */
+        } else if(AutoPilotMode.HoldPose == mDriveMode)
+        {
+
         }
     }
 
@@ -171,6 +186,22 @@ public class AutoPilot {
             double xSpeed = !mXController.atGoal() ? mXController.calculate(currPose.getX()) : 0;
             double ySpeed = !mYController.atGoal() ? mYController.calculate(currPose.getY()) : 0;
             double omegaSpeed = !mOmegaController.atGoal() ? mOmegaController.calculate(currPose.getRotation().getRadians()) : 0;
+
+            // Set Speeds into Swerve System
+            ChassisSpeeds calculatedSpeeds = new ChassisSpeeds(xSpeed, ySpeed, omegaSpeed);
+
+            // Call Autonomous Chasis Speed 
+            var targetSwerveModuleStates = mDrive.getSwerveKinematics().toSwerveModuleStates(calculatedSpeeds);
+
+            // Set Swerve to those Module States
+            mDrive.setModuleStates(targetSwerveModuleStates);
+        } else if(AutoPilotMode.HoldPose == mDriveMode)
+        {
+            
+            // Calculate Speeds to Reach Goal
+            double xSpeed = !mXController.atGoal() ? mXController.calculate(mRobotPose.getX()) : 0;
+            double ySpeed = !mYController.atGoal() ? mYController.calculate(mRobotPose.getY()) : 0;
+            double omegaSpeed = !mOmegaController.atGoal() ? mOmegaController.calculate(mRobotPose.getRotation().getRadians()) : 0;
 
             // Set Speeds into Swerve System
             ChassisSpeeds calculatedSpeeds = new ChassisSpeeds(xSpeed, ySpeed, omegaSpeed);

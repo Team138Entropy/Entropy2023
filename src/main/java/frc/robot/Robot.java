@@ -181,6 +181,9 @@ public class Robot extends TimedRobot {
     // Update Robotstate
     mRobotState.update();
 
+    // Update Auto Pilot
+    mAutoPilot.setRobotPose(mRobotState.getPose());
+
     // Update Smartdashboard Overall and Subsystems
     updateSmartdashboard();
 

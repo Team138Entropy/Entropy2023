@@ -290,6 +290,12 @@ public class RobotState {
         wpiLibPoseObject.setPose(mDrivePoseEstimator);
     }
 
+    // Return the Drive/Vision Based Pose Estimate
+    // This should be the best estimate of where the robot is on the field
+    public Pose2d getPose()
+    {
+        return mDrivePoseEstimator;
+    }
 
     // Update Robot State Related Smart Dashboard
     public void updateSmartdashboard()

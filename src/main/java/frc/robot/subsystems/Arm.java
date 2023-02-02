@@ -59,7 +59,7 @@ public class Arm extends Subsystem {
         ExtensionMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,LimitSwitchNormal.NormallyClosed);
         ExtensionMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,LimitSwitchNormal.NormallyClosed);
         ExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
-        ExtensionMotor.setInverted(true);
+        ExtensionMotor.setInverted(false);
         ExtensionMotor.setSensorPhase(true);
         ExtensionMotor.config_kF(0, 1);
         ExtensionMotor.config_kP(0, 0.9);

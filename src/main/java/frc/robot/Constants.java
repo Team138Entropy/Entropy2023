@@ -448,6 +448,15 @@ public class Constants {
     /* Swerve Specific Auto Constants */
     public static final class AutoConstants 
     {
+
+      public static final class AutoPilot {
+        TuneableNumber mXTolerance = new TuneableNumber("XTolerance", .2);
+        TuneableNumber mYTolerance = new TuneableNumber("YTolerance", .2);
+        TuneableNumber mOmegaTolerance = new TuneableNumber("OmegaTolerance", .2);
+
+      }
+
+
       public static final double kSlowSpeedMetersPerSecond = 1.7;
       public static final double kSlowAccelerationMetersPerSecondSquared = 2.0;
 
