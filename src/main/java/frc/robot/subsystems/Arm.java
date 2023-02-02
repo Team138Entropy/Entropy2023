@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Enums.ArmTargets;
 import frc.robot.util.drivers.EntropyTalonSRX;
+import frc.robot.util.test.TestableMotor;
 
 public class Arm extends Subsystem {
     private static Arm mInstance;
@@ -20,11 +21,8 @@ public class Arm extends Subsystem {
     private final EntropyTalonSRX SecondaryShoulderMotor;
     private final EntropyTalonSRX ExtensionMotor;
 
-    private final Timer SystemsTestTimer;
-
-    private final int ExpectedArmEncoderValue = 0;
-    private final int ExpectedExtensionEncoderValue = 0;
-
+    public final TestableMotor TestShoulderMotor;
+    public final TestableMotor TestExtensionMotor;
     
 
     public static synchronized Arm getInstance() {
@@ -40,7 +38,9 @@ public class Arm extends Subsystem {
         SecondaryShoulderMotor = new EntropyTalonSRX(Constants.Talons.Arm.ShoulderSlaveId);
         ExtensionMotor = new EntropyTalonSRX(Constants.Talons.Arm.ExtensionId);
 
-        SystemsTestTimer = new Timer();
+        TestShoulderMotor = new TestableMotor(MasterShoulderMotor);
+        TestExtensionMotor = new TestableMotor(ExtensionMotor);
+
 
 
         // Shoulder Motor Configuration
@@ -151,29 +151,7 @@ public class Arm extends Subsystem {
         // TODO Auto-generated method stub
         
     }
-    /* 
-    public Boolean testSubsystem() {
-
-        SystemsTestTimer.reset();
-        zeroSensors();
-        SystemsTestTimer.start();
-        
-        MasterShoulderMotor.set(ControlMode.PercentOutput, .3);
-        ExtensionMotor.set(ControlMode.PercentOutput, .3);
-
-        if(SystemsTestTimer.hasElapsed(2)){
-            SystemsTestTimer.stop();
-            MasterShoulderMotor.set(ControlMode.Disabled, 0);
-            ExtensionMotor.set(ControlMode.Disabled, 0);
-        }
-
-        if(MasterShoulderMotor.getSelectedSensorPosition() > ExpectedArmEncoderValue 
-        && ExtensionMotor.getSelectedSensorPosition() > ExpectedExtensionEncoderValue){
-            return true;
-        }
-        return false;
-    }
-    */
+    
  }
 
  

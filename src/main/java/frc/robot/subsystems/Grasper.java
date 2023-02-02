@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.util.drivers.EntropyCANSparkMax;
+import frc.robot.util.test.TestableMotor;
 
 import com.revrobotics.REVLibError;
 import com.revrobotics.CANSparkMax;
@@ -29,6 +30,8 @@ public class Grasper extends Subsystem{
     private final Timer beamActivationTimer;
 
     private boolean BeamSensorOn = true;
+
+    public final TestableMotor TestGrasperMotor;
 
     // Grasper State
     private enum GrasperState {
@@ -52,6 +55,7 @@ public class Grasper extends Subsystem{
       GrasperWheelMotor = new EntropyCANSparkMax(Constants.Talons.Grasper.IntakeMotor, MotorType.kBrushless);
       BeamSensor = new DigitalInput(0);
       beamActivationTimer = new Timer();
+      TestGrasperMotor = new TestableMotor(GrasperWheelMotor);
       mGrasperState = GrasperState.Closed;
     }
   
