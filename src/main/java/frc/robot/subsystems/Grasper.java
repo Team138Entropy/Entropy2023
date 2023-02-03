@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.util.drivers.EntropyCANSparkMax;
@@ -49,14 +50,14 @@ public class Grasper extends Subsystem{
         return mInstance;
     }
 
-    private Grasper()
-    {
+    private Grasper(){
       GrasperSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.Talons.Grasper.PCMId);
       GrasperWheelMotor = new EntropyCANSparkMax(Constants.Talons.Grasper.IntakeMotor, MotorType.kBrushless);
       BeamSensor = new DigitalInput(0);
       beamActivationTimer = new Timer();
       TestGrasperMotor = new TestableMotor(GrasperWheelMotor);
       mGrasperState = GrasperState.Closed;
+      GrasperWheelMotor.getEncoder();
     }
   
    // Open the Grasper

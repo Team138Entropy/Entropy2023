@@ -27,10 +27,20 @@ public class SubsystemTestManager {
       mInstance = new SubsystemTestManager();
     }
     return mInstance;
-}
+  }
+
 
   private SubsystemTestManager(){
     testTimer = new Timer();
+  }
+
+  public void testInit(){
+    boolean isDone = false;
+    do{
+      testStart();
+      
+
+    }while(isDone == false);
   }
 
   public void testStart(){
@@ -40,10 +50,9 @@ public class SubsystemTestManager {
     mGrasper.setGrasperWheelIntake();
     shoulderCheck = false;
     extensionCheck = false;
-
   }
 
-  public void testUpdate(){
+  public boolean testUpdate(){
     if(testTimer.hasElapsed(2)){
         if(mArm.getArmAngle() > expectedShoulderValue){
             shoulderCheck = true;
@@ -52,14 +61,17 @@ public class SubsystemTestManager {
             extensionCheck = true;
         }
         testTimer.stop();
+        return true;
     }
+    return false;
   }
 
-  public void testEnd(){
+  public boolean testEnd(){
     testTimer.reset();
     mArm.setShoulderJog(0);
     mArm.setExtensionJog(0);
     mGrasper.cancelGrasperWheelIntake();
+    return true;
   }
 
   public void getStatus(){

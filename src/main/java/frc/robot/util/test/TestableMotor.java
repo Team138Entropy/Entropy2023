@@ -14,7 +14,7 @@ public class TestableMotor {
         NONE;
     }
 
-    public MotorType testedMotor = MotorType.NONE;
+    public MotorType testedMotorType = MotorType.NONE;
 
     //encoder values
     public double minExpectedEncoderValue = 0;
@@ -26,17 +26,31 @@ public class TestableMotor {
     public double maxExpectedCurrent = 0;
     public double motorCurrent = 0;
 
+    //motor objects, only one is ever used at a time and the others get set to null
+    private final EntropyCANSparkMax CanSparkMax;
+    private final EntropyTalonSRX TalonSRX;
+    private final EntropyTalonFX TalonFX;
+
     //3 contructors for each motor type
     public TestableMotor(EntropyTalonSRX talonSRX) {
-        testedMotor = MotorType.TALON_SRX;
+        testedMotorType = MotorType.TALON_SRX;
+        TalonSRX = talonSRX;
+        CanSparkMax = null;
+        TalonFX = null;
     }
 
     public TestableMotor(EntropyTalonFX talonFX) {
-        testedMotor = MotorType.TALON_FX;
+        testedMotorType = MotorType.TALON_FX;
+       TalonFX = talonFX;
+       CanSparkMax = null;
+       TalonSRX = null;
     }
 
     public TestableMotor(EntropyCANSparkMax sparkMax) {
-        testedMotor = MotorType.SPARK_MAX;
+        testedMotorType = MotorType.SPARK_MAX;
+       CanSparkMax = sparkMax;
+       TalonSRX = null;
+       TalonFX = null;
     }
 
     //set expected and real encoder value functions
@@ -45,8 +59,14 @@ public class TestableMotor {
         maxExpectedEncoderValue = maxExpectedValue;
     }
 
-    public void setEncoderValue(double encoderValue){
-        motorEncoderValue = encoderValue;
+    public void setEncoderValue(){
+        if(testedMotorType == MotorType.SPARK_MAX){
+            CanSparkMax.getEncoder();
+        }else if(testedMotorType == MotorType.TALON_FX){
+            TalonFX.getEncoderTicks();
+        }else if(testedMotorType == MotorType.TALON_SRX){
+            TalonSRX.getSelectedSensorPosition();
+        }
     }
 
     //set expected and real current value functions
