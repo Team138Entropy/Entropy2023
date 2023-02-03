@@ -1,5 +1,8 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+
 public class Enums {
     
     // Type of Jogging
@@ -41,13 +44,13 @@ public class Enums {
         MID_SCORING_BACK(195,0),
         LOW_SCORING_BACK(220,0),
         INTAKE_BACK(170,0),
-        INTAKE_GROUND_FRONT(320,0),
-        INTAKE_GROUND_BACK(230,0),
+        INTAKE_GROUND_FRONT(-20,0),
+        INTAKE_GROUND_BACK(210,0),
         SAFE(90,0),
         START(233, 0),
         HOME_BACKSIDE(215, 0),
         HOME_FRONTSIDE(0, 0),
-        NONE(315,0);
+        NONE(90,0);
 
 
 
@@ -104,6 +107,24 @@ public class Enums {
         }
     }
 
+    // SwerveQuickAdjust
+    //  Similar to the Swerve Snapping System, 
+    //      Swerve system will button adjust
+    public enum SwerveQuickAdjust {
+        FORWARD(new Pose2d(0, 0, new Rotation2d())),
+        BACKWARD(new Pose2d(0, 0, new Rotation2d())),
+        LEFT(new Pose2d(0, 0, new Rotation2d())),
+        RIGHT(new Pose2d(0, 0, new Rotation2d())),
+        NONE(new Pose2d(0, 0, new Rotation2d()));
+
+        public final Pose2d targetPose;
+
+        SwerveQuickAdjust(Pose2d pose)
+        {
+            this.targetPose = pose;
+        }
+    }
+
     // Camera IDs
     public enum Cameras {
         FRONT_SIDE(0),
@@ -126,5 +147,11 @@ public class Enums {
     public enum GamePiece {
         Cone,
         Cube
+    };
+
+    // Arm Control Type
+    public enum ArmControlType {
+        Simple, 
+        Advanced
     };
 }

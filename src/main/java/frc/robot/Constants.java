@@ -154,6 +154,25 @@ public class Constants {
       public static final double acceptableError = 0.5;
     }
 
+    public static final class QuickAdjustConstants {
+      public static final double x_Kp = 3.0;
+      public static final double x_Ki = 0.0;
+      public static final double x_Kd = 0.0;
+
+      public static final double y_Kp = 3.0;
+      public static final double y_Ki = 0.0;
+      public static final double y_Kd = 0.0;
+
+      public static final double maxVelocity = 3;
+      public static final double maxAcceleration = 2;
+
+      public static final TrapezoidProfile.Constraints xConstraints =
+          new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration);
+      
+      public static final TrapezoidProfile.Constraints yConstraints =
+          new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration);
+    };
+
     public static final class SnapConstants {
       public static final double kP = 5.0; 
       public static final double kI = 0;
@@ -422,6 +441,9 @@ public class Constants {
 
     public static final double wheelDiameter = Units.inchesToMeters(4.0);
     public static final double wheelCircumference = wheelDiameter * Math.PI;
+
+    // SwerveAdjustment Value. This Value is in meters
+    public static final double swerveAdjustValue = .5;
 
     /* Swerve Motor */
     public static final class Motor 

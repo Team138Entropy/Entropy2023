@@ -110,6 +110,7 @@ public class Robot extends TimedRobot {
 
   // Arm Target
   public ArmTargets mCurrentArmTarget = ArmTargets.HOME_BACKSIDE;
+  public ArmControlType mArmControlType = ArmControlType.Simple;
 
   public int mManualTargetOffset = 0;
 
@@ -119,7 +120,6 @@ public class Robot extends TimedRobot {
 
   // Position the Auto Pilot System Wants to Drive to
   public TargetedPositions mTargetedPosition = TargetedPositions.NONE;
-
   public TargetedObject mCurrentTargetedObject = TargetedObject.CONE;
 
 
@@ -164,6 +164,10 @@ public class Robot extends TimedRobot {
     // generate generic auto modes to load into JIT
     TrajectoryGeneratorHelper.generateExampleTrajectories();
 
+    // Configure Arm's Maximum and Minimum Rotation Settings
+    mArm.setArmRotationMinimum(Enums.ArmTargets.INTAKE_GROUND_FRONT.armAngle);
+    mArm.setArmRotationMaximum(Enums.ArmTargets.START.armAngle);
+
     // reset odometry
 
     // Reset Drive Sensors
@@ -192,8 +196,6 @@ public class Robot extends TimedRobot {
 
   private void updateSmartdashboard()
   {
-    SmartDashboard.putNumber("Drive Throttle", mOperatorInterface.getDriveThrottle());
-    SmartDashboard.putNumber("Drive Turn", mOperatorInterface.getDriveTurn());
     SmartDashboard.putData("Field", mField);
     SmartDashboard.putString("Robot Pose", mField.getRobotPose().toString());
     SmartDashboard.putNumber("Pigeon Degrees", mPigeon.getYaw().getDegrees());
@@ -202,15 +204,25 @@ public class Robot extends TimedRobot {
     SmartDashboard.putString("Target Arm Position", mCurrentArmTarget.toString());
     SmartDashboard.putNumber("Target Arm Angle", mCurrentArmTarget.armAngle);
     SmartDashboard.putNumber("Target Arm Extension", mCurrentArmTarget.armExtend);
-    SmartDashboard.putBoolean("Jog Mode", mJogMode);
     SmartDashboard.putBoolean("Automatic Mode", mPositionMode);
     SmartDashboard.putNumber("rotate offset", mManualTargetOffset);
     SmartDashboard.putNumber("extend offset", mManualExtendOffset);
+    
     //formula to convert to PSI
     SmartDashboard.putNumber("pressure sensor", 250.0 * mPressureSensor.getVoltage() / 5.0 - 25.0);
     SmartDashboard.putData(mPowerPanel);
 
-    // Vision Based Driver
+    // Controls
+    final String controlsKey = "Controls/";
+    SmartDashboard.putNumber(controlsKey + "Drive Throttle", mOperatorInterface.getDriveThrottle());
+    SmartDashboard.putNumber(controlsKey + "Drive Turn", mOperatorInterface.getDriveTurn());
+    SmartDashboard.putString(controlsKey + "ArmControlMode", mArmControlType.toString());
+    SmartDashboard.putBoolean(controlsKey + "Jog Mode", mJogMode);
+
+    // Auto Mode Executor
+    if(null != mAutoModeExecutor) mAutoModeExecutor.updateSmartDashboard();
+
+    // Auto Pilot Driver
     mAutoPilot.updateSmartDashBoard();
 
     // PhotonVision Smartdashboard
@@ -453,7 +465,8 @@ public class Robot extends TimedRobot {
     mPigeon.rotateSimYaw(sRotation);
 
     // Current Targeted Arm into Mechanism Sim
-    mSimMechanism.SetArmAngle(mCurrentArmTarget.armAngle + mManualTargetOffset);
+    //mSimMechanism.SetArmAngle(mCurrentArmTarget.armAngle + mManualTargetOffset);
+    mSimMechanism.SetArmAngle(mArm.getArmTargtedDegrees());
     mSimMechanism.SetArmLength(mCurrentArmTarget.armExtend + mManualExtendOffset);
 
     // Process Frame where the Robot currently is
@@ -494,8 +507,19 @@ public class Robot extends TimedRobot {
     }
 
     // Constantly tell the Arm where to go
-    mArm.setArmAngle(mCurrentArmTarget.armAngle + mManualTargetOffset);
-    mArm.setArmExtension(mCurrentArmTarget.armExtend + mManualExtendOffset);
+    if(ArmControlType.Simple == mArmControlType)
+    {
+      // Simple Arm Control Type (Do not rotate arm until extension is Retracted)
+      // If you want to move the arm to a different rotation angle, arm extension must be retracted
+      mArm.setArmAngle(mCurrentArmTarget.armAngle + mManualTargetOffset);
+      mArm.setArmExtension(mCurrentArmTarget.armExtend + mManualExtendOffset);
+    }
+    else if(ArmControlType.Advanced == mArmControlType)
+    {
+      // TODO: Allow Arm to move with extension out
+      // This is more complicated
+    }
+ 
 
     // Grasper Functionality
     if(mOperatorInterface.getGrasperOpen()){
@@ -642,6 +666,13 @@ public class Robot extends TimedRobot {
         if(SwerveCardinal.NONE != snapCardinal) // Snap Direction Detected!
         {
           mDrive.startSnap(snapCardinal.degrees);
+        }
+
+        // Swerve Quick Adjust
+        SwerveQuickAdjust quickAdjust = mOperatorInterface.getSwerveQuickAdjust();
+        if(SwerveQuickAdjust.NONE != quickAdjust)
+        {
+          mDrive.startQuickAdjust(quickAdjust.targetPose);
         }
 
         // Swerve Drive

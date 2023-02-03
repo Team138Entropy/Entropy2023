@@ -123,15 +123,16 @@ public class EntropyTalonFX extends TalonFX {
 
     public void updateSmartdashboard()
     {    
-       SmartDashboard.putString(deviceInfo + "/Description", description);
-       SmartDashboard.putNumber(deviceInfo + "/Voltage", getBusVoltage());
-       SmartDashboard.putNumber(deviceInfo + "/Current", getSupplyCurrent()); 
-       SmartDashboard.putBoolean(deviceInfo + "/Inverted", getInverted()); 
-       SmartDashboard.putNumber(deviceInfo + "/ClosedLoopTarget", getClosedLoopTarget());
-       SmartDashboard.putNumber(deviceInfo + "/ClosedLoopTarget", getClosedLoopError());
-       SmartDashboard.putNumber(deviceInfo + "/MotorOutputPercent", getMotorOutputPercent());
-       SmartDashboard.putNumber(deviceInfo + "/MotorOutputVoltage", getMotorOutputVoltage());
-       SmartDashboard.putNumber(deviceInfo + "/FiremwareVersion", getFirmwareVersion());
-       SmartDashboard.putNumber(deviceInfo + "/SelectedSensorPosition", getSelectedSensorPosition());
+       final String key = "TalonFXs/" + deviceInfo;
+       SmartDashboard.putString(key + "/Description", description);
+       SmartDashboard.putNumber(key + "/Voltage", getBusVoltage());
+       SmartDashboard.putNumber(key + "/Current", getSupplyCurrent()); 
+       SmartDashboard.putBoolean(key + "/Inverted", getInverted()); 
+       SmartDashboard.putNumber(key + "/ClosedLoopTarget", getClosedLoopTarget());
+       SmartDashboard.putNumber(key + "/ClosedLoopTarget", getClosedLoopError());
+       SmartDashboard.putNumber(key + "/MotorOutputPercent", getMotorOutputPercent());
+       SmartDashboard.putNumber(key + "/MotorOutputVoltage", getMotorOutputVoltage());
+       SmartDashboard.putNumber(key + "/FiremwareVersion", getFirmwareVersion());
+       SmartDashboard.putNumber(key + "/SelectedSensorPosition", getSelectedSensorPosition());
     }
 }

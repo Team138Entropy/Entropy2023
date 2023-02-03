@@ -128,12 +128,26 @@ public class OperatorInterface {
         if (mDriverController.getButton(Button.B)) {
             result = SwerveCardinal.RIGHT;
         }
-
-        // TODO: do we need to add the DPAD?
-
         return result;
     }
 
+    // Get Quick Movement to a Direction
+    public SwerveQuickAdjust getSwerveQuickAdjust() {
+        SwerveQuickAdjust result = SwerveQuickAdjust.NONE;
+
+        if (mDriverController.getDPad() == 0) {
+            result = SwerveQuickAdjust.FORWARD;
+        }else if (mDriverController.getDPad() == 90) {
+            result = SwerveQuickAdjust.RIGHT;
+        }else if (mDriverController.getDPad() == 180) {
+            result = SwerveQuickAdjust.BACKWARD;
+        }else if (mDriverController.getDPad() == 270) {
+            result = SwerveQuickAdjust.LEFT;
+        }
+        return result;
+    }
+
+    // Returns the Targeted Position on the Field
     public TargetedPositions getScoringCommand() {
         TargetedPositions node = TargetedPositions.NONE;
 
@@ -383,13 +397,12 @@ public class OperatorInterface {
         return mDriverController.getButton(Button.START);
     }
 
-    // TODO?
     public boolean getGrasperOpen() {
-        return false;
+        return mOperatorController.getTrigger(Side.RIGHT);
     }
 
     public boolean getGrasperClosed() {
-        return false;
+        return mOperatorController.getTrigger(Side.LEFT);
     }
 }
 

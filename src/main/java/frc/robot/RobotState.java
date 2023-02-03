@@ -305,11 +305,6 @@ public class RobotState {
         SmartDashboard.putNumber(key + "Vision Pose Latency", mVisionBasedRobotPoseLatencySeconds);
         SmartDashboard.putBoolean(key + "Vision Pose Valid", mIsValidVisionPose);
         SmartDashboard.putData(key + "Visual Field", mVisualField);
-        SmartDashboard.putString(key + "WPI Pose Estimator", mDrivePoseEstimator.toString());
-
-
-
+        SmartDashboard.putString(key + "Pose Estimation", mDrivePoseEstimator.toString());
     }
-
-
 }

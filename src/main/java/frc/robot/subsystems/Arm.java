@@ -19,6 +19,16 @@ public class Arm extends Subsystem {
     private final EntropyTalonSRX SecondaryShoulderMotor;
     private final EntropyTalonSRX ExtensionMotor;
 
+    // Rotation Information
+    private double mMaximumDegreesTarget;
+    private double mMinimumDegreesTarget;
+    private double mTargetedDegrees;
+
+    // Extension Information
+    private double mMaximumExtensionTarget;
+    private double mMinimumExtensionTarget;
+    private double mTargetedExtension;
+
     public static synchronized Arm getInstance() {
         if (mInstance == null) {
           mInstance = new Arm();
@@ -67,6 +77,11 @@ public class Arm extends Subsystem {
         ExtensionMotor.config_kD(0, 0);
         ExtensionMotor.configMotionAcceleration(10000);
         ExtensionMotor.configMotionCruiseVelocity(5000);
+
+        // Rotation Min, Max, Target
+        mMaximumDegreesTarget = 0;
+        mMinimumDegreesTarget = 0;
+        mTargetedDegrees = 0;
     }
 
     // Gets the Feed Forward Value based on Gravity
@@ -74,21 +89,30 @@ public class Arm extends Subsystem {
     //      0 & 180 are completely horizontal. Maximum KF
     public double getGravity(){
         double currentRadians = MasterShoulderMotor.getSelectedSensorPosition() * Constants.Misc.degreeToRadian;
+        // todo - that KF value might have to change by length of the robot
         double feedForward = 0.2 * Math.cos(currentRadians);
         return feedForward;
     }
 
     // Set the Arm Angle in Position Mode
     public void setArmAngle(double Degrees){
-        double feedForward = getGravity();
-        MasterShoulderMotor.set(ControlMode.MotionMagic, Degrees, DemandType.ArbitraryFeedForward, feedForward);
+        if(mMaximumDegreesTarget >= Degrees && mMinimumDegreesTarget <= Degrees)
+        {
+            double feedForward = getGravity();
+            MasterShoulderMotor.set(ControlMode.MotionMagic, Degrees, DemandType.ArbitraryFeedForward, feedForward);
+            mTargetedDegrees = Degrees;
+        }
     }
 
     // Se the Extension Postion in Position Mode
     public void setArmExtension(double Inches){
-        // TODO: Figure out Scaling Value
-        // TODO: arm extension should factor angle?
-        //ExtensionMotor.set(ControlMode.MotionMagic, Inches, DemandType.ArbitraryFeedForward, 0.3); 
+        if(mMaximumExtensionTarget >= Inches && mMinimumExtensionTarget <= Inches)
+        {
+            // TODO: Figure out Scaling Value
+            // TODO: arm extension should factor angle?
+            ExtensionMotor.set(ControlMode.MotionMagic, Inches, DemandType.ArbitraryFeedForward, 0.3); 
+            mTargetedExtension = Inches;
+        }
     }
 
     // Get the current arm angle
@@ -113,6 +137,43 @@ public class Arm extends Subsystem {
         MasterShoulderMotor.set(ControlMode.PercentOutput, Percent);
     }
 
+    // Set Arm Degrees Maximum Value
+    public void setArmRotationMaximum(double degrees)
+    {
+        mMaximumDegreesTarget = degrees;
+    }
+
+    // Set Arm Degrees Minimum Value
+    public void setArmRotationMinimum(double degrees)
+    {
+        mMinimumDegreesTarget = degrees;
+    }
+
+    // Get Arm Targeted Degrees
+    // This is not the value the arm acutally it, its the last commanded value
+    public double getArmTargtedDegrees()
+    {
+        return mTargetedDegrees;
+    }
+
+    // Set Arm Extension Maximum Value
+    public void setArmExtensionMaximum(double inches)
+    {
+        mMaximumExtensionTarget = inches;
+    }
+
+    // Set Arm Extensions Minimum Value
+    public void setArmExtensionMinimum(double inches)
+    {
+        mMinimumExtensionTarget = inches;
+    }
+
+    // Get Arm Targeted Extension
+    public double getArmTargetExtension()
+    {
+        return mTargetedExtension;
+    }
+
     public void updateSmartDashBoard(){
 
         //Arm Positioning and Extension
@@ -122,7 +183,13 @@ public class Arm extends Subsystem {
         SmartDashboard.putNumber(key + "Shoulder Secondary Percent Output", SecondaryShoulderMotor.getMotorOutputPercent());
         SmartDashboard.putNumber(key + "Extension Position", getArmExtension());
         SmartDashboard.putNumber(key + "Extension Percent Output", ExtensionMotor.getMotorOutputPercent());
-        SmartDashboard.putNumber(key + "Extension Per Output", ExtensionMotor.getMotorOutputPercent());
+        SmartDashboard.putNumber(key + "Maximum Arm Degrees", mMaximumDegreesTarget);
+        SmartDashboard.putNumber(key + "Minimum Arm Degrees", mMinimumDegreesTarget);
+        SmartDashboard.putNumber(key + "Target Arm Degrees", mTargetedDegrees);
+        SmartDashboard.putNumber(key + "Maximum Arm Extension", mMaximumExtensionTarget);
+        SmartDashboard.putNumber(key + "Minimum Arm Extension", mMinimumExtensionTarget);
+        SmartDashboard.putNumber(key + "Target Arm Extension", mTargetedExtension);
+
         MasterShoulderMotor.updateSmartdashboard();
         SecondaryShoulderMotor.updateSmartdashboard();
         ExtensionMotor.updateSmartdashboard();
@@ -132,7 +199,9 @@ public class Arm extends Subsystem {
     public void zeroSensors() {
         // TODO Auto-generated method stub
         MasterShoulderMotor.setSelectedSensorPosition(ArmTargets.START.armAngle);
+        mTargetedDegrees = ArmTargets.START.armAngle;
         ExtensionMotor.setSelectedSensorPosition(ArmTargets.START.armExtend);
+        mTargetedExtension = ArmTargets.START.armExtend;
     }
 
     @Override

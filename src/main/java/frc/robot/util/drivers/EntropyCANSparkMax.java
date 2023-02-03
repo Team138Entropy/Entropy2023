@@ -12,6 +12,7 @@ public class EntropyCANSparkMax extends CANSparkMax {
     {
         super(deviceNumber, mtype);
         setDeviceInfo(deviceNumber);
+        setDescription("");
     }
 
     private void setDeviceInfo(int deviceNumber){
@@ -30,11 +31,12 @@ public class EntropyCANSparkMax extends CANSparkMax {
 
     public void updateSmartdashboard()
     {    
-      // SmartDashboard.putString(deviceInfo + "/Description", description);
-       SmartDashboard.putNumber(deviceInfo + "/Voltage", getBusVoltage());
-       SmartDashboard.putNumber(deviceInfo + "/Applied Output", getAppliedOutput());
-       SmartDashboard.putBoolean(deviceInfo + "/Inverted", getInverted()); 
-       SmartDashboard.putNumber(deviceInfo + "/FirmwareVersion", getFirmwareVersion());
-       SmartDashboard.putNumber(deviceInfo + "/Motor Temperature", getMotorTemperature());
+       final String key = "CANSparkMax/" + deviceInfo;
+       SmartDashboard.putString(key + "/Description", description);
+       SmartDashboard.putNumber(key + "/Voltage", getBusVoltage());
+       SmartDashboard.putNumber(key + "/Applied Output", getAppliedOutput());
+       SmartDashboard.putBoolean(key + "/Inverted", getInverted()); 
+       SmartDashboard.putNumber(key + "/FirmwareVersion", getFirmwareVersion());
+       SmartDashboard.putNumber(key + "/Motor Temperature", getMotorTemperature());
     }
 }

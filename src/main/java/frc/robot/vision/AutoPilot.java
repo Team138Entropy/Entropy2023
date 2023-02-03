@@ -197,7 +197,7 @@ public class AutoPilot {
             mDrive.setModuleStates(targetSwerveModuleStates);
         } else if(AutoPilotMode.HoldPose == mDriveMode)
         {
-            
+            // Robot Pose will be constantly updated
             // Calculate Speeds to Reach Goal
             double xSpeed = !mXController.atGoal() ? mXController.calculate(mRobotPose.getX()) : 0;
             double ySpeed = !mYController.atGoal() ? mYController.calculate(mRobotPose.getY()) : 0;

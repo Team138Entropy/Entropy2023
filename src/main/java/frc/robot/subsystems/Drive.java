@@ -118,9 +118,11 @@ public class Drive extends Subsystem {
   // Other Variables
   private boolean mBrakeEnabled;
   private boolean mIsSnapping;
-  private boolean mIsButtonCorrecting;
+  private boolean mIsQuickAdjusting;
 
-  private ProfiledPIDController mSnapPidController;
+  private final ProfiledPIDController mSnapPidController;
+  private final ProfiledPIDController mQuickAdjustXController;
+  private final ProfiledPIDController mQuickAdjustYController;
   private PIDController mVisionPIDController;
   private TimeDelayedBoolean mDelayedBoolean;
 
@@ -154,7 +156,7 @@ public class Drive extends Subsystem {
     // Common Init
     mBrakeEnabled =  false;
     mIsSnapping = false;
-    mIsButtonCorrecting = false;
+    mIsQuickAdjusting = false;
 
     // Setup Snap Pid Controller
     mSnapPidController = new ProfiledPIDController(
@@ -165,7 +167,21 @@ public class Drive extends Subsystem {
     );
     mSnapPidController.enableContinuousInput(-Math.PI, Math.PI);
     mDelayedBoolean = new TimeDelayedBoolean();
-    
+
+    // Setup QuickAdjust Pid Controllers (X, Y)
+    mQuickAdjustXController = new ProfiledPIDController(
+      Constants.Drive.QuickAdjustConstants.x_Kp,
+      Constants.Drive.QuickAdjustConstants.x_Ki,
+      Constants.Drive.QuickAdjustConstants.x_Kd,
+      Constants.Drive.QuickAdjustConstants.xConstraints
+    );
+    mQuickAdjustYController = new ProfiledPIDController(
+      Constants.Drive.QuickAdjustConstants.y_Kp,
+      Constants.Drive.QuickAdjustConstants.y_Ki,
+      Constants.Drive.QuickAdjustConstants.y_Kd,
+      Constants.Drive.QuickAdjustConstants.yConstraints
+    );
+
     // reset gyro to have position to zero
     m_gyro.reset();
 
@@ -476,6 +492,12 @@ public class Drive extends Subsystem {
       }
     }
 
+    // Continue Adjusting
+    if(mIsQuickAdjusting) {
+
+    }
+
+
     // Determine Swerve Module States
     // SwerveModuleState(MetersPerSecond, Angle)
     SwerveModuleState[] swerveModuleStates = null;
@@ -585,6 +607,11 @@ public class Drive extends Subsystem {
     mIsSnapping = true;
   }
 
+  public void startQuickAdjust(Pose2d quickAdjust)
+  {
+
+    mIsQuickAdjusting = true;
+  }
 
   // Return Drive Style Type (differential, swerve)
   public DriveStyle getDriveStyle()
@@ -610,6 +637,7 @@ public class Drive extends Subsystem {
    SmartDashboard.putString("Drive Pose", getPose().toString());
    SmartDashboard.putBoolean("Break Enabled", mBrakeEnabled);
    SmartDashboard.putBoolean("Is Snapping", mIsSnapping);
+   SmartDashboard.putBoolean("Is Quick Adjusting", mIsQuickAdjusting);
    SmartDashboard.putNumber("Pigeon Yaw", mPigeon.getYaw().getDegrees());
 
    // Drive Style Specific Dashboard

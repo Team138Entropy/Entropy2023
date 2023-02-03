@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * An abstract class that is the basis of the robot's autonomous routines. This is implemented in auto modes (which are
@@ -153,7 +154,27 @@ public abstract class AutoModeBase {
 
     }
 
+    // Current Action Index
+    public int getCurrentAction()
+    {
+        return mCurrentAction;
+    }
+
+    // Get Action Count
+    public int getActionCount()
+    {
+        return mAutoActions.size();
+    }
+
     public boolean getIsInterrupted() {
         return mIsInterrupted;
+    }
+
+    public void updateSmartDashboard(String key)
+    {
+        SmartDashboard.putBoolean(key + "Running", isActive());
+        SmartDashboard.putNumber(key + "Current Action", getCurrentAction() + 1);
+        SmartDashboard.putNumber(key + "Total Actions", getActionCount());
+
     }
 }
