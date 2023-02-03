@@ -111,6 +111,41 @@
               "_source0": "network_table:///SmartDashboard/Target Position",
               "_title": "SmartDashboard/Target Position"
             }
+          },
+          "3,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/SendableChooser[0]",
+              "_title": "SmartDashboard/SendableChooser[0]"
+            }
+          },
+          "2,4": {
+            "size": [
+              4,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/AutoPilot/Goal Pose",
+              "_title": "SmartDashboard/AutoPilot/Goal Pose"
+            }
+          },
+          "5,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/AutoPilot/Running",
+              "_title": "AutoPilot",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
           }
         }
       }
@@ -160,7 +195,7 @@
             "content": {
               "_type": "ComboBox Chooser",
               "_source0": "network_table:///SmartDashboard/SendableChooser[1]",
-              "_title": "Auto Mode Chooser"
+              "_title": "SmartDashboard/SendableChooser[1]"
             }
           },
           "1,3": {

@@ -160,6 +160,7 @@ public class AutoPilot {
              */
         } else if(AutoPilotMode.HoldPose == mDriveMode)
         {
+            mGoalPose = mTargetedPose;
 
         }
     }
@@ -242,7 +243,7 @@ public class AutoPilot {
 
     public void updateSmartDashBoard()
     {
-        final String key = "VisionDriver/";
+        final String key = "AutoPilot/";
         SmartDashboard.putBoolean(key + "Running", mRunning);
         SmartDashboard.putString(key + "Mode", mDriveMode.toString());
         SmartDashboard.putBoolean(key + "Has Trajectory", mTrajectorySet);
