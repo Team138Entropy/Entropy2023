@@ -67,6 +67,7 @@ public class Arm {
     public void setArmAngle(double Degrees){
         double feedForward = getGravity();
         MasterShoulderMotor.set(ControlMode.MotionMagic, Degrees, DemandType.ArbitraryFeedForward, feedForward);
+        }
     }
 
     public void updateSmartDashBoard(){
