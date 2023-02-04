@@ -455,16 +455,16 @@ public class Robot extends TimedRobot {
        mArm.setArmExtension(mTestArmExtension);
        
        if (mOperatorInterface.setArmExtendedPlusOne()){
-         mTestArmExtension += 200;
+         mTestArmExtension += 1000;
        }
        else if (mOperatorInterface.setArmExtendedMinusOne()){
-         mTestArmExtension -= 200;
+         mTestArmExtension -= 1000;
        }
        else if (mOperatorInterface.setArmExtendedPlusFive()){
-         mTestArmExtension += 500;
+         mTestArmExtension += 3000;
        }
        else if (mOperatorInterface.setArmExtendedMinusFive()){
-         mTestArmExtension -= 500;
+         mTestArmExtension -= 3000;
        }      
  
         SmartDashboard.putNumber("testArmPos", mTestTargetPositionDegrees);

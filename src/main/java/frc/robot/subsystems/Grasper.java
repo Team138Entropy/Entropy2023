@@ -51,7 +51,7 @@ public class Grasper {
 
     private Grasper()
     {
-      GrasperSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.Talons.Grasper.PCMId);
+      GrasperSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
       GrasperWheelMotor = new EntropyCANSparkMax(Constants.Talons.Grasper.IntakeMotor, MotorType.kBrushless);
       mBeamSensor = new BeamSensor(0);
       beamActivationTimer = new Timer();

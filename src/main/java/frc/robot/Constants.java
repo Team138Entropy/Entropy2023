@@ -193,7 +193,7 @@ public class Constants {
     // More information detailed in the Swerve Module Class 
     public static class SwerveModules {
       public static class Module0 {
-        public static double AngleOffset = 114.7;
+        public static double AngleOffset = 205;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
@@ -208,7 +208,7 @@ public class Constants {
       }
 
       public static class Module1 {
-        public static double AngleOffset = 133.6;
+        public static double AngleOffset = 225;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
@@ -223,7 +223,7 @@ public class Constants {
       }
 
       public static class Module2 {
-        public static double AngleOffset = 66.4;
+        public static double AngleOffset = 158;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
@@ -238,7 +238,7 @@ public class Constants {
       }
 
       public static class Module3 {
-        public static double AngleOffset = 309.46;
+        public static double AngleOffset = 34;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
@@ -368,7 +368,8 @@ public class Constants {
     public static final boolean invertRotateAxis = false;
 
     /* Swerve Module Locations on the Robot */
-    public static final Translation2d[] swerveModuleLocations = {
+    /*
+         public static final Translation2d[] swerveModuleLocations = {
       new Translation2d(
         RobotDimensions.wheelBase/2.0, RobotDimensions.trackWidth/2.0
       ),
@@ -381,6 +382,32 @@ public class Constants {
       new Translation2d(
         -RobotDimensions.wheelBase/2.0, -RobotDimensions.trackWidth/2.0
       )
+    };
+     
+     */
+    public static final Translation2d[] swerveModuleLocations = {
+
+
+
+
+      new Translation2d(
+        RobotDimensions.wheelBase/2.0, -RobotDimensions.trackWidth/2.0
+      ),
+
+
+      new Translation2d(
+        -RobotDimensions.wheelBase/2.0, -RobotDimensions.trackWidth/2.0
+      ),
+
+
+      new Translation2d(
+        RobotDimensions.wheelBase/2.0, RobotDimensions.trackWidth/2.0
+      ),
+
+      new Translation2d(
+        -RobotDimensions.wheelBase/2.0, RobotDimensions.trackWidth/2.0
+      ),
+
     };
 
     /* Swerve Drive Kinematics based on the module locations */

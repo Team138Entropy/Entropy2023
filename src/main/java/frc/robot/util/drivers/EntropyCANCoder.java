@@ -26,6 +26,7 @@ public class EntropyCANCoder extends CANCoder {
         final String key = "CanCoders/" + deviceInfo;
         SmartDashboard.putNumber(key + "/FirmwareVersion", getFirmwareVersion());
         SmartDashboard.putNumber(key + "/AbsolutePosition", getAbsolutePosition());
+        SmartDashboard.putNumber(key + "/AbsolutePosition360", 360 - getAbsolutePosition());
         SmartDashboard.putNumber(key + "/Position", getPosition());
         SmartDashboard.putNumber(key + "/Velocity", getVelocity());
     }
