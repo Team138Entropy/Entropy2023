@@ -36,5 +36,6 @@ public class EntropyCANSparkMax extends CANSparkMax {
        SmartDashboard.putBoolean(deviceInfo + "/Inverted", getInverted()); 
        SmartDashboard.putNumber(deviceInfo + "/FirmwareVersion", getFirmwareVersion());
        SmartDashboard.putNumber(deviceInfo + "/Motor Temperature", getMotorTemperature());
+       
     }
 }

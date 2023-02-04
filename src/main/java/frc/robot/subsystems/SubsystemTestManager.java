@@ -15,11 +15,10 @@ public class SubsystemTestManager {
   //"is done" booleans for each tested thing
   private boolean shoulderCheck = false;
   private boolean extensionCheck = false;
+  private boolean grasperCheck = false;
 
-
-  //placeholder expected encoder value
-  private final double expectedShoulderValue = 100;
-  private final double expectedExtensionValue = 100;
+  //is done 
+  public boolean isRunning = false;
 
 
   public static synchronized SubsystemTestManager getInstance() {
@@ -35,12 +34,15 @@ public class SubsystemTestManager {
   }
 
   public void testInit(){
-    boolean isDone = false;
-    do{
+    if(!isRunning){
       testStart();
-      
+    }else{
+      testUpdate();
 
-    }while(isDone == false);
+      if(testUpdate() == true){
+        testEnd();
+      }
+    }
   }
 
   public void testStart(){
@@ -50,39 +52,61 @@ public class SubsystemTestManager {
     mGrasper.setGrasperWheelIntake();
     shoulderCheck = false;
     extensionCheck = false;
+    isRunning = true;
+
+    mArm.TestExtensionMotor.setExpectedEncoderValue(0, 0);
+    mArm.TestExtensionMotor.setExpectedCurrentValue(0, 0);
+
+    mArm.TestShoulderMotor.setExpectedEncoderValue(0, 0);
+    mArm.TestShoulderMotor.setExpectedCurrentValue(0, 0);
+
+    mGrasper.TestGrasperMotor.setExpectedEncoderValue(0, 0);
+    mGrasper.TestGrasperMotor.setExpectedCurrentValue(0, 0);
   }
 
   public boolean testUpdate(){
+    mArm.TestShoulderMotor.setEncoderValue();
+    mArm.TestExtensionMotor.setCurrentValue();
+    mGrasper.TestGrasperMotor.setEncoderValue();
+
+    mArm.TestShoulderMotor.setCurrentValue();
+    mArm.TestExtensionMotor.setCurrentValue();
+    mGrasper.TestGrasperMotor.setCurrentValue();
+
     if(testTimer.hasElapsed(2)){
-        if(mArm.getArmAngle() > expectedShoulderValue){
-            shoulderCheck = true;
-        }
-        if(mArm.getArmExtension() > expectedExtensionValue){
-            extensionCheck = true;
-        }
-        testTimer.stop();
-        return true;
+      shoulderCheck = mArm.TestShoulderMotor.getEncoderStatus() && mArm.TestShoulderMotor.getCurrentStatus();
+      extensionCheck = mArm.TestExtensionMotor.getEncoderStatus() && mArm.TestExtensionMotor.getCurrentStatus();
+      grasperCheck = mGrasper.TestGrasperMotor.getEncoderStatus() && mGrasper.TestGrasperMotor.getCurrentStatus();
+      testTimer.stop();
+      return true;
     }
     return false;
   }
 
-  public boolean testEnd(){
+  public void testEnd(){
     testTimer.reset();
     mArm.setShoulderJog(0);
     mArm.setExtensionJog(0);
     mGrasper.cancelGrasperWheelIntake();
-    return true;
+    isRunning = false;
+    getStatus();
   }
 
   public void getStatus(){
-    if(shoulderCheck && extensionCheck){
-        System.out.println("everything is good");
-    }else if(shoulderCheck == false && extensionCheck){
-        System.out.println("The extension is good but the shoulder is broken");
-    }else if(extensionCheck == false && shoulderCheck){
-        System.out.println("The shoulder is good but the extension is broken");
+    if(shoulderCheck){
+      System.out.println("shoulder is good");
     }else{
-        System.out.println("Both the shoulder and the extension is broken");
+      System.out.println("shoulder is broken");
+    }
+    if(extensionCheck){
+      System.out.println("extension is good");
+    }else{
+      System.out.println("extension is broken");
+    }
+    if(grasperCheck){
+      System.out.println("grasper is good");
+    }else{
+      System.out.println("grasper is broken");
     }
   }
     

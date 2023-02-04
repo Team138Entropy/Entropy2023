@@ -32,21 +32,21 @@ public class TestableMotor {
     private final EntropyTalonFX TalonFX;
 
     //3 contructors for each motor type
-    public TestableMotor(EntropyTalonSRX talonSRX) {
+    public TestableMotor(EntropyTalonSRX talonSRX){
         testedMotorType = MotorType.TALON_SRX;
         TalonSRX = talonSRX;
         CanSparkMax = null;
         TalonFX = null;
     }
 
-    public TestableMotor(EntropyTalonFX talonFX) {
+    public TestableMotor(EntropyTalonFX talonFX){
         testedMotorType = MotorType.TALON_FX;
        TalonFX = talonFX;
        CanSparkMax = null;
        TalonSRX = null;
     }
 
-    public TestableMotor(EntropyCANSparkMax sparkMax) {
+    public TestableMotor(EntropyCANSparkMax sparkMax){
         testedMotorType = MotorType.SPARK_MAX;
        CanSparkMax = sparkMax;
        TalonSRX = null;
@@ -61,11 +61,11 @@ public class TestableMotor {
 
     public void setEncoderValue(){
         if(testedMotorType == MotorType.SPARK_MAX){
-            CanSparkMax.getEncoder();
+            motorEncoderValue = CanSparkMax.getEncoder().getPosition();
         }else if(testedMotorType == MotorType.TALON_FX){
-            TalonFX.getEncoderTicks();
+            motorEncoderValue = TalonFX.getEncoderTicks();
         }else if(testedMotorType == MotorType.TALON_SRX){
-            TalonSRX.getSelectedSensorPosition();
+            motorEncoderValue = TalonSRX.getSelectedSensorPosition();
         }
     }
 
@@ -75,8 +75,14 @@ public class TestableMotor {
         maxExpectedCurrent = maxExpectedCurrentValue;
     }
 
-    public void setCurrentValue(double current){
-        motorCurrent = current;
+    public void setCurrentValue(){
+        if(testedMotorType == MotorType.SPARK_MAX){
+            motorCurrent = CanSparkMax.getOutputCurrent();
+        }else if(testedMotorType == MotorType.TALON_FX){
+            motorCurrent = TalonFX.getSupplyCurrent();
+        }else if(testedMotorType == MotorType.TALON_SRX){
+            motorCurrent = TalonSRX.getSupplyCurrent();
+        }
     }
 
     //status functions check the real value compaired to the range of expected values and returns true if they are in the expected range
