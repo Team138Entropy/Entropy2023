@@ -409,6 +409,41 @@ public class OperatorInterface {
     public boolean getGrasperClosed() {
         return mOperatorController.getTrigger(Side.LEFT);
     }
+
+
+
+
+    public boolean getArmAnglePlusOne(){
+        return testIncrimentRotation.update(mOperatorController.getButton(Button.Y));
+    }
+
+    public boolean getArmAngleMinusOne(){
+        return testDecrementRotation.update(mOperatorController.getButton(Button.A));
+    }
+
+    public boolean getArmAnglePlusFive(){
+        return testIncrimentRotation.update(mOperatorController.getButton(Button.X));
+    }
+
+    public boolean getArmAngleMinusFive(){ 
+        return testDecrementRotation.update(mOperatorController.getButton(Button.B));
+    }
+
+    public boolean setArmExtendedPlusOne(){
+        return testIncrimentExtension.update(0 == mOperatorController.getDPad());
+    }
+
+    public boolean setArmExtendedMinusOne(){
+        return testDecrementExtension.update((180 == mOperatorController.getDPad()));
+    }
+
+    public boolean setArmExtendedPlusFive(){
+        return testIncrimentExtension.update(270 == mOperatorController.getDPad());
+    }
+
+    public boolean setArmExtendedMinusFive(){
+        return testDecrementExtension.update(90 == mOperatorController.getDPad());
+    }
 }
 
 

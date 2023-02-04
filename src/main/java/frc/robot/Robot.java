@@ -108,6 +108,10 @@ public class Robot extends TimedRobot {
   private boolean mPositionMode = false;
   private boolean mGrasperOpen = true;
 
+  private double mTestTargetPositionDegrees = ArmTargets.HOME_BACKSIDE.armAngle;
+  private double mTestArmExtension = 0;
+
+
   // Arm Target
   public ArmTargets mCurrentArmTarget = ArmTargets.HOME_BACKSIDE;
   public ArmControlType mArmControlType = ArmControlType.Simple;
@@ -409,6 +413,59 @@ public class Robot extends TimedRobot {
     //Automatic functions
     if (mPositionMode == true) {
 
+            //preset arm positions
+      /*
+       if (mOperatorInterface.getArmJogForward()){
+        mArm.setArmAngle(135);
+      }
+      else if (mOperatorInterface.getArmJogMidForward()){
+        mArm.setArmAngle(115);
+      }
+      else if (mOperatorInterface.getArmJogMidBackward()){
+        mArm.setArmAngle(65);
+      }
+      else if (mOperatorInterface.getArmJogBackward()){
+        mArm.setArmAngle(45);
+      }
+      else {
+        mArm.setArmAngle(90);
+      }
+       */
+
+       //Use Y/A/X/B to increase/decrease the current arm angle by 1 or 5 degrees  
+       mArm.setArmAngle(mTestTargetPositionDegrees);
+
+       if (mOperatorInterface.getArmAnglePlusOne()){
+         mTestTargetPositionDegrees += 1;
+       }
+       else if (mOperatorInterface.getArmAngleMinusOne()){
+         mTestTargetPositionDegrees -= 1;
+       }
+       else if (mOperatorInterface.getArmAnglePlusFive()){
+         mTestTargetPositionDegrees += 5;
+       }
+       else if (mOperatorInterface.getArmAngleMinusFive()){
+         mTestTargetPositionDegrees -= 5;
+       }
+ 
+       //Use the d-pad to adjust the arm extension by an inch or 5 inches
+       mArm.setArmExtension(mTestArmExtension);
+       
+       if (mOperatorInterface.setArmExtendedPlusOne()){
+         mTestArmExtension += 1;
+       }
+       else if (mOperatorInterface.setArmExtendedMinusOne()){
+         mTestArmExtension -= 1;
+       }
+       else if (mOperatorInterface.setArmExtendedPlusFive()){
+         mTestArmExtension += 5;
+       }
+       else if (mOperatorInterface.setArmExtendedMinusFive()){
+         mTestArmExtension -= 5;
+       }      
+ 
+
+      /*
       //preset arm positions
       if (mOperatorInterface.getArmJogForward()){
         mArm.setArmAngle(135);
@@ -447,6 +504,7 @@ public class Robot extends TimedRobot {
       else if (mOperatorInterface.getArmExtended0()){
         mArm.setArmExtension(0);
       }
+      */
 
     }
 
