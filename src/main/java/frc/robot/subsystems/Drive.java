@@ -309,8 +309,9 @@ public class Drive extends Subsystem {
 
   // Zeros all Drive related sensors
   public void zeroSensors() {
-    zeroEncoders(); //zero encoders
-    zeroHeading(); //zero gyro
+    //zeroEncoders(); //zero encoders
+    //zeroHeading(); //zero gyro
+    
   }
 
   // Used for Test
@@ -538,7 +539,7 @@ public class Drive extends Subsystem {
                               translation.getX(), 
                               translation.getY(), 
                               rotation, 
-                              mRealRobot ? mPigeon.getYaw().getWPIRotation2d() : mPigeon.getSimYaw().getWPIRotation2d()
+                              true ? mPigeon.getYaw().getWPIRotation2d() : mPigeon.getSimYaw().getWPIRotation2d()
                           )
                           : new ChassisSpeeds(
                               translation.getX(), 

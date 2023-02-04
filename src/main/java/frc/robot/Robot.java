@@ -179,6 +179,8 @@ public class Robot extends TimedRobot {
     // Controllable Panel
     mPowerPanel.setSwitchableChannel(true);
     mArm.zeroSensors();
+    mDrive.zeroHeading();
+    mDrive.zeroEncoders();
   }
 
   /**
@@ -349,7 +351,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
-    mGrasper.setGrasperWheelIntake();
+    DriveLoop(mOperatorInterface.getDrivePrecisionSteer(), true);
 
       //Allows the operator to swap freely between both test modes by pressing START
     if (mJogMode == true && mOperatorInterface.getModeSwitch()){
@@ -380,10 +382,10 @@ public class Robot extends TimedRobot {
 
       //Manual extension of the arm using RB/LB
       if (mOperatorInterface.getArmJogExtended()){
-        mArm.setExtensionJog(0.4);
+        mArm.setExtensionJog(0.7);
       } 
       else if (mOperatorInterface.getArmJogRetracted()){
-        mArm.setExtensionJog(-0.4);
+        mArm.setExtensionJog(-0.7);
       }      
       else {
         mArm.setExtensionJog(0);
@@ -400,7 +402,7 @@ public class Robot extends TimedRobot {
     else {
       mArm.setShoulderJog(0);
     }
-
+    /* 
      //Grasper Open/Close using RT
      if (mOperatorInterface.getGrasperModeSwap()){
       mGrasper.setGrasperClosed();
@@ -408,6 +410,7 @@ public class Robot extends TimedRobot {
     else if (mOperatorInterface.getGrasperWheelIntake()){
       mGrasper.setGrasperOpen();
     }
+    */
     }  
     
     //Automatic functions
@@ -452,18 +455,20 @@ public class Robot extends TimedRobot {
        mArm.setArmExtension(mTestArmExtension);
        
        if (mOperatorInterface.setArmExtendedPlusOne()){
-         mTestArmExtension += 1;
+         mTestArmExtension += 200;
        }
        else if (mOperatorInterface.setArmExtendedMinusOne()){
-         mTestArmExtension -= 1;
+         mTestArmExtension -= 200;
        }
        else if (mOperatorInterface.setArmExtendedPlusFive()){
-         mTestArmExtension += 5;
+         mTestArmExtension += 500;
        }
        else if (mOperatorInterface.setArmExtendedMinusFive()){
-         mTestArmExtension -= 5;
+         mTestArmExtension -= 500;
        }      
  
+        SmartDashboard.putNumber("testArmPos", mTestTargetPositionDegrees);
+        SmartDashboard.putNumber("testExtensionPos", mTestArmExtension);
 
       /*
       //preset arm positions
@@ -508,6 +513,16 @@ public class Robot extends TimedRobot {
 
     }
 
+    // Grasper Functionality
+    if(mOperatorInterface.getGrasperOpen()){
+      mGrasper.setGrasperOpen();
+    }else if (
+      mOperatorInterface.getGrasperClosed() || mGrasper.getBeamSensorBroken()
+    ){
+      // Close Grasper by close press or by beam
+      mGrasper.setGrasperClosed();
+    }
+    mGrasper.update();
   }
 
   /** This function is called once when the robot is first started up. */
@@ -626,7 +641,7 @@ public class Robot extends TimedRobot {
 
     boolean wantsAutoSteer = mOperatorInterface.getDriveAutoSteer();
     if(mOperatorInterface.getBalanceMode() && mBalanceMode == false){
-      mBalanceMode = true;
+      mBalanceMode = false;
     }else if(mOperatorInterface.getBalanceMode() && mBalanceMode == true){
       mBalanceMode = false;
     }
@@ -728,7 +743,7 @@ public class Robot extends TimedRobot {
         else if(mOperatorInterface.getSlowBalance()){
           mChargingStationAutoPilot.update(true, mOperatorInterface.getAutoPilotLeftStrafe(), mOperatorInterface.getAutoPilotRightStrafe());
         }else{
-          mDrive.setBrake(true);
+          //mDrive.setBrake(true);
         }
       }
       else
@@ -736,7 +751,7 @@ public class Robot extends TimedRobot {
         // Normal Swerve Operation
 
         // Do Not AutoPilot Drive
-        mAutoPilot.stop();
+        //mAutoPilot.stop();
         
         // Swerve Snap to a Direction (Button Press Quickly Moves Robot)
         SwerveCardinal snapCardinal = mOperatorInterface.getSwerveSnap();
@@ -749,7 +764,7 @@ public class Robot extends TimedRobot {
         SwerveQuickAdjust quickAdjust = mOperatorInterface.getSwerveQuickAdjust();
         if(SwerveQuickAdjust.NONE != quickAdjust)
         {
-          mDrive.startQuickAdjust(quickAdjust.targetPose);
+        //  mDrive.startQuickAdjust(quickAdjust.targetPose);
         }
 
         // Swerve Drive

@@ -76,7 +76,7 @@ public class Constants {
     }
 
     public static class Sensors {
-      public static final int pigeonCan = 13;
+      public static final int pigeonCan = 25;
     }
 
     public static class PowerDistribution {
@@ -193,7 +193,7 @@ public class Constants {
     // More information detailed in the Swerve Module Class 
     public static class SwerveModules {
       public static class Module0 {
-        public static double AngleOffset = 202;
+        public static double AngleOffset = 205;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
@@ -208,7 +208,7 @@ public class Constants {
       }
 
       public static class Module1 {
-        public static double AngleOffset = 224;
+        public static double AngleOffset = 225;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
@@ -223,7 +223,7 @@ public class Constants {
       }
 
       public static class Module2 {
-        public static double AngleOffset = 156;
+        public static double AngleOffset = 157;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
@@ -238,7 +238,7 @@ public class Constants {
       }
 
       public static class Module3 {
-        public static double AngleOffset = 40;
+        public static double AngleOffset = 37;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(

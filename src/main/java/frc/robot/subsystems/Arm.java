@@ -70,7 +70,7 @@ public class Arm extends Subsystem {
         ExtensionMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,LimitSwitchNormal.NormallyClosed);
         ExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
         ExtensionMotor.setInverted(false);
-        ExtensionMotor.setSensorPhase(true);
+        ExtensionMotor.setSensorPhase(false);
         ExtensionMotor.config_kF(0, 1);
         ExtensionMotor.config_kP(0, 0.9);
         ExtensionMotor.config_kI(0, 0);
@@ -82,6 +82,9 @@ public class Arm extends Subsystem {
         mMaximumDegreesTarget = 0;
         mMinimumDegreesTarget = 0;
         mTargetedDegrees = 0;
+
+        mMaximumExtensionTarget = 240861;
+        mMinimumExtensionTarget = 0;
     }
 
     // Gets the Feed Forward Value based on Gravity
@@ -189,6 +192,7 @@ public class Arm extends Subsystem {
         SmartDashboard.putNumber(key + "Maximum Arm Extension", mMaximumExtensionTarget);
         SmartDashboard.putNumber(key + "Minimum Arm Extension", mMinimumExtensionTarget);
         SmartDashboard.putNumber(key + "Target Arm Extension", mTargetedExtension);
+        SmartDashboard.putString(key + "extension control mode", ExtensionMotor.getControlMode().name());
 
         MasterShoulderMotor.updateSmartdashboard();
         SecondaryShoulderMotor.updateSmartdashboard();
