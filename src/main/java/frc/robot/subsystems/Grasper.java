@@ -78,7 +78,7 @@ public class Grasper {
   public void setGrasperWheelIntake(){
     GrasperWheelMotor.set(0.2);
   }
-
+    
   // Stop the Intake Motor
   public void cancelGrasperWheelIntake(){
     GrasperWheelMotor.set(0);

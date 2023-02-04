@@ -105,6 +105,8 @@ public class Robot extends TimedRobot {
   private boolean mJogMode = true;
   private boolean mPositionMode = false;
   private boolean mGrasperOpen = true;
+  private double mTestTargetPositionDegrees = 0;
+  private double mTestArmExtension = 0;
 
   // Arm Target
   public ArmTargets mCurrentArmTarget = ArmTargets.HOME_BACKSIDE;
@@ -313,6 +315,8 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
 
+    
+    
       //Allows the operator to swap freely between both test modes by pressing START
     if (mJogMode == true && mOperatorInterface.getModeSwitch()){
         mJogMode = false;
@@ -376,7 +380,8 @@ public class Robot extends TimedRobot {
     if (mPositionMode == true) {
 
       //preset arm positions
-      if (mOperatorInterface.getArmJogForward()){
+      /*
+       if (mOperatorInterface.getArmJogForward()){
         mArm.setArmAngle(135);
       }
       else if (mOperatorInterface.getArmJogMidForward()){
@@ -391,6 +396,39 @@ public class Robot extends TimedRobot {
       else {
         mArm.setArmAngle(90);
       }
+       */
+
+       //Use Y/A/X/B to increase/decrease the current arm angle by 1 or 5 degrees  
+      mArm.setArmAngle(mTestTargetPositionDegrees);
+
+      if (mOperatorInterface.getArmAnglePlusOne()){
+        mTestTargetPositionDegrees += 1;
+      }
+      else if (mOperatorInterface.getArmAngleMinusOne()){
+        mTestTargetPositionDegrees -= 1;
+      }
+      else if (mOperatorInterface.getArmAnglePlusFive()){
+        mTestTargetPositionDegrees += 5;
+      }
+      else if (mOperatorInterface.getArmAngleMinusFive()){
+        mTestTargetPositionDegrees -= 5;
+      }
+
+      //Use the d-pad to adjust the arm extension by an inch or 5 inches
+      mArm.setArmExtension(mTestArmExtension);
+      
+      if (mOperatorInterface.setArmExtendedPlusOne()){
+        mTestArmExtension += 1;
+      }
+      else if (mOperatorInterface.setArmExtendedMinusOne()){
+        mTestArmExtension -= 1;
+      }
+      else if (mOperatorInterface.setArmExtendedPlusFive()){
+        mTestArmExtension += 5;
+      }
+      else if (mOperatorInterface.setArmExtendedMinusFive()){
+        mTestArmExtension -= 5;
+      }      
 
       //Automatic closing of the grasper
       if (mGrasper.getBeamSensorBroken() == true){
@@ -401,6 +439,7 @@ public class Robot extends TimedRobot {
       }
       
       //Automatic extension positions 
+      /*
       if (mOperatorInterface.getArmExtended2()){
         mArm.setArmExtension(2);
       }
@@ -413,6 +452,7 @@ public class Robot extends TimedRobot {
       else if (mOperatorInterface.getArmExtended0()){
         mArm.setArmExtension(0);
       }
+      */
 
     }
 
@@ -445,9 +485,11 @@ public class Robot extends TimedRobot {
     mPigeon.rotateSimYaw(sRotation);
 
     // Current Targeted Arm into Mechanism Sim
-    mSimMechanism.SetArmAngle(mCurrentArmTarget.armAngle);
-    mSimMechanism.SetArmLength(mCurrentArmTarget.armExtend);
-
+   /* mSimMechanism.SetArmAngle(mCurrentArmTarget.armAngle);
+    mSimMechanism.SetArmLength(mCurrentArmTarget.armExtend); */ 
+    mSimMechanism.SetArmAngle(mTestTargetPositionDegrees);
+    mSimMechanism.SetArmLength(mTestArmExtension);
+   
     // Process Frame where the Robot currently is
     mPhotonVision.simVision.processFrame(mField.getRobotPose());  
   }

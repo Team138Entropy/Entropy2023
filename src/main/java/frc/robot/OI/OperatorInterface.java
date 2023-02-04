@@ -271,6 +271,22 @@ public class OperatorInterface {
         return mDriverController.getButton(Button.RB);
     }
 
+    public boolean getArmAnglePlusOne(){
+        return mOperatorController.getButton(Button.Y);
+    }
+
+    public boolean getArmAngleMinusOne(){
+        return mOperatorController.getButton(Button.A);
+    }
+
+    public boolean getArmAnglePlusFive(){
+        return mOperatorController.getButton(Button.X);
+    }
+
+    public boolean getArmAngleMinusFive(){
+        return mOperatorController.getButton(Button.B);
+    }
+
     public boolean getArmExtended2() {
         return (0 == mDriverController.getDPad());
     }
@@ -285,6 +301,22 @@ public class OperatorInterface {
 
     public boolean getArmExtended0() {
         return (270 == mDriverController.getDPad());
+    }
+
+    public boolean setArmExtendedPlusOne(){
+        return (0 == mOperatorController.getDPad());
+    }
+
+    public boolean setArmExtendedMinusOne(){
+        return (180 == mOperatorController.getDPad());
+    }
+
+    public boolean setArmExtendedPlusFive(){
+        return (270 == mOperatorController.getDPad());
+    }
+
+    public boolean setArmExtendedMinusFive(){
+        return (90 == mOperatorController.getDPad());
     }
 
     public boolean getArmJogRetracted() {
