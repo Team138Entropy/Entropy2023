@@ -38,6 +38,11 @@ public class OperatorInterface {
 
     private LatchedBoolean balanceDrive = new LatchedBoolean();
 
+    // Test Position Mode Control
+    private LatchedBoolean testIncrimentRotation = new LatchedBoolean();
+    private LatchedBoolean testDecrementRotation = new LatchedBoolean();
+    private LatchedBoolean testIncrimentExtension = new LatchedBoolean();
+    private LatchedBoolean testDecrementExtension = new LatchedBoolean();
 
     public static synchronized OperatorInterface getInstance() {
         if (mInstance == null) {

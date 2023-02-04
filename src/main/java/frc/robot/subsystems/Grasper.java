@@ -104,9 +104,9 @@ public class Grasper {
         setGrasperWheelIntake();
 
         if (mGrasperOpen == true) {
-          GrasperSolenoid.set(true);
           mGrasperOpen = false;
         }
+        GrasperSolenoid.set(true);
         
         if (getGrasperTimeElapsed1() == true){
           mGrasperState = GrasperState.FullyClosed;
@@ -115,13 +115,13 @@ public class Grasper {
       break;
       case Open:
         // TODO - Do we need to do anything here?
-      GrasperSolenoid.set(false);
-      setGrasperWheelIntake();
-      mGrasperOpen = true;
+        GrasperSolenoid.set(false);
+        setGrasperWheelIntake();
+        mGrasperOpen = true;
 
-      if (getBeamSensorBroken() == true){
-        mGrasperState = GrasperState.Closed;
-      }
+        if (getBeamSensorBroken() == true){
+          mGrasperState = GrasperState.Closed;
+        }
 
       break;
       default:

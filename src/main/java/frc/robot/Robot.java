@@ -269,6 +269,9 @@ public class Robot extends TimedRobot {
     mAutoModeExecutor.setAutoMode(mAutoModes.getSelected());
     mAutoModeBase = mAutoModes.getSelected();
     mAutoModeBase.reset();
+
+    // Close Grasper
+    mGrasper.setGrasperClosed();
   }
 
   /** This function is called periodically during autonomous. */
@@ -297,6 +300,9 @@ public class Robot extends TimedRobot {
 
     // Zero Drive Sensors
     mDrive.zeroSensors();
+
+    // Close Grasper
+    mGrasper.setGrasperClosed();
   }
 
   /** This function is called periodically during operator control. */
@@ -332,7 +338,8 @@ public class Robot extends TimedRobot {
   /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {
-
+    // Close Grasper
+    mGrasper.setGrasperClosed();
   }
 
   /** This function is called periodically during test mode. */
@@ -522,13 +529,14 @@ public class Robot extends TimedRobot {
     {
       // Simple Arm Control Type (Do not rotate arm until extension is Retracted)
       // If you want to move the arm to a different rotation angle, arm extension must be retracted
+      // This is still a todo! 
       mArm.setArmAngle(mCurrentArmTarget.armAngle + mManualTargetOffset);
       mArm.setArmExtension(mCurrentArmTarget.armExtend + mManualExtendOffset);
     }
     else if(ArmControlType.Advanced == mArmControlType)
     {
       // TODO: Allow Arm to move with extension out
-      // This is more complicated
+      // This is more complicated.. we might not get to this.. or need it
     }
  
 
