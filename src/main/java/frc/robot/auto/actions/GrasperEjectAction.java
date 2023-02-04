@@ -18,7 +18,7 @@ public class GrasperEjectAction implements Action{
   
     @Override
     public void update(){
-      mGrasper.setGrasperClosed();
+      mGrasper.setGrasperOpen();
       
       mLoopCount++;
     }
