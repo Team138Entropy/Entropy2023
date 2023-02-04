@@ -58,10 +58,9 @@ public class SimMechanism {
         // Grasper Connection Ligament (Left Side)
         mGrasperConnection = mGrasperRootLeft.append(new MechanismLigament2d("Grasper Connection", 5, 0));
         // Left Grasper Ligament
-        mLeftClaw = mGrasperRootLeft.append(new MechanismLigament2d("Left Claw", 5, 90));
+        mLeftClaw = mGrasperRootLeft.append(new MechanismLigament2d("Left Claw", 3, 90));
         // Right Grasper Ligament
-        mRightClaw = mGrasperRootRight.append(new MechanismLigament2d("Right Claw", 5, 90));
-        
+        mRightClaw = mGrasperRootRight.append(new MechanismLigament2d("Right Claw", 3, 90));      
 
         // Useful Methods on mArm:
         //mArm.setAngle(0);
@@ -80,32 +79,26 @@ public void SetArmAngle (double angle ){
 
 }
 
-public void SetArmLength (double length){
+    public void SetArmLength (double length){
     if(length <= 1.5 && length >= 1 ){
             mArm.setLength(length);
         }
     }
 
+    // Close Grasper
+    // Moves Grasper to close state
+    public void closeGrasper(){
+        mLeftClaw.setAngle(45);
+        mRightClaw.setAngle(135);
+    }
+
+    // Open Grasper 
+    // Move Graspers to open state
+    public void openGrasper(){
+        mLeftClaw.setAngle(90);
+        mRightClaw.setAngle(90);
+    }
     
-public void simGrasperState (double angle){
-    if(angle <= 0 && angle >= -360){
-        angle = angle +360;
-
-    }
-        
-    if(angle <= 230 || angle >= 310){
-        mArm.setAngle(angle);
-    }
-}
-
-/*
-if (mOperatorInterface.getSimGrasperClosed()){
-    mGrasper.setSimGrasperClosed();
-}
-*/
-
-// make it so the mode changes stuff not buttons
-
     public void updateSmartDashboard() {
         final String key = "SimMechanism/";
         SmartDashboard.putData(key + "Arm Mechanism", mArmMech);

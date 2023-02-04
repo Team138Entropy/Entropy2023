@@ -464,10 +464,21 @@ public class Robot extends TimedRobot {
     double sRotation = mOperatorInterface.getSwerveRotation();
     mPigeon.rotateSimYaw(sRotation);
 
+    // Arm
     // Current Targeted Arm into Mechanism Sim
+    // This will set the actuall commanded 
     //mSimMechanism.SetArmAngle(mCurrentArmTarget.armAngle + mManualTargetOffset);
     mSimMechanism.SetArmAngle(mArm.getArmTargtedDegrees());
     mSimMechanism.SetArmLength(mCurrentArmTarget.armExtend + mManualExtendOffset);
+
+    // Grasper - Open or Close
+    if(mGrasper.getGrasperState() == Grasper.GrasperState.Open)
+    {
+      mSimMechanism.openGrasper();
+    } else 
+    {
+      mSimMechanism.closeGrasper();
+    }
 
     // Process Frame where the Robot currently is
     mPhotonVision.simVision.processFrame(mField.getRobotPose());  

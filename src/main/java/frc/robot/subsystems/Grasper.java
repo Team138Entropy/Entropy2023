@@ -19,7 +19,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 public class Grasper {
     private static Grasper mInstance;
 
-
     //Grasper pneumatics
     private final Solenoid GrasperSolenoid;
     //NEO Motor 
@@ -35,7 +34,7 @@ public class Grasper {
     private boolean mGrasperOpen = false;
 
     // Grasper State
-    private enum GrasperState {
+    public enum GrasperState {
       FullyClosed,
       Closed,
       Open
@@ -150,7 +149,12 @@ public class Grasper {
       return !mBeamSensor.get();
     }
     return false;
-}
+  }
+
+  // Get Current Grasper State
+  public GrasperState getGrasperState(){
+    return mGrasperState;
+  }
 
   public void updateSmartDashBoard(){
     final String key = "Grasper/";
