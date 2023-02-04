@@ -193,7 +193,7 @@ public class Constants {
     // More information detailed in the Swerve Module Class 
     public static class SwerveModules {
       public static class Module0 {
-        public static double AngleOffset = 205;
+        public static double AngleOffset = 114.7;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
@@ -208,7 +208,7 @@ public class Constants {
       }
 
       public static class Module1 {
-        public static double AngleOffset = 225;
+        public static double AngleOffset = 133.6;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
@@ -223,7 +223,7 @@ public class Constants {
       }
 
       public static class Module2 {
-        public static double AngleOffset = 157;
+        public static double AngleOffset = 66.4;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
@@ -238,7 +238,7 @@ public class Constants {
       }
 
       public static class Module3 {
-        public static double AngleOffset = 37;
+        public static double AngleOffset = 309.46;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
