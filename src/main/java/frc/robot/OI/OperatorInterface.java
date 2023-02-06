@@ -74,6 +74,24 @@ public class OperatorInterface {
     }
 
 
+    // SwerveTranslation that only allows movement in 1 direction
+    public Translation2d getSimpleSwerveTranslation()
+    {
+        // X and Y Components
+        double x = 0;
+        double y = 0;
+        if (mDriverController.getDPad() == 0) {
+            x = 1; // Move Forward (UpField)
+        }else if (mDriverController.getDPad() == 90) {
+            y = -1; // Move Left
+        }else if (mDriverController.getDPad() == 180) {
+            x = -1; // Move Backwards (DownField)
+        }else if (mDriverController.getDPad() == 270) {
+            y = 1; // Move Right
+        }
+        return new Translation2d(x, y);
+    }
+
     /* Swerve Drive Controls */
     public Translation2d getSwerveTranslation() {
         // joystick inputs
@@ -136,21 +154,7 @@ public class OperatorInterface {
         return result;
     }
 
-    // Get Quick Movement to a Direction
-    public SwerveQuickAdjust getSwerveQuickAdjust() {
-        SwerveQuickAdjust result = SwerveQuickAdjust.NONE;
-
-        if (mDriverController.getDPad() == 0) {
-            result = SwerveQuickAdjust.FORWARD;
-        }else if (mDriverController.getDPad() == 90) {
-            result = SwerveQuickAdjust.RIGHT;
-        }else if (mDriverController.getDPad() == 180) {
-            result = SwerveQuickAdjust.BACKWARD;
-        }else if (mDriverController.getDPad() == 270) {
-            result = SwerveQuickAdjust.LEFT;
-        }
-        return result;
-    }
+ 
 
     // Returns the Targeted Position on the Field
     public TargetedPositions getScoringCommand() {

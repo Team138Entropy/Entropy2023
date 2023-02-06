@@ -114,6 +114,7 @@ public class AutoPilot {
         mRobotPose = currentRobotPose;
     }
 
+    // Deprecated?
     private void start()
     {
         // Not Currently Running!
@@ -165,6 +166,7 @@ public class AutoPilot {
         }
     }
 
+    // Deprecated?
     public void update() 
     {
         // Start if not started
@@ -215,6 +217,7 @@ public class AutoPilot {
         }
     }
 
+    // Deprecated?
     public void stop()
     {
         mRunning = false;
@@ -229,6 +232,33 @@ public class AutoPilot {
         {
 
         }
+    }
+
+    // targetPose
+    // constantly targets the pose compared to the robot pose
+    public void targetPose(Pose2d targetPose)
+    {
+        // Store targeted Pose for Logging Purposes
+        mTargetedPose = targetPose; 
+
+        // Set Goals into PID Controller
+        mXController.setGoal(targetPose.getX());
+        mYController.setGoal(targetPose.getY());
+        mOmegaController.setGoal(targetPose.getRotation().getRadians());
+
+        // Calculate Speeds based on Robot Pose
+        double xSpeed = !mXController.atGoal() ? mXController.calculate(mRobotPose.getX()) : 0;
+        double ySpeed = !mYController.atGoal() ? mYController.calculate(mRobotPose.getY()) : 0;
+        double omegaSpeed = !mOmegaController.atGoal() ? mOmegaController.calculate(mRobotPose.getRotation().getRadians()) : 0;
+
+        // Set Speeds into Swerve System
+        ChassisSpeeds calculatedSpeeds = new ChassisSpeeds(xSpeed, ySpeed, omegaSpeed);
+
+        // Call Autonomous Chasis Speed 
+        var targetSwerveModuleStates = mDrive.getSwerveKinematics().toSwerveModuleStates(calculatedSpeeds);
+
+        // Set Swerve to those Module States
+        mDrive.setModuleStates(targetSwerveModuleStates);     
     }
 
     public boolean getRunning()

@@ -83,8 +83,10 @@ public class Arm extends Subsystem {
         mMinimumDegreesTarget = 0;
         mTargetedDegrees = 0;
 
-        mMaximumExtensionTarget = 240861;
+        // Extension Min, Max, Target
+        mMaximumExtensionTarget = 0;
         mMinimumExtensionTarget = 0;
+        mTargetedExtension = 0;
     }
 
     // Gets the Feed Forward Value based on Gravity

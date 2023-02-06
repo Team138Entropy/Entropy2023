@@ -172,6 +172,10 @@ public class Robot extends TimedRobot {
     mArm.setArmRotationMinimum(Enums.ArmTargets.INTAKE_GROUND_FRONT.armAngle);
     mArm.setArmRotationMaximum(Enums.ArmTargets.START.armAngle);
 
+    // Configure Arm's Maximum and Minimum Extension Settings
+    mArm.setArmExtensionMaximum(Constants.Arm.MaxExtensionPosition);
+    mArm.setArmExtensionMinimum(Constants.Arm.MinExtensionPosition);
+
     // reset odometry
 
     // Reset Drive Sensors
@@ -197,6 +201,7 @@ public class Robot extends TimedRobot {
     // Update Smartdashboard Overall and Subsystems
     updateSmartdashboard();
 
+    // Set Target Position 
     mTargetedPosition = mTargetedPositionChooser.getSelected();
   }
 
@@ -530,7 +535,7 @@ public class Robot extends TimedRobot {
   public void simulationInit() {
 
     // Add April Tag Fields to Camera Sim System
-    mPhotonVision.simVision.addVisionTargets(FieldConstants.aprilTagField);
+    mPhotonVision.addSimVisionTargets(FieldConstants.aprilTagField);
   }
 
   /** This function is called periodically whilst in simulation. */
@@ -548,8 +553,9 @@ public class Robot extends TimedRobot {
     // Current Targeted Arm into Mechanism Sim
     // This will set the actuall commanded 
     //mSimMechanism.SetArmAngle(mCurrentArmTarget.armAngle + mManualTargetOffset);
+    //mSimMechanism.SetArmLength(mCurrentArmTarget.armExtend + mManualExtendOffset);
     mSimMechanism.SetArmAngle(mArm.getArmTargtedDegrees());
-    mSimMechanism.SetArmLength(mCurrentArmTarget.armExtend + mManualExtendOffset);
+    mSimMechanism.SetArmLength(mArm.getArmTargetExtension());
 
     // Grasper - Open or Close
     if(mGrasper.getGrasperState() == Grasper.GrasperState.Open)
@@ -561,7 +567,7 @@ public class Robot extends TimedRobot {
     }
 
     // Process Frame where the Robot currently is
-    mPhotonVision.simVision.processFrame(mField.getRobotPose());  
+    mPhotonVision.processSimFrame(mField.getRobotPose());
   }
 
   /** Called Throughout Teleop Periodic */
@@ -634,10 +640,10 @@ public class Robot extends TimedRobot {
     double driveThrottle = mOperatorInterface.getDriveThrottle()*-1;
     double driveTurn = mOperatorInterface.getDriveTurn();
     SmartDashboard.putNumber("Driver Throttle", driveThrottle);
-    SmartDashboard.putNumber("Driver Trun", driveTurn);
+    SmartDashboard.putNumber("Driver Turn", driveTurn);
 
     // precision steer (slow down throttle if left trigger is held)
-   if(precisionSteer) driveThrottle *= .3;
+   if(precisionSteer) driveThrottle *= .55;
 
     boolean wantsAutoSteer = mOperatorInterface.getDriveAutoSteer();
     if(mOperatorInterface.getBalanceMode() && mBalanceMode == false){
@@ -681,60 +687,30 @@ public class Robot extends TimedRobot {
       //mDrive.setBrake(mOperatorInterface.getBrake());
 
       // Auto Pilot (and has Valid Vision Pose)
-      if(wantsAutoSteer && mRobotState.getVisionEstimatedPoseValid())
+      if(wantsAutoSteer)
       {
-        // if not running, set up initial system
-        if(!mAutoPilot.getRunning())
+        // Use Targeted Position to lookup Target Translation
+        // These are the translations of the targeted score position
+        Translation2d selectedXY = null;
+        int targetIndex = mTargetedPosition.ordinal()  - 1;
+        if(Alliance.Blue == DriverStation.getAlliance())
         {
-          // test code
-          Pose2d StartingPose = mField.getRobotPose();
-          //aprilTags
-          AprilTag targetedTag = FieldConstants.getAprilTag(1);
-          //test code
-          if(TargetedPositions.GRID_BOTTOM_1 == mTargetedPosition)
-          {
-            targetedTag = FieldConstants.getAprilTag(1);
-          }
-          else if(TargetedPositions.GRID_BOTTOM_2 == mTargetedPosition)
-          {
-            targetedTag = FieldConstants.getAprilTag(2);
-          }
-          else if(TargetedPositions.GRID_BOTTOM_3 == mTargetedPosition)
-          {
-            targetedTag = FieldConstants.getAprilTag(3);
-          }
-          Pose2d targetedTagPose = targetedTag.pose.toPose2d();
-
-          Translation2d selectedXY = new Translation2d();
-
-          Alliance color = DriverStation.getAlliance();
-
-          TargetedPositions pos = mTargetedPosition;
-          int index = pos.ordinal();
-
-          if(color == Alliance.Blue){
-            selectedXY = FieldConstants.Grids.blueFinalScorePosition[index-1];
-          }else if(color == Alliance.Red){
-            selectedXY = FieldConstants.Grids.redFinalScorePosition[index-1];
-          }
-          
-          //
-          //FieldConstants.Grids.redFinalScorePosition[]
-          //FieldConstants.Grids.blueFinalScorePosition[]
-
-          // 
-          Pose2d targetedTagPoseWithRotation = new Pose2d(selectedXY, StartingPose.getRotation());
-      
-          // test code
-
-          mAutoPilot.setStartingPose(StartingPose);
-          mAutoPilot.setTargetPose(targetedTagPoseWithRotation);
+          // Blue Alliance
+          selectedXY = FieldConstants.Grids.blueFinalScorePosition[targetIndex];
+        }
+        else 
+        {
+          // Red Alliance
+          selectedXY = FieldConstants.Grids.redFinalScorePosition[targetIndex];
         }
 
-        // Constantly Feed the Vision Updated Pose
+        // Create a Rotation
+        // TODO: need to set front or back into target pose
+        Pose2d targetedPose = new Pose2d(selectedXY, new Rotation2d());
 
-        // general vision driving update
-        mAutoPilot.update();
+        // Target this Pose
+        mAutoPilot.targetPose(targetedPose);
+
       }
       else if(mBalanceMode)
       {
@@ -743,7 +719,7 @@ public class Robot extends TimedRobot {
         else if(mOperatorInterface.getSlowBalance()){
           mChargingStationAutoPilot.update(true, mOperatorInterface.getAutoPilotLeftStrafe(), mOperatorInterface.getAutoPilotRightStrafe());
         }else{
-          //mDrive.setBrake(true);
+          mDrive.setBrake(true);
         }
       }
       else
@@ -760,17 +736,22 @@ public class Robot extends TimedRobot {
           mDrive.startSnap(snapCardinal.degrees);
         }
 
-        // Swerve Quick Adjust
-        SwerveQuickAdjust quickAdjust = mOperatorInterface.getSwerveQuickAdjust();
-        if(SwerveQuickAdjust.NONE != quickAdjust)
-        {
-        //  mDrive.startQuickAdjust(quickAdjust.targetPose);
-        }
-
         // Swerve Drive
+        // Joystick based Translation
         Translation2d sTrans = mOperatorInterface.getSwerveTranslation();
         if(precisionSteer) sTrans = sTrans.times(.5); // slow down the speed by 50%!
         double sRotation = mOperatorInterface.getSwerveRotation();
+
+        // Simple Translation (DPad ... Alternative Control)
+        // This allows driver to use DPad to only use in one direction
+        // If it is detected that driver is using this, control will defer to this instead
+        Translation2d sSimpleTrans = mOperatorInterface.getSimpleSwerveTranslation();
+        if(sSimpleTrans.getX() != 0 || sSimpleTrans.getY() != 0)
+        {
+          // Simple Translation has a nonzero component, use this instead!
+          sTrans = sSimpleTrans.times(Constants.SwerveConstants.simpleSwerveDriveSpeed);
+        }
+
         mDrive.setSwerveDrive(sTrans, sRotation, true, true, precisionSteer);
 
         // Log Inputs

@@ -67,7 +67,6 @@ public class Constants {
       public static final int ShoulderMasterId = 16;
       public static final int ShoulderSlaveId = 17;
       public static final int ExtensionId = 18;
-      public static final TuneableNumber jogSpeed = new TuneableNumber("armShoulderJogSpeed",.4);
     }
 
     public static class Grasper {
@@ -336,6 +335,11 @@ public class Constants {
     public static final int shoulderStartPosition = 90;
     public static final int shoulderMinRotation = -40;
     public static final int shoulderMaxRotation = 220;
+
+    public static final TuneableNumber jogSpeed = new TuneableNumber("armShoulderJogSpeed",.4);
+                                                      
+    public static final double MaxExtensionPosition = 241000.0;
+    public static final double MinExtensionPosition = 0;
   }
 
   public static class Grasper {
@@ -386,20 +390,12 @@ public class Constants {
      
      */
     public static final Translation2d[] swerveModuleLocations = {
-
-
-
-
       new Translation2d(
         RobotDimensions.wheelBase/2.0, -RobotDimensions.trackWidth/2.0
       ),
-
-
       new Translation2d(
         -RobotDimensions.wheelBase/2.0, -RobotDimensions.trackWidth/2.0
       ),
-
-
       new Translation2d(
         RobotDimensions.wheelBase/2.0, RobotDimensions.trackWidth/2.0
       ),
@@ -435,6 +431,9 @@ public class Constants {
     public static final int drivePeakCurrentLimit = 60;
     public static final double drivePeakCurrentDuration = 0.1;
     public static final boolean driveEnableCurrentLimit = true;
+
+    // Dpad Only Driving Control for precise tuning
+    public static final double simpleSwerveDriveSpeed = .7;
 
     /* Angle Motor PID Values */
     public static final double angleKP = 0.3;

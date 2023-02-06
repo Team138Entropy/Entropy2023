@@ -4,6 +4,9 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
+import frc.robot.Constants;
 
 public class SimMechanism {
     private static SimMechanism mInstance;
@@ -27,6 +30,12 @@ public class SimMechanism {
     private MechanismLigament2d mLeftClaw;
     private MechanismLigament2d mRightClaw;
 
+    // Sim Arm Length Constraints
+    private final double mArmMinLength = .3;
+    private final double mArmMaxLength = 2;
+    private final double mArmMaxDelta = .05;
+    private double mCurrentArmLength = mArmMinLength;
+
     private SimMechanism()
     {
         // Init Mechanism 
@@ -41,11 +50,11 @@ public class SimMechanism {
         // Arm Mechanism Root
         mArmRoot = mArmMech.getRoot("arm", 1.5, 1.5);
         // Tower of the Mechanism
-        mTower = mArmRoot.append(new MechanismLigament2d("tower", .8, 270));
+        mTower = mArmRoot.append(new MechanismLigament2d("tower", 3, 270));
+        mTower.setColor(new Color8Bit(Color.kSilver));
 
         // Arm which pivots on top of the tower
-        mArm = mArmRoot.append(new MechanismLigament2d("arm", 1, 45));
-        
+        mArm = mArmRoot.append(new MechanismLigament2d("arm", mCurrentArmLength, 45));
 
         // Grasper Mechanism Canvas
         mGrasperMech = new Mechanism2d(9, 9); //Canvas Size (10,10)
@@ -79,9 +88,50 @@ public void SetArmAngle (double angle ){
 
 }
 
+/*
+  private final double mArmMinLength = .7;
+    private final double mArmMaxLength = 2;
+    private final double mArmMaxDelta = .05;
+    currentArmLength
+ */
+    // Simulate Arm Extension
     public void SetArmLength (double length){
-    if(length <= 1.5 && length >= 1 ){
-            mArm.setLength(length);
+        // Convert actual arm encoder units to extension units
+        // Calculate Arm Ranges
+        double actualArmRange = (Constants.Arm.MaxExtensionPosition - Constants.Arm.MinExtensionPosition);
+        double simArmRange = (mArmMaxLength - mArmMinLength);
+
+        // Percentage this length takes up of arm
+        double targetPercent = length/actualArmRange;
+
+        // sim value to use based on that precentage
+        double simLength = (targetPercent * simArmRange) + mArmMinLength;
+
+        // Verify sim value is within range
+        if(simLength >= mArmMinLength && simLength <= mArmMaxLength)
+        {
+            // Determine the sign of the difference
+            double difference = mCurrentArmLength - simLength;
+            double delta = Math.abs(difference);
+
+            // Prevent arm from changing by more than the delta
+            if(delta > mArmMaxDelta) {
+                delta = mArmMaxDelta;
+
+                // Convert Sign if this is subtraction
+                if(difference > 0){
+                    delta *= -1;
+                }
+                
+                // Add (or subtract) delta
+                mCurrentArmLength += delta;
+            }else {
+                // Arm Change is within delta, can just set it
+                mCurrentArmLength = simLength;
+            }
+
+            // Set Arm Length
+            mArm.setLength(mCurrentArmLength);
         }
     }
 
