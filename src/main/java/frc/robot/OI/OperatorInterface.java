@@ -300,11 +300,11 @@ public class OperatorInterface {
     }
 
     public boolean getArmJogExtended5() {
-        return mDriverController.getButton(Button.RB);
+        return mOperatorController.getButton(Button.RB);
     }
 
     public boolean getArmJogExtended() {
-        return mDriverController.getButton(Button.RB);
+        return mOperatorController.getButton(Button.RB);
     }
 
     public boolean getArmExtended2() {
@@ -324,15 +324,15 @@ public class OperatorInterface {
     }
 
     public boolean getArmJogRetracted() {
-        return mDriverController.getButton(Button.LB);
+        return mOperatorController.getButton(Button.LB);
     }
 
     public boolean getArmRotateForward() {
-        return mDriverController.getButton(Button.Y);
+        return mOperatorController.getButton(Button.Y);
     }
 
     public boolean getArmRotateBackward() {
-        return mDriverController.getButton(Button.A);
+        return mOperatorController.getButton(Button.A);
     }
 
     public boolean getGrasperModeSwap() {

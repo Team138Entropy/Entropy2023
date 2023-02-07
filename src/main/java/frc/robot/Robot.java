@@ -399,10 +399,10 @@ public class Robot extends TimedRobot {
 
       //Manual rotation of the arm using Y/A
     if (mOperatorInterface.getArmRotateForward()){
-      mArm.setShoulderJog(0.3);  
+      mArm.setShoulderJog(0.95);  
     } 
     else if (mOperatorInterface.getArmRotateBackward()) {
-      mArm.setShoulderJog(-0.3);
+      mArm.setShoulderJog(-0.95);
     }
     else {
       mArm.setShoulderJog(0);
@@ -411,6 +411,7 @@ public class Robot extends TimedRobot {
      //Grasper Open/Close using RT
      if (mOperatorInterface.getGrasperModeSwap()){
       mGrasper.setGrasperClosed();
+
     }
     else if (mOperatorInterface.getGrasperWheelIntake()){
       mGrasper.setGrasperOpen();
@@ -739,8 +740,9 @@ public class Robot extends TimedRobot {
         // Swerve Drive
         // Joystick based Translation
         Translation2d sTrans = mOperatorInterface.getSwerveTranslation();
-        if(precisionSteer) sTrans = sTrans.times(.5); // slow down the speed by 50%!
+        if(true) sTrans = sTrans.times(.5); // slow down the speed by 50%!
         double sRotation = mOperatorInterface.getSwerveRotation();
+        sRotation *= .25;
 
         // Simple Translation (DPad ... Alternative Control)
         // This allows driver to use DPad to only use in one direction

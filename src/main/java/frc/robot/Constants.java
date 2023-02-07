@@ -338,7 +338,7 @@ public class Constants {
 
     public static final TuneableNumber jogSpeed = new TuneableNumber("armShoulderJogSpeed",.4);
                                                       
-    public static final double MaxExtensionPosition = 241000.0;
+    public static final double MaxExtensionPosition = 250000.0;
     public static final double MinExtensionPosition = 0;
   }
 
@@ -462,7 +462,7 @@ public class Constants {
     public static final NeutralMode driveNeutralMode = NeutralMode.Brake;
 
     /* Swerve Profiling Values */
-    public static final double maxSpeed = 4.5; // meters per second
+    public static final double maxSpeed = 2.5; // meters per second
     public static final double maxAngularVelocity = 10.0;
 
     public static final double wheelDiameter = Units.inchesToMeters(4.0);
