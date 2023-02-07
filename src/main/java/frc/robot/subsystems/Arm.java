@@ -127,7 +127,7 @@ public class Arm extends Subsystem {
     }
 
     // Get the current arm extension
-    public double getArmExtension()
+    public double getArmExtensionPosition()
     {
         return ExtensionMotor.getSelectedSensorPosition();
     }
@@ -179,6 +179,35 @@ public class Arm extends Subsystem {
         return mTargetedExtension;
     }
 
+    public boolean isArmRotationAtAngle(double position, double deadband)
+    {
+        double CurrentPosition = getArmAngle();
+        double upperRange = position + deadband;
+        double lowerRange = position - deadband;
+        boolean atPosition = (CurrentPosition <= upperRange) && (CurrentPosition >= lowerRange);
+        return atPosition;
+    }
+
+    public boolean isArmRotationAtAngle(double position)
+    {
+        return isArmRotationAtAngle(position, 5); //todo: make this a constant
+    }
+
+    // Returns true if the arm is at a position
+    public boolean isArmExtensionAtPosition(double position, double deadband)
+    {
+        double CurrentPosition = getArmExtensionPosition();
+        double upperRange = position + deadband;
+        double lowerRange = position - deadband;
+        boolean atPosition = (CurrentPosition <= upperRange) && (CurrentPosition >= lowerRange);
+        return atPosition;
+    }
+
+    public boolean isArmExtensionAtPosition(double position)
+    {
+        return isArmExtensionAtPosition(position, 10000); //todo: make this a constant
+    }
+
     public void updateSmartDashBoard(){
 
         //Arm Positioning and Extension
@@ -186,7 +215,7 @@ public class Arm extends Subsystem {
         SmartDashboard.putNumber(key + "Shoulder Position", getArmAngle());
         SmartDashboard.putNumber(key + "Shoulder Percent Output", MasterShoulderMotor.getMotorOutputPercent());
         SmartDashboard.putNumber(key + "Shoulder Secondary Percent Output", SecondaryShoulderMotor.getMotorOutputPercent());
-        SmartDashboard.putNumber(key + "Extension Position", getArmExtension());
+        SmartDashboard.putNumber(key + "Extension Position", getArmExtensionPosition());
         SmartDashboard.putNumber(key + "Extension Percent Output", ExtensionMotor.getMotorOutputPercent());
         SmartDashboard.putNumber(key + "Maximum Arm Degrees", mMaximumDegreesTarget);
         SmartDashboard.putNumber(key + "Minimum Arm Degrees", mMinimumDegreesTarget);

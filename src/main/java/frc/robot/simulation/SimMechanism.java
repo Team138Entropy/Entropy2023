@@ -30,6 +30,10 @@ public class SimMechanism {
     private MechanismLigament2d mLeftClaw;
     private MechanismLigament2d mRightClaw;
 
+    // Sim Arm Constraints
+    //private final double 
+
+
     // Sim Arm Length Constraints
     private final double mArmMinLength = .3;
     private final double mArmMaxLength = 2;
