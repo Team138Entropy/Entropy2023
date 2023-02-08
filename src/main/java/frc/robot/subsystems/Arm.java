@@ -208,6 +208,15 @@ public class Arm extends Subsystem {
         return isArmExtensionAtPosition(position, 10000); //todo: make this a constant
     }
 
+    public boolean isArmSafe()
+    {
+        if (getArmAngle() <= 180 && getArmAngle() >= 0){
+            return false;
+        }
+        return true;
+    }
+
+
     public void updateSmartDashBoard(){
 
         //Arm Positioning and Extension

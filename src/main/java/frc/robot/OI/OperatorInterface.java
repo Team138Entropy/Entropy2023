@@ -161,23 +161,23 @@ public class OperatorInterface {
         TargetedPositions node = TargetedPositions.NONE;
 
         if (mOperatorController.getButton(Button.RB)) {
-            node = TargetedPositions.GRID_BOTTOM_1;
+            node = TargetedPositions.GRID_1;
         }else if (mOperatorController.getButton(Button.BACK)) {
-            node = TargetedPositions.GRID_BOTTOM_2;
+            node = TargetedPositions.GRID_2;
         }else if (mOperatorController.getButton(Button.START)) {
-            node = TargetedPositions.GRID_BOTTOM_3;
+            node = TargetedPositions.GRID_3;
         }else if (mOperatorController.getButton(Button.L_JOYSTICK)) {
-            node = TargetedPositions.GRID_MIDDLE_1;
+            node = TargetedPositions.GRID_4;
         }else if (mOperatorController.getButton(Button.R_JOYSTICK)) {
-            node = TargetedPositions.GRID_MIDDLE_2;
+            node = TargetedPositions.GRID_5;
         }else if (mOperatorController.getDPad() == 0) {
-            node = TargetedPositions.GRID_MIDDLE_3;
+            node = TargetedPositions.GRID_6;
         }else if (mOperatorController.getDPad() == 90) {
-            node = TargetedPositions.GRID_TOP_1;
+            node = TargetedPositions.GRID_7;
         }else if (mOperatorController.getDPad() == 180) {
-            node = TargetedPositions.GRID_TOP_2;
+            node = TargetedPositions.GRID_8;
         }else if (mOperatorController.getDPad() == 270) {
-            node = TargetedPositions.GRID_TOP_3;
+            node = TargetedPositions.GRID_9;
         }
 
         return node;

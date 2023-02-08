@@ -126,7 +126,6 @@ public class Robot extends TimedRobot {
   public TargetedPositions mTargetedPosition = TargetedPositions.NONE;
   public TargetedObject mCurrentTargetedObject = TargetedObject.CONE;
 
-
   /**
    * On Robot Startup
    */
@@ -135,17 +134,17 @@ public class Robot extends TimedRobot {
 
     // Temp Target Position Chooser - Eventually this will be by button!
     mTargetedPositionChooser = new SendableChooser<TargetedPositions>();
-    mTargetedPositionChooser.setDefaultOption("GRID_BOTTOM_1", TargetedPositions.GRID_BOTTOM_1);
+    mTargetedPositionChooser.setDefaultOption("NONE", TargetedPositions.NONE);
     mTargetedPositionChooser.addOption("NONE", TargetedPositions.NONE);
-    mTargetedPositionChooser.addOption("GRID_BOTTOM_1", TargetedPositions.GRID_BOTTOM_1);
-    mTargetedPositionChooser.addOption("GRID_BOTTOM_2", TargetedPositions.GRID_BOTTOM_2);
-    mTargetedPositionChooser.addOption("GRID_BOTTOM_3", TargetedPositions.GRID_BOTTOM_3);
-    mTargetedPositionChooser.addOption("GRID_MIDDLE_1", TargetedPositions.GRID_MIDDLE_1);
-    mTargetedPositionChooser.addOption("GRID_MIDDLE_2", TargetedPositions.GRID_MIDDLE_2);
-    mTargetedPositionChooser.addOption("GRID_MIDDLE_3", TargetedPositions.GRID_MIDDLE_3);
-    mTargetedPositionChooser.addOption("GRID_TOP_1", TargetedPositions.GRID_TOP_1);
-    mTargetedPositionChooser.addOption("GRID_TOP_2", TargetedPositions.GRID_TOP_2);
-    mTargetedPositionChooser.addOption("GRID_TOP_3", TargetedPositions.GRID_TOP_3);
+    mTargetedPositionChooser.addOption("GRID_1", TargetedPositions.GRID_1);
+    mTargetedPositionChooser.addOption("GRID_2", TargetedPositions.GRID_2);
+    mTargetedPositionChooser.addOption("GRID_3", TargetedPositions.GRID_3);
+    mTargetedPositionChooser.addOption("GRID_4", TargetedPositions.GRID_4);
+    mTargetedPositionChooser.addOption("GRID_5", TargetedPositions.GRID_5);
+    mTargetedPositionChooser.addOption("GRID_6", TargetedPositions.GRID_6);
+    mTargetedPositionChooser.addOption("GRID_7", TargetedPositions.GRID_7);
+    mTargetedPositionChooser.addOption("GRID_8", TargetedPositions.GRID_8);
+    mTargetedPositionChooser.addOption("GRID_9", TargetedPositions.GRID_9);
     mTargetedPositionChooser.addOption("RED_SUBSTATION_LEFT", TargetedPositions.RED_SUBSTATION_LEFT);
     mTargetedPositionChooser.addOption("RED_SUBSTATION_RIGHT", TargetedPositions.RED_SUBSTATION_RIGHT);
     mTargetedPositionChooser.addOption("BLUE_SUBSTATION_LEFT", TargetedPositions.BLUE_SUBSTATION_LEFT);
@@ -203,6 +202,12 @@ public class Robot extends TimedRobot {
 
     // Set Target Position 
     mTargetedPosition = mTargetedPositionChooser.getSelected();
+
+    if (mTargetedPositionChooser.getSelected() != TargetedPositions.NONE) {
+      mTargetedPosition = mTargetedPositionChooser.getSelected();
+    }
+
+
   }
 
   private void updateSmartdashboard()
@@ -320,6 +325,18 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     mOperatorInterface.setDriverRumble(mBalanceMode, mBalanceMode ? .2 : 0);
+
+    if (mTargetedPositionChooser.getSelected() == TargetedPositions.NONE) {
+      if (mOperatorInterface.getScoringCommand() != TargetedPositions.NONE) {
+        mTargetedPosition = mOperatorInterface.getScoringCommand();
+      }
+      
+    }
+    if (mTargetedPosition == TargetedPositions.NONE) {
+
+    }
+
+    
     // Main Robot Loop!
     RobotLoop();
   }
@@ -552,7 +569,7 @@ public class Robot extends TimedRobot {
 
     // Arm
     // Current Targeted Arm into Mechanism Sim
-    // This will set the actuall commanded 
+    // This will set the actualll commanded 
     //mSimMechanism.SetArmAngle(mCurrentArmTarget.armAngle + mManualTargetOffset);
     //mSimMechanism.SetArmLength(mCurrentArmTarget.armExtend + mManualExtendOffset);
     mSimMechanism.SetArmAngle(mArm.getArmTargtedDegrees());
