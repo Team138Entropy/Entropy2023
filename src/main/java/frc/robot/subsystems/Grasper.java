@@ -30,14 +30,24 @@ public class Grasper {
     private boolean BeamSensorOn = true;
     //Wheel Timer
     private final Timer wheelCancellationTimer;
+    //Reverse Wheel Timer
+    private final Timer wheelReverseTimer;
+    //Dribble Timer
+    private final Timer dribbleTimer;
+    private final Timer dribbleTimer2;
+    private boolean DribbleActive = false;
     //Grasper Open/Closed
     private boolean mGrasperOpen = false;
+    //allows for a toggle of dribble
+    private boolean mdribbleOn = true;
+    
 
     // Grasper State
     public enum GrasperState {
       FullyClosed,
       Closed,
-      Open
+      Open,
+      FullyOpen
     };
     public GrasperState mGrasperState;
 
@@ -56,6 +66,9 @@ public class Grasper {
       BeamSensor = new DigitalInput(0);
       beamActivationTimer = new Timer();
       wheelCancellationTimer = new Timer();
+      wheelReverseTimer = new Timer();
+      dribbleTimer = new Timer();
+      dribbleTimer2 = new Timer();
       mGrasperState = GrasperState.FullyClosed;
     }
   
@@ -68,9 +81,32 @@ public class Grasper {
 
       case FullyClosed:
 
+      //dont run unless 1 sec is true, then run until .25 is true, then reset and start timer/refer to beginning
+
         GrasperSolenoid.set(true);
         cancelGrasperWheelIntake();
         mGrasperOpen = false;
+        
+
+        if (mdribbleOn == true) {
+          if (DribbleActive == true){
+          setGrasperWheelIntake();
+          if (getGrasperDribbleTimer2() == true){
+            DribbleActive = false;
+            dribbleTimer.reset();
+            dribbleTimer.start();
+          }
+        }
+
+          if (DribbleActive == false){
+            cancelGrasperWheelIntake();
+            if (getGrasperDribbleTimer() == true){
+            DribbleActive = true;
+            dribbleTimer2.reset();
+            dribbleTimer2.start();
+        }
+      }
+    }
 
       break;
 
@@ -88,8 +124,20 @@ public class Grasper {
         }
 
       break;
+
       case Open:
-        // TODO - Do we need to do anything here?
+
+      GrasperSolenoid.set(false);
+      setGrasperWheelReverse();
+      mGrasperOpen = true;
+
+      if (getGrasperEjectTimeElapsed() == true){
+        mGrasperState = GrasperState.FullyOpen;
+      }
+
+      break;
+      case FullyOpen:
+    
       GrasperSolenoid.set(false);
       setGrasperWheelIntake();
       mGrasperOpen = true;
@@ -127,6 +175,11 @@ public class Grasper {
     GrasperWheelMotor.set(0.2);
   }
 
+  //Run the intake motor reversed
+  public void setGrasperWheelReverse(){
+    GrasperWheelMotor.set(-0.2);
+  }
+
   // Stop the Intake Motor
   public void cancelGrasperWheelIntake(){
     GrasperWheelMotor.set(0);
@@ -141,7 +194,19 @@ public class Grasper {
   public boolean getGrasperTimeElapsed1(){
     return wheelCancellationTimer.hasElapsed(1);
   }
+  //Timer for the wheels running in reverse
+  public boolean getGrasperEjectTimeElapsed(){
+    return wheelReverseTimer.hasElapsed(1);
+  }
+  //Timer for dribble
+  public boolean getGrasperDribbleTimer(){
+    return dribbleTimer.hasElapsed(1);
+  }
+  public boolean getGrasperDribbleTimer2(){
+    return dribbleTimer2.hasElapsed(0.25);
+  }
 
+  //Checks if the beam sensors connection becomes broken
   public boolean getBeamSensorBroken(){
     if (BeamSensorOn == false){
       if (getGrasperTimeElapsed3() == true){
@@ -154,7 +219,6 @@ public class Grasper {
     }
     return false;
 }
-
 
 // Boolean made for Sim Code
 public boolean grasperIsClosed(){

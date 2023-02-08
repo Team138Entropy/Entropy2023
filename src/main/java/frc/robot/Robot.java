@@ -332,6 +332,7 @@ public class Robot extends TimedRobot {
 //add function (angle = angle + 1) and attatch to a buttom for sim periodic
 
     //Manual Functions
+
     if (mJogMode == true){
 
       //Manual extension of the arm using RB/LB
