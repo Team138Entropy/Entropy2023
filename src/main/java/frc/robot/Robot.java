@@ -71,6 +71,7 @@ public class Robot extends TimedRobot {
   private final Drive mDrive = Drive.getInstance();
   private final Arm mArm = Arm.getInstance();
   private final Grasper mGrasper = Grasper.getInstance();
+  private final SuperStructure mSuperStructure = SuperStructure.getInstance();
 
   private final chargingStationAutoPilot mChargingStationAutoPilot = chargingStationAutoPilot.getInstance();
 
@@ -161,6 +162,7 @@ public class Robot extends TimedRobot {
     // Real or Simulation Robot
     mRobotState.setRealRobot(mRealRobot);
     mDrive.setRealRobot(mRealRobot);
+    mSuperStructure.setRealRobot(mRealRobot);
 
     // populate autonomous list
     populateAutonomousModes();
@@ -610,14 +612,17 @@ public class Robot extends TimedRobot {
       // Simple Arm Control Type (Do not rotate arm until extension is Retracted)
       // If you want to move the arm to a different rotation angle, arm extension must be retracted
       // This is still a todo! 
-      mArm.setArmAngle(mCurrentArmTarget.armAngle + mManualTargetOffset);
-      mArm.setArmExtension(mCurrentArmTarget.armExtend + mManualExtendOffset);
+
+      mSuperStructure.setTargetArmPosition(mCurrentArmTarget);
+      //mArm.setArmAngle(mCurrentArmTarget.armAngle + mManualTargetOffset);
+      //mArm.setArmExtension(mCurrentArmTarget.armExtend + mManualExtendOffset);
     }
     else if(ArmControlType.Advanced == mArmControlType)
     {
       // TODO: Allow Arm to move with extension out
       // This is more complicated.. we might not get to this.. or need it
     }
+    mSuperStructure.update();
  
 
     // Grasper Functionality
