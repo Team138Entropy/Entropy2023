@@ -3,19 +3,17 @@ package frc.robot.subsystems;
 import java.util.Vector;
 import frc.robot.Constants;
 import frc.robot.subsystems.Arm;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Enums.ArmTargets;
 import frc.robot.simulation.SimMechanism;
 
 
 
-public class SuperStructure {
-  private static SuperStructure mInstance;
-
-  
-  public static synchronized SuperStructure getInstance() {
+public class Superstructure {
+  private static Superstructure mInstance;  
+  public static synchronized Superstructure getInstance() {
     if (mInstance == null) {
-      mInstance = new SuperStructure();
+      mInstance = new Superstructure();
     }
     return mInstance;
   }
@@ -41,7 +39,7 @@ public class SuperStructure {
   private double mExtensionOverride;
   private double mArmOverride;
 
-  private SuperStructure() {
+  private Superstructure() {
     mRealRobot = false;
 
     // Default the Arm Targets to null
@@ -152,6 +150,9 @@ public class SuperStructure {
 
   public void updateSmartDashBoard()
   {
+    final String key = "Superstructure/";
+    SmartDashboard.putBoolean(key + "Extension Overriding", mOverridingExtension);
+    SmartDashboard.putBoolean(key + "Angle Overriding", mOverridingAngle);
 
   }
 }

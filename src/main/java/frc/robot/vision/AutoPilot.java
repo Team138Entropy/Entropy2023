@@ -16,6 +16,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.Vision;
 import frc.robot.auto.TrajectoryFollower;
 import frc.robot.subsystems.Drive;
+import frc.robot.util.TuneableNumber;
 
 // Auto Pilot System
 //      Calculates How to Drive to a Pose
@@ -60,6 +61,11 @@ public class AutoPilot {
     private final ProfiledPIDController mXController = new ProfiledPIDController(3, 0, 0, mX_CONSTRAINTS);
     private final ProfiledPIDController mYController = new ProfiledPIDController(3, 0, 0, mY_CONSTRAINTS);
     private final ProfiledPIDController mOmegaController = new ProfiledPIDController(2, 0, 0, mOMEGA_CONSTRAINTS);
+
+    // Tolerances
+    private final TuneableNumber mXTolerance = new TuneableNumber("X Tolerance", .2);
+    private final TuneableNumber mYTolerance = new TuneableNumber("Y Tolerance", .2);
+    private final TuneableNumber mRotationTolerance = new TuneableNumber("Rotation Tolerance", Units.degreesToRadians(3));
 
     // Type of System being used to Drive
     enum AutoPilotMode {
@@ -201,11 +207,34 @@ public class AutoPilot {
         } else if(AutoPilotMode.HoldPose == mDriveMode)
         {
             // Robot Pose will be constantly updated
-            // Calculate Speeds to Reach Goal
-            double xSpeed = !mXController.atGoal() ? mXController.calculate(mRobotPose.getX()) : 0;
-            double ySpeed = !mYController.atGoal() ? mYController.calculate(mRobotPose.getY()) : 0;
-            double omegaSpeed = !mOmegaController.atGoal() ? mOmegaController.calculate(mRobotPose.getRotation().getRadians()) : 0;
+            // Calculate Distances between target and robot
+            double xDistance = Math.abs(mRobotPose.getX() - mTargetedPose.getX());
+            double yDistance = Math.abs(mRobotPose.getY() - mTargetedPose.getY());
+            double rotationDistance = Math.abs(mRobotPose.getRotation().getRadians() - mTargetedPose.getRotation().getRadians());
 
+            // Speeds
+            double xSpeed = 0;
+            double ySpeed = 0;
+            double omegaSpeed = 0;
+
+            // Update X if outside Tolerance
+            if(xDistance > mXTolerance.get())
+            {
+                xSpeed = mXController.calculate(mRobotPose.getX(), mTargetedPose.getX());
+            }
+
+            // Update Y if outside Tolerance
+            if(yDistance > mYTolerance.get())
+            {
+                ySpeed = mYController.calculate(mRobotPose.getY(), mTargetedPose.getY());
+            }
+
+            // Update Rotation if outside Tolerance
+            if(rotationDistance > mRotationTolerance.get())
+            {
+                omegaSpeed = mOmegaController.calculate(mRobotPose.getRotation().getRadians(), mTargetedPose.getRotation().getRadians());
+            }
+        
             // Set Speeds into Swerve System
             ChassisSpeeds calculatedSpeeds = new ChassisSpeeds(xSpeed, ySpeed, omegaSpeed);
 
@@ -245,6 +274,8 @@ public class AutoPilot {
         mXController.setGoal(targetPose.getX());
         mYController.setGoal(targetPose.getY());
         mOmegaController.setGoal(targetPose.getRotation().getRadians());
+
+        
 
         // Calculate Speeds based on Robot Pose
         double xSpeed = !mXController.atGoal() ? mXController.calculate(mRobotPose.getX()) : 0;

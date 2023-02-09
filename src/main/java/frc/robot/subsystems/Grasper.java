@@ -16,7 +16,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-public class Grasper {
+public class Grasper extends Subsystem {
     private static Grasper mInstance;
 
     //Grasper pneumatics
@@ -154,6 +154,16 @@ public class Grasper {
   // Get Current Grasper State
   public GrasperState getGrasperState(){
     return mGrasperState;
+  }
+
+  public void zeroSensors()
+  {
+
+  }
+
+  public void checkSubsystem()
+  {
+    
   }
 
   public void updateSmartDashBoard(){

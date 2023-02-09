@@ -71,7 +71,7 @@ public class Robot extends TimedRobot {
   private final Drive mDrive = Drive.getInstance();
   private final Arm mArm = Arm.getInstance();
   private final Grasper mGrasper = Grasper.getInstance();
-  private final SuperStructure mSuperStructure = SuperStructure.getInstance();
+  private final Superstructure mSuperStructure = Superstructure.getInstance();
 
   private final chargingStationAutoPilot mChargingStationAutoPilot = chargingStationAutoPilot.getInstance();
 
@@ -82,8 +82,11 @@ public class Robot extends TimedRobot {
   // Autonomous Modes
   private SendableChooser<AutoModeBase> mAutoModes;
 
+  // Position Target Chooser
   private SendableChooser<TargetedPositions> mTargetedPositionChooser;
 
+  // Arm Target Chooser 
+  private SendableChooser<ArmTargets> mArmTargetOverrideChooser;
 
   // Field Object
   private final Field2d mField = new Field2d();
@@ -115,6 +118,7 @@ public class Robot extends TimedRobot {
 
   // Arm Target
   public ArmTargets mCurrentArmTarget = ArmTargets.HOME_BACKSIDE;
+  public ArmTargets mArmTargetOverride = ArmTargets.NONE;
   public ArmControlType mArmControlType = ArmControlType.Simple;
 
   public int mManualTargetOffset = 0;
@@ -132,8 +136,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-
-    // Temp Target Position Chooser - Eventually this will be by button!
+    // Target Position Chooser - Able to Override the Position
     mTargetedPositionChooser = new SendableChooser<TargetedPositions>();
     mTargetedPositionChooser.setDefaultOption("NONE", TargetedPositions.NONE);
     mTargetedPositionChooser.addOption("NONE", TargetedPositions.NONE);
@@ -148,6 +151,25 @@ public class Robot extends TimedRobot {
     mTargetedPositionChooser.addOption("GRID_9", TargetedPositions.GRID_9);
     mTargetedPositionChooser.addOption("SUBSTATION_LEFT", TargetedPositions.SUBSTATION_LEFT);
     mTargetedPositionChooser.addOption("SUBSTATION_RIGHT", TargetedPositions.SUBSTATION_RIGHT);
+    SmartDashboard.putData("Target Position Override", mTargetedPositionChooser);
+
+    // Arm Target Position Chooser - Able to Override the Button
+    mArmTargetOverrideChooser = new SendableChooser<ArmTargets>();
+    mArmTargetOverrideChooser.setDefaultOption("NONE", ArmTargets.NONE);
+    mArmTargetOverrideChooser.addOption("SAFE", ArmTargets.SAFE);
+    mArmTargetOverrideChooser.addOption("TOP_SCORING_FRONT", ArmTargets.TOP_SCORING_FRONT);
+    mArmTargetOverrideChooser.addOption("MID_SCORING_FRONT", ArmTargets.MID_SCORING_FRONT);
+    mArmTargetOverrideChooser.addOption("LOW_SCORING_FRONT", ArmTargets.LOW_SCORING_FRONT);
+    mArmTargetOverrideChooser.addOption("TOP_SCORING_BACK", ArmTargets.TOP_SCORING_BACK);
+    mArmTargetOverrideChooser.addOption("MID_SCORING_BACK", ArmTargets.MID_SCORING_BACK);
+    mArmTargetOverrideChooser.addOption("LOW_SCORING_BACK", ArmTargets.LOW_SCORING_BACK);
+    mArmTargetOverrideChooser.addOption("SAFE", ArmTargets.SAFE);
+    mArmTargetOverrideChooser.addOption("START", ArmTargets.START);
+    mArmTargetOverrideChooser.addOption("INTAKE_FRONT", ArmTargets.INTAKE_FRONT);
+    mArmTargetOverrideChooser.addOption("INTAKE_BACK", ArmTargets.INTAKE_BACK);
+    mArmTargetOverrideChooser.addOption("INTAKE_GROUND_FRONT", ArmTargets.INTAKE_GROUND_FRONT);
+    mArmTargetOverrideChooser.addOption("INTAKE_GROUND_BACK", ArmTargets.INTAKE_GROUND_BACK);
+    SmartDashboard.putData("Arm Target Override", mArmTargetOverrideChooser);
 
     // Start Datalog Manager
     DataLogManager.start();
@@ -200,6 +222,10 @@ public class Robot extends TimedRobot {
     // Update Smartdashboard Overall and Subsystems
     updateSmartdashboard();
 
+    // Get Arm Override (if set)
+    mArmTargetOverride = mArmTargetOverrideChooser.getSelected();
+
+    // Currently Targeted Object
     mCurrentTargetedObject = mOperatorInterface.setTargetedObject();
   }
 
@@ -247,12 +273,11 @@ public class Robot extends TimedRobot {
     // Sim Mechanism 
     mSimMechanism.updateSmartDashboard(); // Sim Only
 
+    // Superstructure 
+    mSuperStructure.updateSmartDashBoard();
+
     // Iterates each Subsystem 
     mSubsystemManager.updateSmartdashboard();
-
-    mGrasper.updateSmartDashBoard();
-
-
   }
 
   // Fill Autonomous Modes List
@@ -261,7 +286,7 @@ public class Robot extends TimedRobot {
     mAutoModes = new SendableChooser<AutoModeBase>();
     //mAutoModes.setDefaultOption("Nothing", new DoNothingMode());
     mAutoModes.setDefaultOption("Test Swerve Mode", new SwerveTestAutoMode() );
-    SmartDashboard.putData(mAutoModes);
+    SmartDashboard.putData("Auto Modes", mAutoModes);
   }
 
   /***
@@ -320,10 +345,14 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     mOperatorInterface.setDriverRumble(mBalanceMode, mBalanceMode ? .2 : 0);
 
+    // Target Position Chooser
     if (mTargetedPositionChooser.getSelected() == TargetedPositions.NONE) {
       if (mOperatorInterface.getScoringCommand() != TargetedPositions.NONE) {
         mTargetedPosition = mOperatorInterface.getScoringCommand();
       }
+    }else {
+      // Targeted Position Chooser is not none
+      mTargetedPosition = mTargetedPositionChooser.getSelected();
     }
 
     
@@ -588,23 +617,29 @@ public class Robot extends TimedRobot {
     mField.setRobotPose(robotPose);
     mRobotState.setRobotPose(robotPose);
     
+    // Get Arm Target
     if(mOperatorInterface.getArmTarget() != ArmTargets.NONE){
       mCurrentArmTarget = mOperatorInterface.getArmTarget();
       mManualExtendOffset = 0;
       mManualTargetOffset = 0;
     }
 
+    // Get Arm Extension Trims
     if(mOperatorInterface.getManualArmExtendUp()){
       mManualExtendOffset += 1;
     }else if(mOperatorInterface.getManualArmExtendDown()){
       mManualExtendOffset -= 1;
     }
 
+    // Get Arm Rotation Trims
     if(mOperatorInterface.getManualArmRotateUp()){
       mManualTargetOffset += 1;
     }else if(mOperatorInterface.getManualArmRotateDown()){
       mManualTargetOffset -= 1;
     }
+
+    // Arm Override (if set)
+    if(ArmTargets.NONE != mArmTargetOverride) mCurrentArmTarget = mArmTargetOverride;
 
     // Constantly tell the Arm where to go
     if(ArmControlType.Simple == mArmControlType)
@@ -692,8 +727,8 @@ public class Robot extends TimedRobot {
       // Swerve Brake
       //mDrive.setBrake(mOperatorInterface.getBrake());
 
-      // Auto Pilot (and has Valid Vision Pose)
-      if(wantsAutoSteer)
+      // Auto Pilot (and has Valid Target Position)
+      if(wantsAutoSteer && mTargetedPosition != TargetedPositions.NONE)
       {
         // Use Targeted Position to lookup Target Translation
         // These are the translations of the targeted score position
@@ -702,12 +737,12 @@ public class Robot extends TimedRobot {
         if(Alliance.Blue == DriverStation.getAlliance())
         {
           // Blue Alliance
-          selectedXY = FieldConstants.Grids.blueFinalScorePosition[targetIndex];
+          selectedXY = FieldConstants.Grids.blueFinalScorePositionFlipped[targetIndex];
         }
         else 
         {
           // Red Alliance
-          selectedXY = FieldConstants.Grids.redFinalScorePosition[targetIndex];
+          selectedXY = FieldConstants.Grids.redFinalScorePositionFlipped[targetIndex];
         }
 
         // Create a Rotation

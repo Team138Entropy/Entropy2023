@@ -181,7 +181,8 @@ public final class FieldConstants {
     public static final Translation2d[] blueFinalScorePosition = new Translation2d[nodeRowCount];
     public static final double scoreFinalPosOffset = .4;
 
-
+    public static final Translation2d[] redFinalScorePositionFlipped = new Translation2d[nodeRowCount];
+    public static final Translation2d[] blueFinalScorePositionFlipped = new Translation2d[nodeRowCount];
     static {
       for (int i = 0; i < nodeRowCount; i++) {
         boolean isCube = i == 1 || i == 4 || i == 7;
@@ -205,6 +206,12 @@ public final class FieldConstants {
         // Final Scoring Positions
         redFinalScorePosition[i] = redInitScorePosition[i].minus(new Translation2d(scoreFinalPosOffset, 0));
         blueFinalScorePosition[i] = blueInitScorePosition[i].plus(new Translation2d(scoreFinalPosOffset, 0));
+      }
+      
+      // Use to Flip the Order to get in Grid 1 -> 9
+      for (int i = 0; i < nodeRowCount; i++) {
+        redFinalScorePositionFlipped[i] = redFinalScorePosition[nodeRowCount - i - 1];
+        blueFinalScorePositionFlipped[i] = blueFinalScorePosition[i]; // blue is already flipped
       }
     }
 
