@@ -22,6 +22,26 @@ public class SwerveTestAutoMode extends AutoModeBase {
             new Pose2d(1.5, 0, new Rotation2d())
         ), Constants.SwerveConstants.AutoConstants.slowSwerveSpeedConfig);
 
+        //Might have to change this - this assumes 0,0 is higher up
+        //Also the values will need to be tuned, these simply hold the general idea 
+        Trajectory LParkTraj = TrajectoryGenerator.generateTrajectory(List.of(
+            new Pose2d(0, 0, new Rotation2d()),
+            new Pose2d(2, 0, new Rotation2d())
+        ), Constants.SwerveConstants.AutoConstants.slowSwerveSpeedConfig);
+
+        Trajectory LScoreTraj = TrajectoryGenerator.generateTrajectory(List.of(
+            new Pose2d(0, 0, new Rotation2d()),
+            new Pose2d(2, -0.4, new Rotation2d())
+        ), Constants.SwerveConstants.AutoConstants.slowSwerveSpeedConfig);
+
+        Trajectory LScoreChargeTraj = TrajectoryGenerator.generateTrajectory(List.of(
+            new Pose2d(0, 0, new Rotation2d()),
+            new Pose2d(2, -0.4, new Rotation2d()),
+            new Pose2d(2, -2, new Rotation2d()),
+            new Pose2d(1, -2, new Rotation2d())
+        ), Constants.SwerveConstants.AutoConstants.slowSwerveSpeedConfig);
+
+
         addAction(new DriveTrajectoryAction(genTraj));
 
     }
