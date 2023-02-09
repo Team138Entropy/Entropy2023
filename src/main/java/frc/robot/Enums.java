@@ -25,10 +25,8 @@ public class Enums {
         GRID_7,
         GRID_8,
         GRID_9,
-        RED_SUBSTATION_LEFT,
-        RED_SUBSTATION_RIGHT,
-        BLUE_SUBSTATION_LEFT,
-        BLUE_SUBSTATION_RIGHT;
+        SUBSTATION_LEFT,
+        SUBSTATION_RIGHT;
     }
 
     // arm targets
@@ -37,6 +35,7 @@ public class Enums {
         //THESE ARE PLACEHOLDER VALUES
         TOP_SCORING_FRONT(10, Constants.Arm.MaxExtensionPosition),
         MID_SCORING_FRONT(-7,Constants.Arm.MinExtensionPosition),
+        //-60
         LOW_SCORING_FRONT(-60,Constants.Arm.MinExtensionPosition),
         INTAKE_FRONT(-6,Constants.Arm.MinExtensionPosition),
         TOP_SCORING_BACK(170,0),

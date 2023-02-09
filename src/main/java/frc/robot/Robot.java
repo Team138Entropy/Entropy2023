@@ -145,11 +145,8 @@ public class Robot extends TimedRobot {
     mTargetedPositionChooser.addOption("GRID_7", TargetedPositions.GRID_7);
     mTargetedPositionChooser.addOption("GRID_8", TargetedPositions.GRID_8);
     mTargetedPositionChooser.addOption("GRID_9", TargetedPositions.GRID_9);
-    mTargetedPositionChooser.addOption("RED_SUBSTATION_LEFT", TargetedPositions.RED_SUBSTATION_LEFT);
-    mTargetedPositionChooser.addOption("RED_SUBSTATION_RIGHT", TargetedPositions.RED_SUBSTATION_RIGHT);
-    mTargetedPositionChooser.addOption("BLUE_SUBSTATION_LEFT", TargetedPositions.BLUE_SUBSTATION_LEFT);
-    mTargetedPositionChooser.addOption("BLUE_SUBSTATION_RIGHT", TargetedPositions.BLUE_SUBSTATION_RIGHT);
-    SmartDashboard.putData(mTargetedPositionChooser);
+    mTargetedPositionChooser.addOption("SUBSTATION_LEFT", TargetedPositions.SUBSTATION_LEFT);
+    mTargetedPositionChooser.addOption("SUBSTATION_RIGHT", TargetedPositions.SUBSTATION_RIGHT);
 
     // Start Datalog Manager
     DataLogManager.start();
@@ -180,7 +177,8 @@ public class Robot extends TimedRobot {
     // Reset Drive Sensors
 
     // Controllable Panel
-    mPowerPanel.setSwitchableChannel(true);
+    mPowerPanel.setSwitchableChannel(mCurrentTargetedObject == TargetedObject.CUBE);
+    
     mArm.zeroSensors();
     mDrive.zeroHeading();
     mDrive.zeroEncoders();
@@ -200,14 +198,7 @@ public class Robot extends TimedRobot {
     // Update Smartdashboard Overall and Subsystems
     updateSmartdashboard();
 
-    // Set Target Position 
-    mTargetedPosition = mTargetedPositionChooser.getSelected();
-
-    if (mTargetedPositionChooser.getSelected() != TargetedPositions.NONE) {
-      mTargetedPosition = mTargetedPositionChooser.getSelected();
-    }
-
-
+    mCurrentTargetedObject = mOperatorInterface.setTargetedObject();
   }
 
   private void updateSmartdashboard()
@@ -223,6 +214,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Automatic Mode", mPositionMode);
     SmartDashboard.putNumber("rotate offset", mManualTargetOffset);
     SmartDashboard.putNumber("extend offset", mManualExtendOffset);
+    SmartDashboard.putString("Targeted Object", mCurrentTargetedObject.toString());
     
     //formula to convert to PSI
     SmartDashboard.putNumber("pressure sensor", 250.0 * mPressureSensor.getVoltage() / 5.0 - 25.0);
@@ -330,10 +322,6 @@ public class Robot extends TimedRobot {
       if (mOperatorInterface.getScoringCommand() != TargetedPositions.NONE) {
         mTargetedPosition = mOperatorInterface.getScoringCommand();
       }
-      
-    }
-    if (mTargetedPosition == TargetedPositions.NONE) {
-
     }
 
     
@@ -597,11 +585,6 @@ public class Robot extends TimedRobot {
     Pose2d robotPose = mDrive.getPose();
     mField.setRobotPose(robotPose);
     mRobotState.setRobotPose(robotPose);
-
-    // Operator Arm Commands
-    if(mOperatorInterface.getScoringCommand() != TargetedPositions.NONE){
-      mTargetedPosition = mOperatorInterface.getScoringCommand();
-    }
     
     if(mOperatorInterface.getArmTarget() != ArmTargets.NONE){
       mCurrentArmTarget = mOperatorInterface.getArmTarget();
