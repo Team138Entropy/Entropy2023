@@ -14,22 +14,19 @@ public class Enums {
 
     // scoring nodes
     public enum TargetedPositions {
-        //bottom, middle, and top are refering to the grids not the scoring hights
-        //top and bottom are fliped on one side 
+        //Numbered left to right as if you are standing behind it
         NONE,
-        GRID_BOTTOM_1,
-        GRID_BOTTOM_2,
-        GRID_BOTTOM_3,
-        GRID_MIDDLE_1,
-        GRID_MIDDLE_2,
-        GRID_MIDDLE_3,
-        GRID_TOP_1,
-        GRID_TOP_2,
-        GRID_TOP_3,
-        RED_SUBSTATION_LEFT,
-        RED_SUBSTATION_RIGHT,
-        BLUE_SUBSTATION_LEFT,
-        BLUE_SUBSTATION_RIGHT;
+        GRID_1,
+        GRID_2,
+        GRID_3,
+        GRID_4,
+        GRID_5,
+        GRID_6,
+        GRID_7,
+        GRID_8,
+        GRID_9,
+        SUBSTATION_LEFT,
+        SUBSTATION_RIGHT;
     }
 
     // arm targets
@@ -38,6 +35,7 @@ public class Enums {
         //THESE ARE PLACEHOLDER VALUES
         TOP_SCORING_FRONT(10, Constants.Arm.MaxExtensionPosition),
         MID_SCORING_FRONT(-7,Constants.Arm.MinExtensionPosition),
+        //-60
         LOW_SCORING_FRONT(-60,Constants.Arm.MinExtensionPosition),
         INTAKE_FRONT(-6,Constants.Arm.MinExtensionPosition),
         TOP_SCORING_BACK(170,0),

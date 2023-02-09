@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
 import frc.robot.Enums.*;
+import frc.robot.OI.APacController.Buttons;
 import frc.robot.OI.XboxController.Axis;
 import frc.robot.OI.XboxController.Button;
 import frc.robot.OI.XboxController.Side;
@@ -16,8 +17,8 @@ public class OperatorInterface {
 
     // Instances of the Driver and Operator Controller
     private XboxController mDriverController;
-    private XboxController mOperatorController;
-    private XboxController mOperatorController2;
+    private APacController mOperatorController;
+    private APacController mOperatorController2;
     // Latched Booleans
     private LatchedBoolean mOperatorSelectButton = new LatchedBoolean();
     private LatchedBoolean mOperatorStartButton = new LatchedBoolean();
@@ -53,8 +54,8 @@ public class OperatorInterface {
     
     private OperatorInterface() {
         mDriverController = new XboxController(Constants.Controllers.Driver.port);
-        mOperatorController = new XboxController(Constants.Controllers.Operator.port);
-        mOperatorController2 = new XboxController(Constants.Controllers.Operator2.port);
+        mOperatorController = new APacController(Constants.Controllers.Operator.port);
+        mOperatorController2 = new APacController(Constants.Controllers.Operator2.port);
     }
 
     public boolean getClimberTest(){
@@ -160,24 +161,28 @@ public class OperatorInterface {
     public TargetedPositions getScoringCommand() {
         TargetedPositions node = TargetedPositions.NONE;
 
-        if (mOperatorController.getButton(Button.RB)) {
-            node = TargetedPositions.GRID_BOTTOM_1;
-        }else if (mOperatorController.getButton(Button.BACK)) {
-            node = TargetedPositions.GRID_BOTTOM_2;
-        }else if (mOperatorController.getButton(Button.START)) {
-            node = TargetedPositions.GRID_BOTTOM_3;
-        }else if (mOperatorController.getButton(Button.L_JOYSTICK)) {
-            node = TargetedPositions.GRID_MIDDLE_1;
-        }else if (mOperatorController.getButton(Button.R_JOYSTICK)) {
-            node = TargetedPositions.GRID_MIDDLE_2;
-        }else if (mOperatorController.getDPad() == 0) {
-            node = TargetedPositions.GRID_MIDDLE_3;
-        }else if (mOperatorController.getDPad() == 90) {
-            node = TargetedPositions.GRID_TOP_1;
-        }else if (mOperatorController.getDPad() == 180) {
-            node = TargetedPositions.GRID_TOP_2;
-        }else if (mOperatorController.getDPad() == 270) {
-            node = TargetedPositions.GRID_TOP_3;
+        if (mOperatorController.getButton(Buttons.COIN)) {
+            node = TargetedPositions.GRID_1;
+        }else if (mOperatorController.getButton(Buttons.SW8)) {
+            node = TargetedPositions.GRID_2;
+        }else if (mOperatorController.getButton(Buttons.SW7)) {
+            node = TargetedPositions.GRID_3;
+        }else if (mOperatorController.getButton(Buttons.SW6)) {
+            node = TargetedPositions.GRID_4;
+        }else if (mOperatorController.getButton(Buttons.SW5)) {
+            node = TargetedPositions.GRID_5;
+        }else if (mOperatorController.getButton(Buttons.SW4)) {
+            node = TargetedPositions.GRID_6;
+        }else if (mOperatorController.getButton(Buttons.SW3)) {
+            node = TargetedPositions.GRID_7;
+        }else if (mOperatorController.getButton(Buttons.SW2)) {
+            node = TargetedPositions.GRID_8;
+        }else if (mOperatorController.getButton(Buttons.SW1)) {
+            node = TargetedPositions.GRID_9;
+        }else if (mOperatorController2.getButton(Buttons.COIN)) {
+            node = TargetedPositions.SUBSTATION_RIGHT;
+        }else if (mOperatorController2.getButton(Buttons.SW8)) {
+            node = TargetedPositions.SUBSTATION_LEFT;
         }
 
         return node;
@@ -221,7 +226,7 @@ public class OperatorInterface {
     }
 
     public void setOperatorRumble(boolean a){ 
-        mOperatorController.setRumble(a);
+        //mOperatorController.setRumble(a);
     }
 
     public void setDriverRumble(boolean rumbleOn, double rumbleValue){ 
@@ -233,11 +238,11 @@ public class OperatorInterface {
     }
     
     public boolean getArmEject() {
-        return mOperatorController.getTrigger(Side.LEFT);
+        return mOperatorController2.getButton(Buttons.SW2);
     }
 
     public boolean getGrasperIntakeManual() {
-        return mLeftBumper.update(mOperatorController.getTrigger(Side.RIGHT));
+        return mLeftBumper.update(mOperatorController.getButton(Buttons.SW1));
     }
 
     /**
@@ -246,41 +251,50 @@ public class OperatorInterface {
      * @return
      */
     public boolean getSwitchModePress(){
-        return mOperatorStartButton.update(mOperatorController.getButton(Button.START));
+        //return mOperatorStartButton.update(mOperatorController.getButton(Button.START));
+        return false;
     }
 
     public boolean getSelectButtonPress(){
-        return mOperatorSelectButton.update(mOperatorController.getButton(Button.BACK));
+        //return mOperatorSelectButton.update(mOperatorController.getButton(Button.BACK));
+        return false;
     }
 
     public boolean getArmEncoderZero(){
-        return mOperatorController.getButton(Button.R_JOYSTICK);
+        //return mOperatorController.getButton(Button.R_JOYSTICK);
+        return false;
     }
 
     public boolean getArmExtend() {
-        int input = mOperatorController.getDPad();
-        return input <= 45 && input >= 315;
+        //int input = mOperatorController.getDPad();
+        //return input <= 45 && input >= 315;
+        return false;
     }
 
     public boolean getArmRetract() {
-        int input = mOperatorController.getDPad();
-        return input <= 225 && input >= 135;
+        //int input = mOperatorController.getDPad();
+        //return input <= 225 && input >= 135;
+        return false;
     }
 
     public boolean getArmExtendManual() {
-        return mOperatorController.getButton(Button.B);
+        //return mOperatorController.getButton(Button.B);
+        return false;
     }
 
     public boolean getArmRetractManual() {
-        return mOperatorController.getButton(Button.X);
+        //return mOperatorController.getButton(Button.X);
+        return false;
     }
 
     public boolean getArmExtendPress(){
-        return mExtensionUp.update(mOperatorController.getButton(Button.B));
+       // return mExtensionUp.update(mOperatorController.getButton(Button.B));
+       return false;
     }
 
     public boolean getArmRetractPress(){
-        return mExtensionDown.update(mOperatorController.getButton(Button.X));
+        //return mExtensionDown.update(mOperatorController.getButton(Button.X));
+        return false;
     }
 
     public boolean getArmJogForward() {
@@ -300,11 +314,13 @@ public class OperatorInterface {
     }
 
     public boolean getArmJogExtended5() {
-        return mOperatorController.getButton(Button.RB);
+        //return mOperatorController.getButton(Button.RB);
+        return false;
     }
 
     public boolean getArmJogExtended() {
-        return mOperatorController.getButton(Button.RB);
+        //return mOperatorController.getButton(Button.RB);
+        return false;
     }
 
     public boolean getArmExtended2() {
@@ -324,15 +340,18 @@ public class OperatorInterface {
     }
 
     public boolean getArmJogRetracted() {
-        return mOperatorController.getButton(Button.LB);
+        //return mOperatorController.getButton(Button.LB);
+        return false;
     }
 
     public boolean getArmRotateForward() {
-        return mOperatorController.getButton(Button.Y);
+        //return mOperatorController.getButton(Button.Y);
+        return false;
     }
 
     public boolean getArmRotateBackward() {
-        return mOperatorController.getButton(Button.A);
+        //return mOperatorController.getButton(Button.A);
+        return false;
     }
 
     public boolean getGrasperModeSwap() {
@@ -353,49 +372,55 @@ public class OperatorInterface {
     public ArmTargets getArmTarget() {
         ArmTargets target = ArmTargets.NONE;
 
-        if(mOperatorController2.getButton(Button.LB)){
+        if(mOperatorController2.getButton(Buttons.A)){
             target = ArmTargets.INTAKE_FRONT;
-        }else if(mOperatorController2.getButton(Button.RB)){
+        }else if(mOperatorController2.getButton(Buttons.B)){
             target = ArmTargets.INTAKE_BACK;
-        }else if(mOperatorController2.getButton(Button.Y)){
+        }/*else if(mOperatorController2.getButton(Buttons.Y)){
             target = ArmTargets.HOME_BACKSIDE;
-        }else if(mOperatorController2.getButton(Button.A)){
+        }*/else if(mOperatorController2.getButton(Buttons.SW3)){
             target = ArmTargets.TOP_SCORING_FRONT;
-        }else if(mOperatorController2.getButton(Button.B)){
+        }else if(mOperatorController2.getButton(Buttons.SW5)){
             target = ArmTargets.MID_SCORING_FRONT;
-        }else if(mOperatorController2.getButton(Button.X)){
+        }else if(mOperatorController2.getButton(Buttons.SW6)){
             target = ArmTargets.LOW_SCORING_FRONT;
-        }else if(mOperatorController2.getButton(Button.BACK)){
+        }/*else if(mOperatorController2.getButton(Button.BACK)){
             target = ArmTargets.TOP_SCORING_BACK;
-        }else if(mOperatorController2.getButton(Button.L_JOYSTICK)){
+        }*/else if(mOperatorController2.getButton(Buttons.SW4)){
             target = ArmTargets.MID_SCORING_BACK;
-        }else if(mOperatorController2.getButton(Button.START)){
+        }else if(mOperatorController2.getButton(Buttons.SW7)){
             target = ArmTargets.LOW_SCORING_BACK;
         }
         return target;
     }
 
     public boolean getManualArmExtendUp() {
-        return manualExtensionup.update(mOperatorController2.getDPad() == 0);
+        //return manualExtensionup.update(mOperatorController2.getDPad() == 0);
+        return false;
     }
     public boolean getManualArmExtendDown() {
-        return manualExtensionDown.update(mOperatorController2.getDPad() == 180);
+        //return manualExtensionDown.update(mOperatorController2.getDPad() == 180);
+        return false;
     }
 
     public boolean getManualArmRotateUp() {
-        return manualRotationUp.update(mOperatorController2.getDPad() == 90);
+        //return manualRotationUp.update(mOperatorController2.getDPad() == 90);
+        return false;
     }
 
     public boolean getManualArmRotateDown() {
-        return manualRotationDown.update(mOperatorController2.getDPad() == 270);
+        //return manualRotationDown.update(mOperatorController2.getDPad() == 270);
+        return false;
     }
 
     public boolean getIntakeOpen() {
-        return mOperatorController.getTrigger(Side.LEFT);
+        //return mOperatorController.getTrigger(Side.LEFT);
+        return false;
     }
 
     public boolean getIntakeClose() {
-        return mOperatorController.getTrigger(Side.RIGHT);
+        //return mOperatorController.getTrigger(Side.RIGHT);
+        return false;
     }
 
     public boolean getDriverRelease() {
@@ -407,46 +432,62 @@ public class OperatorInterface {
     }
 
     public boolean getGrasperOpen() {
-        return mOperatorController.getTrigger(Side.RIGHT);
+        return mOperatorController2.getButton(Buttons.SW2);
+    
     }
 
     public boolean getGrasperClosed() {
-        return mOperatorController.getTrigger(Side.LEFT);
+        return mOperatorController2.getButton(Buttons.SW1);
     }
 
 
 
 
     public boolean getArmAnglePlusOne(){
-        return testIncrimentRotation.update(mOperatorController.getButton(Button.Y));
+        //return testIncrimentRotation.update(mOperatorController.getButton(Button.Y));
+        return false;
     }
 
     public boolean getArmAngleMinusOne(){
-        return testDecrementRotation.update(mOperatorController.getButton(Button.A));
+        //return testDecrementRotation.update(mOperatorController.getButton(Button.A));
+        return false;
     }
 
     public boolean getArmAnglePlusFive(){
-        return testIncrimentRotation.update(mOperatorController.getButton(Button.X));
+        //return testIncrimentRotation.update(mOperatorController.getButton(Button.X))
+        return false;
     }
 
     public boolean getArmAngleMinusFive(){ 
-        return testDecrementRotation.update(mOperatorController.getButton(Button.B));
+        //return testDecrementRotation.update(mOperatorController.getButton(Button.B));
+        return false;
     }
 
     public boolean setArmExtendedPlusOne(){
-        return testIncrimentExtension.update(0 == mOperatorController.getDPad());
+        //return testIncrimentExtension.update(0 == mOperatorController.getDPad());
+        return false;
     }
 
     public boolean setArmExtendedMinusOne(){
-        return testDecrementExtension.update((180 == mOperatorController.getDPad()));
+        //return testDecrementExtension.update((180 == mOperatorController.getDPad()));
+        return false;
     }
 
     public boolean setArmExtendedPlusFive(){
-        return testIncrimentExtension.update(270 == mOperatorController.getDPad());
+        //return testIncrimentExtension.update(270 == mOperatorController.getDPad());
+        return false;
     }
 
     public boolean setArmExtendedMinusFive(){
-        return testDecrementExtension.update(90 == mOperatorController.getDPad());
+        //return testDecrementExtension.update(90 == mOperatorController.getDPad());
+        return false;
+    }
+
+    public TargetedObject setTargetedObject(){
+        if(mOperatorController2.getButton(Buttons.A)){
+            return TargetedObject.CUBE;
+        }
+        return TargetedObject.CONE;
     }
 }
 
