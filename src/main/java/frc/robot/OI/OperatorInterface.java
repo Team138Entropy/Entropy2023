@@ -318,9 +318,11 @@ public class OperatorInterface {
         return false;
     }
 
+
+
     public boolean getArmJogExtended() {
         //return mOperatorController.getButton(Button.RB);
-        return mDriverController.getButton(Button.B);
+        return mOperatorController2.getButton(Buttons.SW5);
     }
 
     public boolean getArmExtended2() {
@@ -340,8 +342,8 @@ public class OperatorInterface {
     }
 
     public boolean getArmJogRetracted() {
-        return mDriverController.getButton(Button.A);
-    
+       // return mDriverController.getButton(Button.A);
+        return mOperatorController2.getButton(Buttons.SW4);
     }
 
     public boolean getArmRotateForward() {
