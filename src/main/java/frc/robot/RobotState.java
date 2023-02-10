@@ -205,7 +205,9 @@ public class RobotState {
         if(mIsValidVisionPose)
         {
             try {
+                
                 mSwerveDrivePoseEstimator.addVisionMeasurement(mVisionBasedRobotPose, mVisionBasedRobotPoseLatencySeconds);
+            
             } catch (Exception ex)
             {
                 System.out.println(ex.getMessage());

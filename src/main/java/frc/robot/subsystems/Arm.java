@@ -115,7 +115,7 @@ public class Arm extends Subsystem {
         {
             // TODO: Figure out Scaling Value
             // TODO: arm extension should factor angle?
-            ExtensionMotor.set(ControlMode.MotionMagic, Inches, DemandType.ArbitraryFeedForward, 0.3); 
+            ExtensionMotor.set(ControlMode.MotionMagic, Inches, DemandType.ArbitraryFeedForward, 0.2); 
             mTargetedExtension = Inches;
         }
     }
