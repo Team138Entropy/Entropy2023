@@ -58,8 +58,8 @@ public class Arm extends Subsystem {
         MasterShoulderMotor.config_kI(0, .01);
         MasterShoulderMotor.config_kD(0, 300);
         MasterShoulderMotor.configSelectedFeedbackCoefficient(360.0/8192.0);
-        MasterShoulderMotor.configMotionAcceleration(4);
-        MasterShoulderMotor.configMotionCruiseVelocity(10, 10);
+        MasterShoulderMotor.configMotionAcceleration(10);
+        MasterShoulderMotor.configMotionCruiseVelocity(15, 10);
         SecondaryShoulderMotor.follow(MasterShoulderMotor); // Secondary Motor will follow Primary Motor
         SecondaryShoulderMotor.setInverted(true);
 
@@ -76,7 +76,7 @@ public class Arm extends Subsystem {
         ExtensionMotor.config_kI(0, 0);
         ExtensionMotor.config_kD(0, 0);
         ExtensionMotor.configMotionAcceleration(60000);
-        ExtensionMotor.configMotionCruiseVelocity(30000);
+        ExtensionMotor.configMotionCruiseVelocity(50000);
 
         // Rotation Min, Max, Target
         mMaximumDegreesTarget = 0;

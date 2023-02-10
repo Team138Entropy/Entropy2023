@@ -320,7 +320,7 @@ public class OperatorInterface {
 
     public boolean getArmJogExtended() {
         //return mOperatorController.getButton(Button.RB);
-        return false;
+        return mDriverController.getButton(Button.B);
     }
 
     public boolean getArmExtended2() {
@@ -340,18 +340,16 @@ public class OperatorInterface {
     }
 
     public boolean getArmJogRetracted() {
-        //return mOperatorController.getButton(Button.LB);
-        return false;
+        return mDriverController.getButton(Button.A);
+    
     }
 
     public boolean getArmRotateForward() {
-        //return mOperatorController.getButton(Button.Y);
-        return false;
+        return mOperatorController.getButton(Buttons.SW7);
     }
 
     public boolean getArmRotateBackward() {
-        //return mOperatorController.getButton(Button.A);
-        return false;
+        return mOperatorController.getButton(Buttons.SW6);
     }
 
     public boolean getGrasperModeSwap() {
@@ -428,7 +426,7 @@ public class OperatorInterface {
     }
 
     public boolean getModeSwitch() {
-        return mDriverController.getButton(Button.START);
+        return mOperatorController2.getButton(Buttons.SW3);
     }
 
     public boolean getGrasperOpen() {
@@ -444,8 +442,7 @@ public class OperatorInterface {
 
 
     public boolean getArmAnglePlusOne(){
-        //return testIncrimentRotation.update(mOperatorController.getButton(Button.Y));
-        return false;
+        return testIncrimentRotation.update(mOperatorController2.getButton(Buttons.SW5));
     }
 
     public boolean getArmAngleMinusOne(){

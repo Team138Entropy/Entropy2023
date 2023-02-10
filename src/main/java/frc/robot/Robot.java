@@ -392,7 +392,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
-    DriveLoop(mOperatorInterface.getDrivePrecisionSteer(), true);
+    //DriveLoop(mOperatorInterface.getDrivePrecisionSteer(), true);
 
       //Allows the operator to swap freely between both test modes by pressing START
     if (mJogMode == true && mOperatorInterface.getModeSwitch()){

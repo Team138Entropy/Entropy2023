@@ -204,7 +204,13 @@ public class RobotState {
         // Todo: Recomended to only feed vision pose within 1 meter or so of robot
         if(mIsValidVisionPose)
         {
-            mSwerveDrivePoseEstimator.addVisionMeasurement(mVisionBasedRobotPose, mVisionBasedRobotPoseLatencySeconds);
+            try {
+                mSwerveDrivePoseEstimator.addVisionMeasurement(mVisionBasedRobotPose, mVisionBasedRobotPoseLatencySeconds);
+            } catch (Exception ex)
+            {
+                System.out.println(ex.getMessage());
+                System.out.println("CONCURRENT EXCEPTION?");
+            }
         }
 
         // Get Overall System Pose Estimate
