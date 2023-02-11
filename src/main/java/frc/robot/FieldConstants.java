@@ -179,7 +179,7 @@ public final class FieldConstants {
     // Final Scoring Positions
     public static final Translation2d[] redFinalScorePosition = new Translation2d[nodeRowCount];
     public static final Translation2d[] blueFinalScorePosition = new Translation2d[nodeRowCount];
-    public static final double scoreFinalPosOffset = .4;
+    public static final double scoreFinalPosOffset = .2;
 
     public static final Translation2d[] redFinalScorePositionFlipped = new Translation2d[nodeRowCount];
     public static final Translation2d[] blueFinalScorePositionFlipped = new Translation2d[nodeRowCount];

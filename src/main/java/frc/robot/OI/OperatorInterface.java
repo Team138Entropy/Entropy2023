@@ -376,16 +376,16 @@ public class OperatorInterface {
             target = ArmTargets.INTAKE_FRONT;
         }else if(mOperatorController2.getButton(Buttons.COIN)){
             target = ArmTargets.INTAKE_BACK;
-        }/*else if(mOperatorController2.getButton(Buttons.Y)){
+        }else if(mOperatorController2.getButton(Buttons.B)){//
             target = ArmTargets.HOME_BACKSIDE;
-        }*/else if(mOperatorController2.getButton(Buttons.SW3)){
+        }else if(mOperatorController2.getButton(Buttons.SW3)){
             target = ArmTargets.TOP_SCORING_FRONT;
         }else if(mOperatorController2.getButton(Buttons.SW5)){
             target = ArmTargets.MID_SCORING_FRONT;
         }else if(mOperatorController2.getButton(Buttons.SW6)){
             target = ArmTargets.LOW_SCORING_FRONT;
-        }/*else if(mOperatorController2.getButton(Button.BACK)){
-            target = ArmTargets.TOP_SCORING_BACK;
+        }/*else if(mOperatorController2.getButton(Buttons.A)){//
+            target = ArmTargets.HOME_FRONTSIDE;
         }*/else if(mOperatorController2.getButton(Buttons.SW4)){
             target = ArmTargets.MID_SCORING_BACK;
         }else if(mOperatorController2.getButton(Buttons.SW7)){

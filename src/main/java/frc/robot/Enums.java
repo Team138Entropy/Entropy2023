@@ -38,13 +38,12 @@ public class Enums {
         //NAME_OF_POSITION(armAngle, armExtension),
         //THESE ARE PLACEHOLDER VALUES
         TOP_SCORING_FRONT(10, Constants.Arm.MaxExtensionPosition),
-        TOP_SCORING_FRONT_CUBE(6, Constants.Arm.MaxExtensionPosition),
+        TOP_SCORING_FRONT_CUBE(-1, Constants.Arm.MaxExtensionPosition),
         MID_SCORING_FRONT(-7,Constants.Arm.MinExtensionPosition),
-        MID_SCORING_FRONT_CUBE(-7,Constants.Arm.MinExtensionPosition),
+        MID_SCORING_FRONT_CUBE(-15,Constants.Arm.MinExtensionPosition),
 
-        //-60
         LOW_SCORING_FRONT(-60,Constants.Arm.MinExtensionPosition),
-        INTAKE_FRONT(-6,Constants.Arm.MinExtensionPosition),
+        INTAKE_FRONT(0,Constants.Arm.MinExtensionPosition),
         TOP_SCORING_BACK(170,0),
         MID_SCORING_BACK(173,Constants.Arm.MaxExtensionPosition),
         LOW_SCORING_BACK(207,186000),
@@ -54,7 +53,7 @@ public class Enums {
         SAFE(90,0),
         START(233, 0),
         HOME_BACKSIDE(220, 0),
-        HOME_FRONTSIDE(0, 0),
+        HOME_FRONTSIDE(-60, 0),
         NONE(90,0);
 
 

@@ -652,6 +652,19 @@ public class Robot extends TimedRobot {
       {
         mCurrentArmTarget = Constants.Arm.CubeArmTargetOverrides.get(mCurrentArmTarget);
       }
+    }else {
+      // Current Object is Cone, Convert Back to Cube
+      if(Constants.Arm.CubeArmTargetOverrides.containsValue(mCurrentArmTarget))
+      {
+        // Current Arm Target is a Cube, convert back to its cone counterpart
+        for (var entry : Constants.Arm.CubeArmTargetOverrides.entrySet()) {
+          if(entry.getValue() == mCurrentArmTarget)
+          {
+            mCurrentArmTarget = entry.getKey();
+            break;
+          }
+        }
+      }
     }
 
     // Simple Arm Control
@@ -801,20 +814,24 @@ public class Robot extends TimedRobot {
       // These are the translations of the targeted score position
       Translation2d selectedXY = null;
       int targetIndex = mTargetedPosition.ordinal()  - 1;
-      if(Alliance.Blue == DriverStation.getAlliance())
+      if(targetIndex < FieldConstants.Grids.blueFinalScorePositionFlipped.length)
       {
-        // Blue Alliance
-        selectedXY = FieldConstants.Grids.blueFinalScorePositionFlipped[targetIndex];
-      }
-      else 
-      {
-        // Red Alliance
-        selectedXY = FieldConstants.Grids.redFinalScorePositionFlipped[targetIndex];
+        if(Alliance.Blue != DriverStation.getAlliance())
+        {
+          // Blue Alliance
+          selectedXY = FieldConstants.Grids.blueFinalScorePositionFlipped[targetIndex];
+        }
+        else 
+        {
+          // Red Alliance
+          selectedXY = FieldConstants.Grids.redFinalScorePositionFlipped[targetIndex];
+        }
+  
+        // Create a Rotation
+        // TODO: need to set front or back into target pose
+        result = new Pose2d(selectedXY, new Rotation2d());
       }
 
-      // Create a Rotation
-      // TODO: need to set front or back into target pose
-      result = new Pose2d(selectedXY, new Rotation2d());
     }
     return result;
   }

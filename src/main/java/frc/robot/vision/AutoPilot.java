@@ -93,6 +93,10 @@ public class AutoPilot {
     private double mXSpeedFactor = 0.3;
     private double mYSpeedFactor = 0.3;
 
+    private boolean mWithinToleranceX = false;
+    private boolean mWithinToleranceY = false;
+    private boolean mWithinToleranceRotation = false;
+
     // Visual Field for Debugging
     private final Field2d mVisualField = new Field2d();
 
@@ -126,6 +130,9 @@ public class AutoPilot {
         mXSpeed = 0;
         mYSpeed = 0;
         mRotationSpeed = 0;
+        mWithinToleranceX = true;
+        mWithinToleranceY = true;
+        mWithinToleranceRotation = true;
 
         // Update X if outside Tolerance
         if(mXDistance > mXTolerance.get())
@@ -133,6 +140,8 @@ public class AutoPilot {
             mXSpeed = mXController.calculate(mRobotPose.getX(), mTargetedPose.getX());
             mXSpeed *= mXSpeedFactor;
             if(mInvertX) mXSpeed *= -1;
+
+            mWithinToleranceX = false;
         }
 
         // Update Y if outside Tolerance
@@ -141,6 +150,8 @@ public class AutoPilot {
             mYSpeed = mYController.calculate(mRobotPose.getY(), mTargetedPose.getY());
             mYSpeed *= mYSpeedFactor;
             if(mInvertY) mYSpeed *= -1;
+
+            mWithinToleranceY = false;
         }
 
         // Update Rotation if outside Tolerance
@@ -148,6 +159,8 @@ public class AutoPilot {
         {
             mRotationSpeed = mOmegaController.calculate(mRobotPose.getRotation().getRadians(), mTargetedPose.getRotation().getRadians());
             if(mInvertRotation) mRotationSpeed *= -1;
+
+            mWithinToleranceRotation = false;
         }
         
         // Allow Driving - Posible to just use update for data
@@ -195,6 +208,9 @@ public class AutoPilot {
         SmartDashboard.putNumber(key + "Distance/X", mXDistance);
         SmartDashboard.putNumber(key + "Distance/Y", mYDistance);
         SmartDashboard.putNumber(key + "Distance/Rotation", mRotationDistance);
+        SmartDashboard.putBoolean(key + "DistanceTolerance/X", mWithinToleranceX);
+        SmartDashboard.putBoolean(key + "DistanceTolerance/Y", mWithinToleranceY);
+        SmartDashboard.putBoolean(key + "DistanceTolerance/Rotation", mWithinToleranceRotation);
 
 
         // Debug Field Drawing
