@@ -22,7 +22,7 @@ public class Grasper extends Subsystem {
     //Grasper pneumatics
     private final Solenoid GrasperSolenoid;
     //NEO Motor 
-    private final EntropyCANSparkMax GrasperWheelMotor;
+    //private final EntropyCANSparkMax GrasperWheelMotor;
     //Beam Sensor
     private final BeamSensor mBeamSensor;
     //Beam Timer
@@ -52,7 +52,7 @@ public class Grasper extends Subsystem {
     private Grasper()
     {
       GrasperSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
-      GrasperWheelMotor = new EntropyCANSparkMax(Constants.Talons.Grasper.IntakeMotor, MotorType.kBrushless);
+      //GrasperWheelMotor = new EntropyCANSparkMax(Constants.Talons.Grasper.IntakeMotor, MotorType.kBrushless);
       mBeamSensor = new BeamSensor(0);
       beamActivationTimer = new Timer();
       wheelCancellationTimer = new Timer();
@@ -78,12 +78,12 @@ public class Grasper extends Subsystem {
 
   // Start the Intake Motor
   public void setGrasperWheelIntake(){
-    GrasperWheelMotor.set(0.2);
+    //GrasperWheelMotor.set(0.2);
   }
 
   // Stop the Intake Motor
   public void cancelGrasperWheelIntake(){
-    GrasperWheelMotor.set(0);
+   // GrasperWheelMotor.set(0);
   }
 
   // Constant Update Function 
@@ -169,9 +169,9 @@ public class Grasper extends Subsystem {
   public void updateSmartDashBoard(){
     final String key = "Grasper/";
     //Grasper Motor
-    SmartDashboard.putNumber(key + "Voltage", GrasperWheelMotor.getBusVoltage());
-    SmartDashboard.putNumber(key + "Temperature", GrasperWheelMotor.getMotorTemperature());
-    SmartDashboard.putNumber(key + "Output", GrasperWheelMotor.getAppliedOutput());
+    //SmartDashboard.putNumber(key + "Voltage", GrasperWheelMotor.getBusVoltage());
+    //SmartDashboard.putNumber(key + "Temperature", GrasperWheelMotor.getMotorTemperature());
+   // SmartDashboard.putNumber(key + "Output", GrasperWheelMotor.getAppliedOutput());
     //IR Beam Sensor 
     SmartDashboard.putBoolean(key + "IR Beam Sensor", mBeamSensor.get());
     //Solenoid
@@ -181,6 +181,6 @@ public class Grasper extends Subsystem {
     SmartDashboard.putString(key + "GrasperState", mGrasperState.toString());
 
     // Update Grasper Motor Smartdashboard
-    GrasperWheelMotor.updateSmartdashboard();
+   // GrasperWheelMotor.updateSmartdashboard();
   }
 } 

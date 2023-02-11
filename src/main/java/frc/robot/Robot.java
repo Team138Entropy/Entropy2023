@@ -98,8 +98,8 @@ public class Robot extends TimedRobot {
   private final boolean mRealRobot = Robot.isReal();
 
   // Reference to the Power Distrubtion Panel
-  private final PowerDistribution mPowerPanel = new PowerDistribution(Constants.Talons.PowerDistribution.pdpCan, 
-                                                                                                  ModuleType.kRev);
+  //private final PowerDistribution mPowerPanel = new PowerDistribution(Constants.Talons.PowerDistribution.pdpCan, 
+  //                                                                                                ModuleType.kRev);
 
   // DIO Based Analog Input
   private final AnalogInput mPressureSensor = new AnalogInput(0);
@@ -202,7 +202,7 @@ public class Robot extends TimedRobot {
     // Reset Drive Sensors
 
     // Controllable Panel (Turn on Light for Cube)
-    mPowerPanel.setSwitchableChannel(mCurrentTargetedObject == TargetedObject.CUBE);
+    //mPowerPanel.setSwitchableChannel(mCurrentTargetedObject == TargetedObject.CUBE);
     
     mArm.zeroSensors();
     mDrive.zeroHeading();
@@ -249,7 +249,7 @@ public class Robot extends TimedRobot {
     
     //formula to convert to PSI
     SmartDashboard.putNumber("pressure sensor", 250.0 * mPressureSensor.getVoltage() / 5.0 - 25.0);
-    SmartDashboard.putData(mPowerPanel);
+    //SmartDashboard.putData(mPowerPanel);
 
     // Controls
     final String controlsKey = "Controls/";
