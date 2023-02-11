@@ -372,9 +372,9 @@ public class OperatorInterface {
     public ArmTargets getArmTarget() {
         ArmTargets target = ArmTargets.NONE;
 
-        if(mOperatorController2.getButton(Buttons.A)){
+        if(mOperatorController2.getButton(Buttons.SW8)){
             target = ArmTargets.INTAKE_FRONT;
-        }else if(mOperatorController2.getButton(Buttons.B)){
+        }else if(mOperatorController2.getButton(Buttons.COIN)){
             target = ArmTargets.INTAKE_BACK;
         }/*else if(mOperatorController2.getButton(Buttons.Y)){
             target = ArmTargets.HOME_BACKSIDE;

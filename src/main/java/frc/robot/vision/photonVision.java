@@ -43,8 +43,9 @@ public class photonVision {
     
     // TODO - Likely two more camera to come to be a 3 camera system
     //      - this should be in an array with a corresponding transform3d, enums to index
-    public static final PhotonCamera frontCamera = new PhotonCamera("frontApriltagCam");
-    public static final PhotonCamera backCamera = new PhotonCamera("backApriltagCam");
+    
+    public static final PhotonCamera frontCamera = new PhotonCamera("backApriltagCam");
+    public static final PhotonCamera backCamera = new PhotonCamera("frontApriltagCam");
     public static final PhotonCamera grasperCamera = new PhotonCamera("grasperCam");
     // Transform2d (and all of the geometry classes in WPILIB) use meters
     // All these inches measurements are from the center of the robot

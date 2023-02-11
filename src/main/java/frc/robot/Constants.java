@@ -97,7 +97,7 @@ public class Constants {
       Rotation2d.fromDegrees(0);
 
     // Allowed Seconds Threshold
-    public static final double kAllowedSecondsThreshold = 2; //seconds
+    public static final double kAllowedSecondsThreshold = 5; //seconds
   }
 
   // Subsystems
@@ -338,7 +338,7 @@ public class Constants {
 
     public static final TuneableNumber jogSpeed = new TuneableNumber("armShoulderJogSpeed",.4);
                                                       
-    public static final double MaxExtensionPosition = 250000.0;
+    public static final double MaxExtensionPosition = 245000.0;
     public static final double MinExtensionPosition = 0;
   }
 

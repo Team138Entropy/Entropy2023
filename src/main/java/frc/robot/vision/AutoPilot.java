@@ -221,12 +221,16 @@ public class AutoPilot {
             if(xDistance > mXTolerance.get())
             {
                 xSpeed = mXController.calculate(mRobotPose.getX(), mTargetedPose.getX());
+                xSpeed *= .22;
+                //xSpeed *= -1;
             }
 
             // Update Y if outside Tolerance
             if(yDistance > mYTolerance.get())
             {
                 ySpeed = mYController.calculate(mRobotPose.getY(), mTargetedPose.getY());
+                ySpeed *= .22;
+                ySpeed *= -1;
             }
 
             // Update Rotation if outside Tolerance
