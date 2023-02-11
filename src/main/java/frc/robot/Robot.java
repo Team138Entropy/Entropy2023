@@ -245,6 +245,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("rotate offset", mManualTargetOffset);
     SmartDashboard.putNumber("extend offset", mManualExtendOffset);
     SmartDashboard.putString("Targeted Object", mCurrentTargetedObject.toString());
+    SmartDashboard.putBoolean("balance mode", mBalanceMode);
     
     //formula to convert to PSI
     SmartDashboard.putNumber("pressure sensor", 250.0 * mPressureSensor.getVoltage() / 5.0 - 25.0);
@@ -698,10 +699,8 @@ public class Robot extends TimedRobot {
    if(precisionSteer) driveThrottle *= .55;
 
     boolean wantsAutoSteer = mOperatorInterface.getDriveAutoSteer();
-    if(mOperatorInterface.getBalanceMode() && mBalanceMode == false){
-      mBalanceMode = false;
-    }else if(mOperatorInterface.getBalanceMode() && mBalanceMode == true){
-      mBalanceMode = false;
+    if(mOperatorInterface.getBalanceMode()){
+      mBalanceMode = !mBalanceMode;
     }
     //wantsAutoSteer &= allowAutoSteer; //disable if autosteer isn't allowed
     SmartDashboard.putBoolean("Autosteer", wantsAutoSteer);
@@ -743,13 +742,13 @@ public class Robot extends TimedRobot {
       mAutoPilot.setTargetPose(mTargetPose);
 
       // Update Auto Pilot
-      mAutoPilot.update(false);
+      //mAutoPilot.update(false);
 
       // Auto Pilot (and has Valid Target Position)
       if(wantsAutoSteer && mTargetedPosition != TargetedPositions.NONE)
       {
        // Update Auto Pilot (allow drive)
-       mAutoPilot.update(true);
+       //mAutoPilot.update(true);
       }
       else if(mBalanceMode)
       {
@@ -763,10 +762,8 @@ public class Robot extends TimedRobot {
       }
       else
       {
+        mDrive.setBrake(false);
         // Normal Swerve Operation
-
-        // Do Not AutoPilot Drive
-        //mAutoPilot.stop();
         
         // Swerve Snap to a Direction (Button Press Quickly Moves Robot)
         SwerveCardinal snapCardinal = mOperatorInterface.getSwerveSnap();
@@ -816,7 +813,7 @@ public class Robot extends TimedRobot {
       int targetIndex = mTargetedPosition.ordinal()  - 1;
       if(targetIndex < FieldConstants.Grids.blueFinalScorePositionFlipped.length)
       {
-        if(Alliance.Blue != DriverStation.getAlliance())
+        if(Alliance.Blue == DriverStation.getAlliance())
         {
           // Blue Alliance
           selectedXY = FieldConstants.Grids.blueFinalScorePositionFlipped[targetIndex];

@@ -5,6 +5,7 @@ import frc.robot.util.drivers.Pigeon;
 import frc.robot.util.geometry.Rotation2d;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class chargingStationAutoPilot {
     private static chargingStationAutoPilot mInstance;
@@ -27,7 +28,7 @@ public class chargingStationAutoPilot {
     public boolean autoBalanceXMode = false;
 
     //placeholder PID values
-    private final PIDController balanceController = new PIDController(0, 0, 0);
+    private final PIDController balanceController = new PIDController(2, 0, 0);
 
 
     static final double chargingStationDegreeThreshold = 5;
@@ -45,14 +46,19 @@ public class chargingStationAutoPilot {
     }
 
     public void update(Boolean slowDrive,boolean leftStrafe, boolean rightStrafe) {
+        pitchAngleDegrees = mPigeon.getUnadjustedPitch().getDegrees();
         
 
-        if (!autoBalanceXMode && (Math.abs(pitchAngleDegrees) >= Math.abs(chargingStationDegreeThreshold))) {
+        if ((Math.abs(pitchAngleDegrees) >= Math.abs(chargingStationDegreeThreshold))) {
             autoBalanceXMode = true;
         }
-        else if (autoBalanceXMode && (Math.abs(pitchAngleDegrees) <= Math.abs(chargingStationDegreeThreshold))) {
+        else{
             autoBalanceXMode = false;
         }
+        SmartDashboard.putBoolean("autoBalanceX mode", autoBalanceXMode);
+        SmartDashboard.putNumber("chargeStation threshold", chargingStationDegreeThreshold);
+        SmartDashboard.putNumber("pitch angle", pitchAngleDegrees);
+        
 
 
         if ( autoBalanceXMode ) {
@@ -73,8 +79,8 @@ public class chargingStationAutoPilot {
         }
 
         
-        if(slowDrive){
-            xAxisRate = xAxisRate*.5;
+        if(true){
+            xAxisRate = xAxisRate*.01;
         }
 
         // Set Speeds into Swerve System
@@ -85,6 +91,8 @@ public class chargingStationAutoPilot {
 
         // Set Swerve to those Module States
         mDrive.setModuleStates(targetSwerveModuleStates);
+
+        SmartDashboard.putNumber("xAxisRate", xAxisRate);
 
         
 
@@ -101,7 +109,5 @@ public class chargingStationAutoPilot {
         // Set Swerve to those Module States
         mDrive.setModuleStates(targetSwerveModuleStates);
     }
-
-
 
 }

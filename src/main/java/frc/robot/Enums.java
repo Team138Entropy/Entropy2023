@@ -43,7 +43,7 @@ public class Enums {
         MID_SCORING_FRONT_CUBE(-15,Constants.Arm.MinExtensionPosition),
 
         LOW_SCORING_FRONT(-60,Constants.Arm.MinExtensionPosition),
-        INTAKE_FRONT(0,Constants.Arm.MinExtensionPosition),
+        INTAKE_FRONT(-4,Constants.Arm.MinExtensionPosition),
         TOP_SCORING_BACK(170,0),
         MID_SCORING_BACK(173,Constants.Arm.MaxExtensionPosition),
         LOW_SCORING_BACK(207,186000),

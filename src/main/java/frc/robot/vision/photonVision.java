@@ -44,9 +44,10 @@ public class photonVision {
     // TODO - Likely two more camera to come to be a 3 camera system
     //      - this should be in an array with a corresponding transform3d, enums to index
     
-    public static final PhotonCamera frontCamera = new PhotonCamera("backApriltagCam");
-    public static final PhotonCamera backCamera = new PhotonCamera("frontApriltagCam");
-    public static final PhotonCamera grasperCamera = new PhotonCamera("grasperCam");
+    
+    public static final PhotonCamera frontCamera = new PhotonCamera("frontApriltagCam");
+    public static final PhotonCamera backCamera = new PhotonCamera("backApriltagCam");
+    //public static final PhotonCamera grasperCamera = new PhotonCamera("grasperCam");
     // Transform2d (and all of the geometry classes in WPILIB) use meters
     // All these inches measurements are from the center of the robot
     // The more accurate these numbers are the better the vision calculation will be
@@ -61,15 +62,19 @@ public class photonVision {
     public static final Transform3d robotToBackCam = 
                     new Transform3d(new Translation3d(0, 0.0, 0), 
                     new Rotation3d(0,0,Units.degreesToRadians(180))); //Camera is mirrored on the backside, so yaw will be flipped 180
-    public static final Transform3d robotToGrasperCam = 
+   /*
+                    public static final Transform3d robotToGrasperCam = 
                     new Transform3d(new Translation3d(0, 0.0, 0), 
                     new Rotation3d(0.5,0,0.5)); 
-
+*/
     // TODO - Add Additional Cameras
     public static final List<Pair<PhotonCamera, Transform3d>> CameraList = List.of(
       new Pair<PhotonCamera, Transform3d>(frontCamera, robotToFrontCam),
-      new Pair<PhotonCamera, Transform3d>(backCamera, robotToBackCam),
+      new Pair<PhotonCamera, Transform3d>(backCamera, robotToBackCam)
+      /*
+      ,
       new Pair<PhotonCamera, Transform3d>(grasperCamera, robotToGrasperCam)
+      */
     );
 
     

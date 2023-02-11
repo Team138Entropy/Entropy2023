@@ -90,8 +90,8 @@ public class AutoPilot {
     private double mYSpeed = 0;
     private double mRotationSpeed = 0;
 
-    private double mXSpeedFactor = 0.3;
-    private double mYSpeedFactor = 0.3;
+    private double mXSpeedFactor = 0.20;
+    private double mYSpeedFactor = 0.2;
 
     private boolean mWithinToleranceX = false;
     private boolean mWithinToleranceY = false;
@@ -103,7 +103,9 @@ public class AutoPilot {
 
     private AutoPilot()
     {
-
+            mXController.reset(0);
+            mYController.reset(0);
+            mOmegaController.reset(0);
     }
 
     // Set Target Pose to Drive To
