@@ -742,13 +742,13 @@ public class Robot extends TimedRobot {
       mAutoPilot.setTargetPose(mTargetPose);
 
       // Update Auto Pilot
-      //mAutoPilot.update(false);
+      mAutoPilot.update(false);
 
       // Auto Pilot (and has Valid Target Position)
       if(wantsAutoSteer && mTargetedPosition != TargetedPositions.NONE)
       {
        // Update Auto Pilot (allow drive)
-       //mAutoPilot.update(true);
+       mAutoPilot.update(true);
       }
       else if(mBalanceMode)
       {
