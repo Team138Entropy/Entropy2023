@@ -130,6 +130,7 @@ public class Robot extends TimedRobot {
   // Position the Auto Pilot System Wants to Drive to
   public TargetedPositions mTargetedPosition = TargetedPositions.NONE;
   public TargetedObject mCurrentTargetedObject = TargetedObject.CONE;
+  public Pose2d mTargetPose = new Pose2d();
 
   /**
    * On Robot Startup
@@ -200,7 +201,7 @@ public class Robot extends TimedRobot {
 
     // Reset Drive Sensors
 
-    // Controllable Panel
+    // Controllable Panel (Turn on Light for Cube)
     mPowerPanel.setSwitchableChannel(mCurrentTargetedObject == TargetedObject.CUBE);
     
     mArm.zeroSensors();
@@ -236,6 +237,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Pigeon Degrees", mPigeon.getYaw().getDegrees());
     SmartDashboard.putNumber("Pigeon Radians", mPigeon.getYaw().getRadians());
     SmartDashboard.putString("Target Position", mTargetedPosition.toString());
+    SmartDashboard.putString("Target Pose", mTargetPose.toString());
     SmartDashboard.putString("Target Arm Position", mCurrentArmTarget.toString());
     SmartDashboard.putNumber("Target Arm Angle", mCurrentArmTarget.armAngle);
     SmartDashboard.putNumber("Target Arm Extension", mCurrentArmTarget.armExtend);
@@ -638,27 +640,23 @@ public class Robot extends TimedRobot {
       mManualTargetOffset -= 1;
     }
 
-    // Arm Override (if set)
+    // Arm Override by Shuffleboard (if set)
     if(ArmTargets.NONE != mArmTargetOverride) mCurrentArmTarget = mArmTargetOverride;
 
-    // Constantly tell the Arm where to go
-    if(ArmControlType.Simple == mArmControlType)
+    // Override for Cube Objects (if exists)
+    // Allow Cube Positions to be different
+    if(mCurrentTargetedObject == TargetedObject.CUBE)
     {
-      // Simple Arm Control Type (Do not rotate arm until extension is Retracted)
-      // If you want to move the arm to a different rotation angle, arm extension must be retracted
-      // This is still a todo! 
+      // If an override position for cube, get the cube specific target
+      if(Constants.Arm.CubeArmTargetOverrides.containsKey(mCurrentArmTarget))
+      {
+        mCurrentArmTarget = Constants.Arm.CubeArmTargetOverrides.get(mCurrentArmTarget);
+      }
+    }
 
-      mSuperStructure.setTargetArmPosition(mCurrentArmTarget);
-      //mArm.setArmAngle(mCurrentArmTarget.armAngle + mManualTargetOffset);
-      //mArm.setArmExtension(mCurrentArmTarget.armExtend + mManualExtendOffset);
-    }
-    else if(ArmControlType.Advanced == mArmControlType)
-    {
-      // TODO: Allow Arm to move with extension out
-      // This is more complicated.. we might not get to this.. or need it
-    }
+    // Simple Arm Control
+    mSuperStructure.setTargetArmPosition(mCurrentArmTarget);
     mSuperStructure.update();
- 
 
     // Grasper Functionality
     if(mOperatorInterface.getGrasperOpen()){
@@ -727,31 +725,18 @@ public class Robot extends TimedRobot {
       // Swerve Brake
       //mDrive.setBrake(mOperatorInterface.getBrake());
 
+      // Get Target Pose
+      mTargetPose = getTargetPose(mTargetedPosition);
+      mAutoPilot.setTargetPose(mTargetPose);
+
+      // Update Auto Pilot
+      mAutoPilot.update(false);
+
       // Auto Pilot (and has Valid Target Position)
       if(wantsAutoSteer && mTargetedPosition != TargetedPositions.NONE)
       {
-        // Use Targeted Position to lookup Target Translation
-        // These are the translations of the targeted score position
-        Translation2d selectedXY = null;
-        int targetIndex = mTargetedPosition.ordinal()  - 1;
-        if(Alliance.Blue == DriverStation.getAlliance())
-        {
-          // Blue Alliance
-          selectedXY = FieldConstants.Grids.blueFinalScorePositionFlipped[targetIndex];
-        }
-        else 
-        {
-          // Red Alliance
-          selectedXY = FieldConstants.Grids.redFinalScorePositionFlipped[targetIndex];
-        }
-
-        // Create a Rotation
-        // TODO: need to set front or back into target pose
-        Pose2d targetedPose = new Pose2d(selectedXY, new Rotation2d());
-
-        // Target this Pose
-        mAutoPilot.targetPose(targetedPose);
-
+       // Update Auto Pilot (allow drive)
+       mAutoPilot.update(true);
       }
       else if(mBalanceMode)
       {
@@ -804,6 +789,34 @@ public class Robot extends TimedRobot {
 
     // Update Odometry of Robot (only if real)
     if(mRealRobot) mDrive.updateOdometry();
+  }
+
+  // Get Target Pose from Target Position
+  public Pose2d getTargetPose(TargetedPositions pos)
+  {
+    Pose2d result = new Pose2d();
+    if(TargetedPositions.NONE != pos) 
+    {
+      // Use Targeted Position to lookup Target Translation
+      // These are the translations of the targeted score position
+      Translation2d selectedXY = null;
+      int targetIndex = mTargetedPosition.ordinal()  - 1;
+      if(Alliance.Blue == DriverStation.getAlliance())
+      {
+        // Blue Alliance
+        selectedXY = FieldConstants.Grids.blueFinalScorePositionFlipped[targetIndex];
+      }
+      else 
+      {
+        // Red Alliance
+        selectedXY = FieldConstants.Grids.redFinalScorePositionFlipped[targetIndex];
+      }
+
+      // Create a Rotation
+      // TODO: need to set front or back into target pose
+      result = new Pose2d(selectedXY, new Rotation2d());
+    }
+    return result;
   }
 
 }

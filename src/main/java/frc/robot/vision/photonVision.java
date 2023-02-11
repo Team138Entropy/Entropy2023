@@ -88,7 +88,7 @@ public class photonVision {
     // EntropyVisionSim, which extends PhotonVisionSim
     public EntropyVisionSim simFrontCamera =
             new EntropyVisionSim(
-                    "frontApriltagCam",
+                    "backApriltagCam",
                     camDiagFOV,
                     robotToFrontCam,
                     maxLEDRange,
@@ -98,7 +98,7 @@ public class photonVision {
 
     public EntropyVisionSim simBackCamera =
                     new EntropyVisionSim(
-                            "backApriltagCam",
+                            "frontApriltagCam",
                             camDiagFOV,
                             robotToBackCam,
                             maxLEDRange,

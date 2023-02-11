@@ -106,6 +106,7 @@ public class RobotState {
        //  Various different strategies are available (AverageBestTargets, Closest_To_Camera_Height, Closest_To_Last_Pose,
        //                                              Closest_To_Reference_Pose, Lowest_Ambiguity)
        //  ref: https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html
+       // FRONT CAMERA ONLY.. to do do back camera
        mRobotPoseEstimator = new PhotonPoseEstimator(
         FieldConstants.aprilTagField, 
         PoseStrategy.AVERAGE_BEST_TARGETS, 
@@ -306,11 +307,13 @@ public class RobotState {
         simVisionPose.setPose(mVisionBasedRobotPose);
 
         // Vision Following Trajectory if applicable
+        /*
         Trajectory driveTraj = AutoPilot.getInstance().getTrajectory();
         if(null != driveTraj)
         {
             mVisualField.getObject("Trajectory").setTrajectory(driveTraj);
         }
+        */
 
         // WPILIB Pose Estimator
         FieldObject2d wpiLibPoseObject = mVisualField.getObject("WpilibPose");

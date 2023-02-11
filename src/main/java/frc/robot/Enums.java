@@ -1,5 +1,9 @@
 package frc.robot;
 
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Map;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -33,8 +37,11 @@ public class Enums {
     public enum ArmTargets {
         //NAME_OF_POSITION(armAngle, armExtension),
         //THESE ARE PLACEHOLDER VALUES
-        TOP_SCORING_FRONT(10, Constants.Arm.MaxExtensionPosition), //todo fix me!
+        TOP_SCORING_FRONT(10, Constants.Arm.MaxExtensionPosition),
+        TOP_SCORING_FRONT_CUBE(6, Constants.Arm.MaxExtensionPosition),
         MID_SCORING_FRONT(-7,Constants.Arm.MinExtensionPosition),
+        MID_SCORING_FRONT_CUBE(-7,Constants.Arm.MinExtensionPosition),
+
         //-60
         LOW_SCORING_FRONT(-60,Constants.Arm.MinExtensionPosition),
         INTAKE_FRONT(-6,Constants.Arm.MinExtensionPosition),
@@ -46,10 +53,9 @@ public class Enums {
         INTAKE_GROUND_BACK(210,0),
         SAFE(90,0),
         START(233, 0),
-        HOME_BACKSIDE(215, 0),
+        HOME_BACKSIDE(220, 0),
         HOME_FRONTSIDE(0, 0),
         NONE(90,0);
-
 
 
         public final double armAngle;

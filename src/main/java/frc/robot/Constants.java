@@ -1,9 +1,13 @@
 package frc.robot;
 import edu.wpi.first.math.geometry.*;
+
+import java.util.HashMap;
+import java.util.Map;
 import edu.wpi.first.math.util.Units;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
+import frc.robot.Enums.ArmTargets;
 import frc.robot.util.TuneableNumber;
 import frc.robot.util.drivers.SwerveModuleConstants;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -340,6 +344,14 @@ public class Constants {
                                                       
     public static final double MaxExtensionPosition = 245000.0;
     public static final double MinExtensionPosition = 0;
+
+    // Overrides of the Arm Targets if Targetting Cube
+    public static final Map<ArmTargets,ArmTargets> CubeArmTargetOverrides = new HashMap<ArmTargets, ArmTargets>();
+    static {
+      // Add Arm Overrides
+      CubeArmTargetOverrides.put(Enums.ArmTargets.TOP_SCORING_FRONT, Enums.ArmTargets.TOP_SCORING_FRONT_CUBE);
+      CubeArmTargetOverrides.put(Enums.ArmTargets.MID_SCORING_FRONT, Enums.ArmTargets.MID_SCORING_FRONT_CUBE);
+    }
   }
 
   public static class Grasper {

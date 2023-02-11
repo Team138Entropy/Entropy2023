@@ -11,6 +11,8 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.Vision;
@@ -44,12 +46,11 @@ public class AutoPilot {
     private boolean mRunning;
     private Trajectory mTrajectory;
     private boolean mTrajectorySet;
-    private Pose2d mStartingPose;
-    private Pose2d mTargetedPose;
-    private Pose2d mGoalPose;
+    private Pose2d mTargetedPose = new Pose2d();
+    private Pose2d mGoalPose = new Pose2d();
 
     // Current Robot Pose
-    private Pose2d mRobotPose;
+    private Pose2d mRobotPose = new Pose2d();
 
     // Motion Control
     private static final TrapezoidProfile.Constraints mX_CONSTRAINTS = 
@@ -75,6 +76,148 @@ public class AutoPilot {
     };
     private AutoPilotMode mDriveMode;
 
+    // Driving Related Variables
+    private final boolean mDrawField = true;
+    private final boolean mInvertX = false;
+    private final boolean mInvertY = false;
+    private final boolean mInvertRotation = false;
+
+    private double mXDistance = 0;
+    private double mYDistance = 0;
+    private double mRotationDistance = 0;
+
+    private double mXSpeed = 0;
+    private double mYSpeed = 0;
+    private double mRotationSpeed = 0;
+
+    private double mXSpeedFactor = 0.3;
+    private double mYSpeedFactor = 0.3;
+
+    // Visual Field for Debugging
+    private final Field2d mVisualField = new Field2d();
+
+
+    private AutoPilot()
+    {
+
+    }
+
+    // Set Target Pose to Drive To
+    public void setTargetPose(Pose2d targPose)
+    {
+        mTargetedPose = targPose;
+    }
+
+    // Set Current Robot Pose
+    public void setRobotPose(Pose2d currentRobotPose)
+    {
+        mRobotPose = currentRobotPose;
+    }
+
+    public void update(boolean allowDrive) 
+    {
+        // Robot Pose will be constantly updated
+        // Calculate Distances between target and robot
+        mXDistance = Math.abs(mRobotPose.getX() - mTargetedPose.getX());
+        mYDistance = Math.abs(mRobotPose.getY() - mTargetedPose.getY());
+        mRotationDistance = Math.abs(mRobotPose.getRotation().getRadians() - mTargetedPose.getRotation().getRadians());
+
+        // Speeds (zeroed until set otherwise)
+        mXSpeed = 0;
+        mYSpeed = 0;
+        mRotationSpeed = 0;
+
+        // Update X if outside Tolerance
+        if(mXDistance > mXTolerance.get())
+        {
+            mXSpeed = mXController.calculate(mRobotPose.getX(), mTargetedPose.getX());
+            mXSpeed *= mXSpeedFactor;
+            if(mInvertX) mXSpeed *= -1;
+        }
+
+        // Update Y if outside Tolerance
+        if(mYDistance > mYTolerance.get())
+        {
+            mYSpeed = mYController.calculate(mRobotPose.getY(), mTargetedPose.getY());
+            mYSpeed *= mYSpeedFactor;
+            if(mInvertY) mYSpeed *= -1;
+        }
+
+        // Update Rotation if outside Tolerance
+        if(mRotationDistance > mRotationTolerance.get())
+        {
+            mRotationSpeed = mOmegaController.calculate(mRobotPose.getRotation().getRadians(), mTargetedPose.getRotation().getRadians());
+            if(mInvertRotation) mRotationSpeed *= -1;
+        }
+        
+        // Allow Driving - Posible to just use update for data
+        if(allowDrive)
+        {
+            // Set Speeds into Swerve System
+            ChassisSpeeds calculatedSpeeds = new ChassisSpeeds(mXSpeed, mYSpeed, mRotationSpeed);
+
+            // Call Autonomous Chasis Speed 
+            var targetSwerveModuleStates = mDrive.getSwerveKinematics().toSwerveModuleStates(calculatedSpeeds);
+
+            // Set Swerve to those Module States
+            mDrive.setModuleStates(targetSwerveModuleStates);
+        }
+    }
+
+    
+    /*
+         private final boolean mDrawField = true;
+    private final boolean mInvertX = false;
+    private final boolean mInvertY = false;
+    private final boolean mInvertRotation = false;
+
+    private double mXDistance = 0;
+    private double mYDistance = 0;
+    private double mRotationDistance = 0;
+
+    private double mXSpeedFactor = 0.3;
+    private double mYSpeedFactor = 0.3;
+
+        private double mXSpeed = 0;
+    private double mYSpeed = 0;
+    private double mRotationSpeed = 0;
+     */
+
+    public void updateSmartDashBoard()
+    {
+        final String key = "AutoPilot/";
+        //SmartDashboard.putString(key + "Mode", mDriveMode.toString());
+        SmartDashboard.putString(key + "Target Pose", mTargetedPose.toString());
+        SmartDashboard.putString(key + "Robot Pose", mRobotPose.toString());
+        SmartDashboard.putNumber(key + "Speeds/X", mXSpeed);
+        SmartDashboard.putNumber(key + "Speeds/Y", mYSpeed);
+        SmartDashboard.putNumber(key + "Speeds/Rotation", mRotationSpeed);
+        SmartDashboard.putNumber(key + "Distance/X", mXDistance);
+        SmartDashboard.putNumber(key + "Distance/Y", mYDistance);
+        SmartDashboard.putNumber(key + "Distance/Rotation", mRotationDistance);
+
+
+        // Debug Field Drawing
+        if(mDrawField)
+        {
+            // Robot Pose
+            FieldObject2d fieldRobotPose = mVisualField.getObject("Robot");
+            fieldRobotPose.setPose(mRobotPose);
+
+            // Target Pose
+            FieldObject2d fieldTargetPose = mVisualField.getObject("TargetPose");
+            fieldTargetPose.setPose(mTargetedPose);     
+
+            // Put in Smartdashboard
+            SmartDashboard.putData(key + "Field", mVisualField);
+        }
+        
+    }
+}
+
+
+// OLD LOGIC
+/*
     private AutoPilot()
     {
         init();
@@ -160,11 +303,7 @@ public class AutoPilot {
             mYController.setGoal(mGoalPose.getY());
             mOmegaController.setGoal(mGoalPose.getRotation().getRadians());
 
-            /*
-             TODO: Need to generate a list of Poses to Drive
-              
-             
-             */
+   
         } else if(AutoPilotMode.HoldPose == mDriveMode)
         {
             mGoalPose = mTargetedPose;
@@ -304,20 +443,7 @@ public class AutoPilot {
     public Trajectory getTrajectory()
     {
         return mTrajectorySet ? mTrajectory : null;
-    }
+    } 
 
-    public void updateSmartDashBoard()
-    {
-        final String key = "AutoPilot/";
-        SmartDashboard.putBoolean(key + "Running", mRunning);
-        SmartDashboard.putString(key + "Mode", mDriveMode.toString());
-        SmartDashboard.putBoolean(key + "Has Trajectory", mTrajectorySet);
-        SmartDashboard.putString(key + "Trajectory Starting Pose", 
-            mTrajectorySet ? mTrajectory.getInitialPose().toString() : ""
-        );
-        SmartDashboard.putString(key + "Target Pose", mTargetedPose.toString());
-        SmartDashboard.putString(key + "Starting Pose", mStartingPose.toString());
-        SmartDashboard.putString(key + "Goal Pose", mGoalPose.toString());
-        
-    }
-}
+
+ */
