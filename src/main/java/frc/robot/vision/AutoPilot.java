@@ -64,8 +64,8 @@ public class AutoPilot {
     private final ProfiledPIDController mOmegaController = new ProfiledPIDController(2, 0, 0, mOMEGA_CONSTRAINTS);
 
     // Tolerances
-    private final TuneableNumber mXTolerance = new TuneableNumber("X Tolerance", .2);
-    private final TuneableNumber mYTolerance = new TuneableNumber("Y Tolerance", .2);
+    private final TuneableNumber mXTolerance = new TuneableNumber("X Tolerance", .10);
+    private final TuneableNumber mYTolerance = new TuneableNumber("Y Tolerance", .15);
     private final TuneableNumber mRotationTolerance = new TuneableNumber("Rotation Tolerance", Units.degreesToRadians(3));
 
     // Type of System being used to Drive
@@ -90,12 +90,15 @@ public class AutoPilot {
     private double mYSpeed = 0;
     private double mRotationSpeed = 0;
 
-    private double mXSpeedFactor = 0.20;
-    private double mYSpeedFactor = 0.2;
+    private double mXSpeedFactor = 0.35;
+    private double mYSpeedFactor = 0.35;
 
     private boolean mWithinToleranceX = false;
     private boolean mWithinToleranceY = false;
     private boolean mWithinToleranceRotation = false;
+
+    // Calculated Chasis Speeds
+    private ChassisSpeeds mCalculatedSpeeds = new ChassisSpeeds();
 
     // Visual Field for Debugging
     private final Field2d mVisualField = new Field2d();
@@ -169,10 +172,10 @@ public class AutoPilot {
         if(allowDrive)
         {
             // Set Speeds into Swerve System
-            ChassisSpeeds calculatedSpeeds = new ChassisSpeeds(mXSpeed, mYSpeed, mRotationSpeed);
+            mCalculatedSpeeds = new ChassisSpeeds(mXSpeed, mYSpeed, mRotationSpeed);
 
             // Call Autonomous Chasis Speed 
-            var targetSwerveModuleStates = mDrive.getSwerveKinematics().toSwerveModuleStates(calculatedSpeeds);
+            var targetSwerveModuleStates = mDrive.getSwerveKinematics().toSwerveModuleStates(mCalculatedSpeeds);
 
             // Set Swerve to those Module States
             mDrive.setModuleStates(targetSwerveModuleStates);
@@ -213,6 +216,10 @@ public class AutoPilot {
         SmartDashboard.putBoolean(key + "DistanceTolerance/X", mWithinToleranceX);
         SmartDashboard.putBoolean(key + "DistanceTolerance/Y", mWithinToleranceY);
         SmartDashboard.putBoolean(key + "DistanceTolerance/Rotation", mWithinToleranceRotation);
+        SmartDashboard.putNumber(key + "CalculatedSpeeds/X", mCalculatedSpeeds.vxMetersPerSecond);
+        SmartDashboard.putNumber(key + "CalculatedSpeeds/Y", mCalculatedSpeeds.vyMetersPerSecond);
+        SmartDashboard.putNumber(key + "CalculatedSpeeds/Rotation", mCalculatedSpeeds.omegaRadiansPerSecond);
+
 
 
         // Debug Field Drawing

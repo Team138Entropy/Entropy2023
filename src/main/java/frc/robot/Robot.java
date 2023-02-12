@@ -172,11 +172,11 @@ public class Robot extends TimedRobot {
     mArmTargetOverrideChooser.addOption("INTAKE_GROUND_BACK", ArmTargets.INTAKE_GROUND_BACK);
     SmartDashboard.putData("Arm Target Override", mArmTargetOverrideChooser);
 
-    // Start Datalog Manager
-    DataLogManager.start();
+    // Start Datalog Manager - removed until wpilog is resolved
+    //DataLogManager.start();
 
     // Record both DS control and joystick data
-    DriverStation.startDataLog(DataLogManager.getLog());  
+    //DriverStation.startDataLog(DataLogManager.getLog());  
     
     // Real or Simulation Robot
     mRobotState.setRealRobot(mRealRobot);
@@ -792,8 +792,8 @@ public class Robot extends TimedRobot {
         mDrive.setSwerveDrive(sTrans, sRotation, true, true, precisionSteer);
 
         // Log Inputs
-        SmartDashboard.putString("Swerve Input Translation", sTrans.toString());
-        SmartDashboard.putNumber("Swerve Input Rotation", sRotation);
+        SmartDashboard.putString("Controls/Swerve Input Translation", sTrans.toString());
+        SmartDashboard.putNumber("Controls/Swerve Input Rotation", sRotation);
       }
     }
 

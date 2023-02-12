@@ -200,8 +200,8 @@ public final class FieldConstants {
 
         // Arificial Scoring Positions
         // Initial Scoring Positions
-        redInitScorePosition[i] = lowTranslations[i].plus(new Translation2d(scorePosOffset, 0));
-        blueInitScorePosition[i] = oppLowTranslations[i].minus(new Translation2d(scorePosOffset, 0));
+        redInitScorePosition[i] = oppLowTranslations[i].plus(new Translation2d(scorePosOffset, 0));
+        blueInitScorePosition[i] = lowTranslations[i].minus(new Translation2d(scorePosOffset, 0));
 
         // Final Scoring Positions
         redFinalScorePosition[i] = redInitScorePosition[i].minus(new Translation2d(scoreFinalPosOffset, 0));
