@@ -17,6 +17,7 @@ public class SimMechanism {
         }
         return mInstance;
     }
+<<<<<<< Updated upstream
 
     private Mechanism2d mArmMech;
     private MechanismRoot2d mArmRoot;
@@ -26,6 +27,19 @@ public class SimMechanism {
     private Mechanism2d mGrasperMech;
     private MechanismRoot2d mGrasperRootRight;
     private MechanismRoot2d mGrasperRootLeft;
+=======
+    
+    private Mechanism2d mWheelMech;
+    private Mechanism2d mArmMech;
+    private Mechanism2d mGrasperMech;
+    private MechanismRoot2d mArmRoot;
+    private MechanismRoot2d mGrasperRootRight;
+    private MechanismRoot2d mGrasperRootLeft;
+    private MechanismRoot2d mWheelRoot;
+    private MechanismLigament2d mTower;
+    private MechanismLigament2d mWheel;
+    private MechanismLigament2d mArm; 
+>>>>>>> Stashed changes
     private MechanismLigament2d mGrasperConnection;
     private MechanismLigament2d mLeftClaw;
     private MechanismLigament2d mRightClaw;
@@ -50,6 +64,16 @@ public class SimMechanism {
         init();
     }
 
+<<<<<<< Updated upstream
+=======
+    /* 
+     * Sim Mech Cheat Sheet
+     * 
+     * Mech = new Mechanism2d
+     * Root = Mech
+     * Ligiment = Root
+     */
+>>>>>>> Stashed changes
     private void init()
     {
         // Arm Mechanism Canvas
@@ -57,28 +81,60 @@ public class SimMechanism {
 
         // Arm Mechanism Root
         mArmRoot = mArmMech.getRoot("arm", 1.5, 1.5);
+<<<<<<< Updated upstream
         // Tower of the Mechanism
         mTower = mArmRoot.append(new MechanismLigament2d("tower", 3, 270));
         mTower.setColor(new Color8Bit(Color.kSilver));
+=======
+
+        // Tower of the Mechanism
+        mTower = mArmRoot.append(new MechanismLigament2d("tower", 3, 270)); 
+>>>>>>> Stashed changes
 
         // Arm which pivots on top of the tower
         mArm = mArmRoot.append(new MechanismLigament2d("arm", mCurrentArmLength, mCurrentArmAngle));
 
+<<<<<<< Updated upstream
+=======
+
+
+>>>>>>> Stashed changes
         // Grasper Mechanism Canvas
         mGrasperMech = new Mechanism2d(9, 9); //Canvas Size (10,10)
 
         // Grasper Mechanism Root (Right Side)
         mGrasperRootRight = mGrasperMech.getRoot("grasper root right", 7, 2); 
+<<<<<<< Updated upstream
+=======
+        
+>>>>>>> Stashed changes
         // Grasper Mechanism Root (Left Side)
         mGrasperRootLeft = mGrasperMech.getRoot("grasper root left", 2, 2); 
 
         // Grasper Connection Ligament (Left Side)
         mGrasperConnection = mGrasperRootLeft.append(new MechanismLigament2d("Grasper Connection", 5, 0));
+<<<<<<< Updated upstream
         // Left Grasper Ligament
         mLeftClaw = mGrasperRootLeft.append(new MechanismLigament2d("Left Claw", 3, 90));
         // Right Grasper Ligament
         mRightClaw = mGrasperRootRight.append(new MechanismLigament2d("Right Claw", 3, 90));      
 
+=======
+        
+        // Left Grasper Ligament
+        mLeftClaw = mGrasperRootLeft.append(new MechanismLigament2d("Left Claw", 3, 90));
+        
+        // Right Grasper Ligament
+        mRightClaw = mGrasperRootRight.append(new MechanismLigament2d("Right Claw", 3, 90));      
+        
+
+    
+        mWheelMech = new Mechanism2d(9, 9);
+        
+        mWheelRoot = mWheelMech.getRoot("wheel root", 4.5, 4.5);
+
+        mWheel = mWheelRoot.append(new MechanismLigament2d("wheel", 3, 90));
+>>>>>>> Stashed changes
         // Useful Methods on mArm:
         //mArm.setAngle(0);
         //mArm.setLength(0);
@@ -174,10 +230,28 @@ public void SetArmAngle (double angle ){
         mLeftClaw.setAngle(90);
         mRightClaw.setAngle(90);
     }
+<<<<<<< Updated upstream
     
+=======
+    public void SpinWheel(){
+        double angle = mWheel.getAngle();
+        if( angle <=1 || angle >=1 ){
+            angle = angle +5;
+        }
+        mWheel.setAngle(angle);
+        if( angle >=360){
+            angle = 0;
+        }
+    }
+
+>>>>>>> Stashed changes
     public void updateSmartDashboard() {
         final String key = "SimMechanism/";
         SmartDashboard.putData(key + "Arm Mechanism", mArmMech);
         SmartDashboard.putData(key + "Grasper Mechanism", mGrasperMech);
+<<<<<<< Updated upstream
+=======
+        SmartDashboard.putData(key + "Wheel Mechanism", mWheelMech);
+>>>>>>> Stashed changes
     }
 }

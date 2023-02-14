@@ -583,31 +583,9 @@ public class Robot extends TimedRobot {
   public void simulationPeriodic() {
     
     mDrive.updateDriveSim();
+
     // Update Pose on Virtual Field
-
-    // Simulate Swerve Rotation
-    double sRotation = mOperatorInterface.getSwerveRotation();
-    mPigeon.rotateSimYaw(sRotation);
-
-    // Arm
-    // Current Targeted Arm into Mechanism Sim
-    // This will set the actualll commanded 
-    //mSimMechanism.SetArmAngle(mCurrentArmTarget.armAngle + mManualTargetOffset);
-    //mSimMechanism.SetArmLength(mCurrentArmTarget.armExtend + mManualExtendOffset);
-    mSimMechanism.SetArmAngle(mArm.getArmTargtedDegrees());
-    mSimMechanism.SetArmLength(mArm.getArmTargetExtension());
-
-    // Grasper - Open or Close
-    if(mGrasper.getGrasperState() == Grasper.GrasperState.Open)
-    {
-      mSimMechanism.openGrasper();
-    } else 
-    {
-      mSimMechanism.closeGrasper();
-    }
-
-    // Process Frame where the Robot currently is
-    mPhotonVision.processSimFrame(mField.getRobotPose());
+    
   }
 
   /** Called Throughout Teleop Periodic */
