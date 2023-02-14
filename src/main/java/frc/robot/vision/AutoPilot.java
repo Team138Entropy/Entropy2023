@@ -92,6 +92,7 @@ public class AutoPilot {
 
     private double mXSpeedFactor = 0.35;
     private double mYSpeedFactor = 0.35;
+    private double mRotationSpeedFactor = 1;
 
     private boolean mWithinToleranceX = false;
     private boolean mWithinToleranceY = false;
@@ -106,14 +107,21 @@ public class AutoPilot {
 
     private AutoPilot()
     {
-            mXController.reset(0);
-            mYController.reset(0);
-            mOmegaController.reset(0);
+        mXController.reset(0);
+        mYController.reset(0);
+        mOmegaController.reset(0);
     }
 
     // Set Target Pose to Drive To
     public void setTargetPose(Pose2d targPose)
     {
+        // Detect if this is a new target
+        if(targPose != mTargetedPose)
+        {
+            resetTolerances();
+        }
+
+        // Set to the Target Pose
         mTargetedPose = targPose;
     }
 
@@ -122,6 +130,14 @@ public class AutoPilot {
     {
         mRobotPose = currentRobotPose;
     }
+
+    public void resetTolerances()
+    {
+        mWithinToleranceX = false;
+        mWithinToleranceY = false;
+        mWithinToleranceRotation = false;
+    }
+
 
     public void update(boolean allowDrive) 
     {
@@ -145,8 +161,10 @@ public class AutoPilot {
             mXSpeed = mXController.calculate(mRobotPose.getX(), mTargetedPose.getX());
             mXSpeed *= mXSpeedFactor;
             if(mInvertX) mXSpeed *= -1;
-
             mWithinToleranceX = false;
+        } else {
+            // Within Tolerance
+            mWithinToleranceX = true;
         }
 
         // Update Y if outside Tolerance
@@ -155,17 +173,22 @@ public class AutoPilot {
             mYSpeed = mYController.calculate(mRobotPose.getY(), mTargetedPose.getY());
             mYSpeed *= mYSpeedFactor;
             if(mInvertY) mYSpeed *= -1;
-
             mWithinToleranceY = false;
+        } else {
+            // Within Tolerance
+            mWithinToleranceY = true;
         }
 
         // Update Rotation if outside Tolerance
         if(mRotationDistance > mRotationTolerance.get())
         {
             mRotationSpeed = mOmegaController.calculate(mRobotPose.getRotation().getRadians(), mTargetedPose.getRotation().getRadians());
+            mRotationSpeed *= mRotationSpeedFactor;
             if(mInvertRotation) mRotationSpeed *= -1;
-
             mWithinToleranceRotation = false;
+        } {
+            // Within Tolerance
+            mWithinToleranceRotation = true;
         }
         
         // Allow Driving - Posible to just use update for data
@@ -180,6 +203,15 @@ public class AutoPilot {
             // Set Swerve to those Module States
             mDrive.setModuleStates(targetSwerveModuleStates);
         }
+    }
+
+    // Has Auto Pilot Reached its Target!
+    public boolean atTarget()
+    {
+        return (mWithinToleranceX 
+            && mWithinToleranceY
+            && mWithinToleranceRotation
+        );
     }
 
     

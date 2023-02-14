@@ -172,7 +172,7 @@ public class Robot extends TimedRobot {
     mArmTargetOverrideChooser.addOption("INTAKE_GROUND_BACK", ArmTargets.INTAKE_GROUND_BACK);
     SmartDashboard.putData("Arm Target Override", mArmTargetOverrideChooser);
 
-    // Start Datalog Manager - removed until wpilog is resolved
+    // Start Datalog Manager - removed until wpilib issue is resolved
     //DataLogManager.start();
 
     // Record both DS control and joystick data
