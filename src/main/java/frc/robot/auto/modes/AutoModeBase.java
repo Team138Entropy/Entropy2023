@@ -7,6 +7,7 @@ import frc.robot.auto.actions.NoopAction;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -21,6 +22,7 @@ public abstract class AutoModeBase {
     public List<Action> mAutoActions = new ArrayList<>();
     public int mCurrentAction = 0;
     public boolean mHasStartedAction = false;
+    
 
     protected abstract void routine() throws AutoModeEndedException;
 
@@ -74,6 +76,31 @@ public abstract class AutoModeBase {
     {
         mAutoActions.add(a);
     }
+
+    // Add Starting Pose
+    public void setStartingPose(Pose2d targetPose)
+    {
+
+    }
+
+    // Pose to Drive To
+    public void driveToPose(Pose2d targetPose)
+    {
+
+    }
+
+    // Pose to Drive To with Limited Speed
+    public void driveToPose(Pose2d targetPose, double value)
+    {
+
+    }
+
+    public void driveToPose(Pose2d targetPose, Action otherAction)
+    {
+
+    }
+
+
 
     public void done() {
         System.out.println("Auto mode done");
@@ -169,6 +196,7 @@ public abstract class AutoModeBase {
     public boolean getIsInterrupted() {
         return mIsInterrupted;
     }
+
 
     public void updateSmartDashboard(String key)
     {

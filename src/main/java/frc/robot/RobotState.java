@@ -54,7 +54,8 @@ public class RobotState {
     Pose2d mRobotPose;
 
     // Photon Vision Class to Estimate RobotPose based on last seen vision 
-    PhotonPoseEstimator mRobotPoseEstimator;
+    PhotonPoseEstimator mFrontCameraPoseEstimator;
+    PhotonPoseEstimator mBackCameraPoseEstimator;
 
     // Overall Drive Pose Estimator
     /*
@@ -106,18 +107,23 @@ public class RobotState {
        //  Various different strategies are available (AverageBestTargets, Closest_To_Camera_Height, Closest_To_Last_Pose,
        //                                              Closest_To_Reference_Pose, Lowest_Ambiguity)
        //  ref: https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html
+       PoseStrategy chosenStrategy = PoseStrategy.AVERAGE_BEST_TARGETS;
        // FRONT CAMERA ONLY.. to do do back camera
-       mRobotPoseEstimator = new PhotonPoseEstimator(
+       mFrontCameraPoseEstimator = new PhotonPoseEstimator(
         FieldConstants.aprilTagField, 
-        PoseStrategy.AVERAGE_BEST_TARGETS, 
-        
+        chosenStrategy, 
         photonVision.CameraList.get(0).getFirst(),
         photonVision.CameraList.get(0).getSecond()
-
-    
        );
+       mBackCameraPoseEstimator = new PhotonPoseEstimator(
+        FieldConstants.aprilTagField,
+        chosenStrategy,
+        photonVision.CameraList.get(1).getFirst(),
+        photonVision.CameraList.get(1).getSecond()
+       );
+       
        /*
-       mRobotPoseEstimator = new RobotPoseEstimator(FieldConstants.aprilTagField, 
+       mFrontCameraPoseEstimator = new RobotPoseEstimator(FieldConstants.aprilTagField, 
                                                         PoseStrategy.AVERAGE_BEST_TARGETS, photonVision.CameraList
                                                     );
 */
@@ -151,11 +157,11 @@ public class RobotState {
     // Get Vision Estimated Robot Pose
     // Returns a Pair of the Pose2D of the Robot with a Latency Value
     public Pair<Pose2d, Double> getVisionEstimatedPose(Pose2d prevEstimatedRobotPose) {
-       // mRobotPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+       // mFrontCameraPoseEstimator.setReferencePose(prevEstimatedRobotPose);
     
         double currentTime = Timer.getFPGATimestamp();
         
-        Optional<EstimatedRobotPose> result = mRobotPoseEstimator.update();
+        Optional<EstimatedRobotPose> result = mFrontCameraPoseEstimator.update();
         if (result.isPresent() && null != result.get().estimatedPose) {
             return new Pair<Pose2d, Double>(result.get().estimatedPose.toPose2d(), currentTime - 0);
         } else {
@@ -275,17 +281,17 @@ public class RobotState {
         // Iterate Node Scoring Positions (In Front of the Lowest Node)
         for(int i = 0; i < FieldConstants.Grids.lowTranslations.length; i++)
         {
-            // Red Node
+            // Blue Node
             Translation2d currTrans = FieldConstants.Grids.lowTranslations[i];
             Pose2d nodePose = new Pose2d(currTrans, new Rotation2d());
-            FieldObject2d nodePoseObj = mVisualField.getObject("Red Node " + i);
+            FieldObject2d nodePoseObj = mVisualField.getObject("Blue Node " + i);
             nodePoseObj.setPose(nodePose);
 
-            // Blue Node
-            Translation2d currTransBlue = FieldConstants.Grids.oppLowTranslations[i];
-            Pose2d newPoseBlue = new Pose2d(currTransBlue, new Rotation2d());
-            FieldObject2d nodePoseBlueObj = mVisualField.getObject("Blue Node " + i);
-            nodePoseBlueObj.setPose(newPoseBlue);
+            // Red Node
+            Translation2d currTransRed = FieldConstants.Grids.oppLowTranslations[i];
+            Pose2d newPoseRed = new Pose2d(currTransRed, new Rotation2d());
+            FieldObject2d nodePoseRedObj = mVisualField.getObject("Red Node " + i);
+            nodePoseRedObj.setPose(newPoseRed);
 
             // Score Nodes
                    

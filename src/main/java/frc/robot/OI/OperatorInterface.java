@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
 import frc.robot.Enums.*;
-import frc.robot.OI.APacController.Buttons;
+import frc.robot.OI.APacController.*;
 import frc.robot.OI.XboxController.Axis;
 import frc.robot.OI.XboxController.Button;
 import frc.robot.OI.XboxController.Side;
@@ -161,27 +161,27 @@ public class OperatorInterface {
     public TargetedPositions getScoringCommand() {
         TargetedPositions node = TargetedPositions.NONE;
 
-        if (mOperatorController.getButton(Buttons.COIN)) {
+        if (mOperatorController2.getButton(Buttons.SW1)) {
             node = TargetedPositions.GRID_1;
-        }else if (mOperatorController.getButton(Buttons.SW8)) {
+        }else if (mOperatorController2.getButton(Buttons.SW2)) {
             node = TargetedPositions.GRID_2;
-        }else if (mOperatorController.getButton(Buttons.SW7)) {
+        }else if (mOperatorController2.getButton(Buttons.SW3)) {
             node = TargetedPositions.GRID_3;
-        }else if (mOperatorController.getButton(Buttons.SW6)) {
+        }else if (mOperatorController2.getButton(Buttons.SW4)) {
             node = TargetedPositions.GRID_4;
-        }else if (mOperatorController.getButton(Buttons.SW5)) {
+        }else if (mOperatorController2.getButton(Buttons.SW5)) {
             node = TargetedPositions.GRID_5;
-        }else if (mOperatorController.getButton(Buttons.SW4)) {
+        }else if (mOperatorController2.getButton(Buttons.SW6)) {
             node = TargetedPositions.GRID_6;
-        }else if (mOperatorController.getButton(Buttons.SW3)) {
+        }else if (mOperatorController2.getButton(Buttons.SW7)) {
             node = TargetedPositions.GRID_7;
-        }else if (mOperatorController.getButton(Buttons.SW2)) {
-            node = TargetedPositions.GRID_8;
-        }else if (mOperatorController.getButton(Buttons.SW1)) {
-            node = TargetedPositions.GRID_9;
-        }else if (mOperatorController2.getButton(Buttons.COIN)) {
-            node = TargetedPositions.SUBSTATION_RIGHT;
         }else if (mOperatorController2.getButton(Buttons.SW8)) {
+            node = TargetedPositions.GRID_8;
+        }else if (mOperatorController2.getButton(Buttons.COIN)) {
+            node = TargetedPositions.GRID_9;
+        }else if (mOperatorController2.getAxis(Axises.X) == 1 || mOperatorController2.getAxis(Axises.X) == -1) {
+            node = TargetedPositions.SUBSTATION_RIGHT;
+        }else if (mOperatorController2.getAxis(Axises.Y) == 1 || mOperatorController2.getAxis(Axises.Y) == 1) {
             node = TargetedPositions.SUBSTATION_LEFT;
         }
 
@@ -372,24 +372,30 @@ public class OperatorInterface {
     public ArmTargets getArmTarget() {
         ArmTargets target = ArmTargets.NONE;
 
-        if(mOperatorController2.getButton(Buttons.SW8)){
+        if(mOperatorController2.getAxis(Axises.X) == 1 || mOperatorController2.getAxis(Axises.Y) == 1){
             target = ArmTargets.INTAKE_FRONT;
-        }else if(mOperatorController2.getButton(Buttons.COIN)){
+        }else if(mOperatorController2.getAxis(Axises.X) == -1 || mOperatorController2.getAxis(Axises.Y) == -1){
             target = ArmTargets.INTAKE_BACK;
-        }else if(mOperatorController2.getButton(Buttons.B)){//
+        }else if(mOperatorController.getButton(Buttons.SW4)){
             target = ArmTargets.HOME_BACKSIDE;
-        }else if(mOperatorController2.getButton(Buttons.SW3)){
-            target = ArmTargets.TOP_SCORING_FRONT;
-        }else if(mOperatorController2.getButton(Buttons.SW5)){
-            target = ArmTargets.MID_SCORING_FRONT;
-        }else if(mOperatorController2.getButton(Buttons.SW6)){
-            target = ArmTargets.LOW_SCORING_FRONT;
-        }/*else if(mOperatorController2.getButton(Buttons.A)){//
+        }else if(mOperatorController.getButton(Buttons.SW3)){
             target = ArmTargets.HOME_FRONTSIDE;
-        }*/else if(mOperatorController2.getButton(Buttons.SW4)){
+        }else if(mOperatorController.getButton(Buttons.COIN)){
+            target = ArmTargets.TOP_SCORING_FRONT;
+        }else if(mOperatorController.getAxis(Axises.X) == 1){
+            target = ArmTargets.MID_SCORING_FRONT;
+        }else if(mOperatorController.getAxis(Axises.Y) == 1){
+            target = ArmTargets.LOW_SCORING_FRONT;
+        }else if(mOperatorController.getButton(Buttons.SW1)){
+            target = ArmTargets.HOME_FRONTSIDE;
+        }else if(mOperatorController.getAxis(Axises.X) == -1){
             target = ArmTargets.MID_SCORING_BACK;
-        }else if(mOperatorController2.getButton(Buttons.SW7)){
+        }else if(mOperatorController.getAxis(Axises.Y) == -1){
             target = ArmTargets.LOW_SCORING_BACK;
+        }else if(mOperatorController2.getButton(Buttons.A)){
+            target = ArmTargets.INTAKE_GROUND_FRONT;
+        }else if(mOperatorController2.getButton(Buttons.B)){
+            target = ArmTargets.INTAKE_GROUND_BACK;
         }
         return target;
     }
@@ -432,12 +438,12 @@ public class OperatorInterface {
     }
 
     public boolean getGrasperOpen() {
-        return mOperatorController2.getButton(Buttons.SW2);
+        return mOperatorController.getButton(Buttons.SW2);
     
     }
 
     public boolean getGrasperClosed() {
-        return mOperatorController2.getButton(Buttons.SW1);
+        return mOperatorController.getButton(Buttons.SW1);
     }
 
 
@@ -483,7 +489,7 @@ public class OperatorInterface {
     }
 
     public TargetedObject setTargetedObject(){
-        if(mOperatorController2.getButton(Buttons.A)){
+        if(mOperatorController.getButton(Buttons.B)){
             return TargetedObject.CUBE;
         }
         return TargetedObject.CONE;

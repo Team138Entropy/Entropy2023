@@ -63,7 +63,6 @@ public class Arm extends Subsystem {
         SecondaryShoulderMotor.follow(MasterShoulderMotor); // Secondary Motor will follow Primary Motor
         SecondaryShoulderMotor.setInverted(true);
 
-
         // Extension Motor Configuration
         ExtensionMotor.configFactoryDefault();
         ExtensionMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,LimitSwitchNormal.NormallyClosed);

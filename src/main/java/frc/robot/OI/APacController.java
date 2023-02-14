@@ -26,13 +26,8 @@ public class APacController {
         this.id = id;
         }
     }
-
-    public enum Side {
-        LEFT,
-        RIGHT
-      }
     
-      public enum Axis {
+      public enum Axises {
         X,
         Y
       }
@@ -46,10 +41,9 @@ public class APacController {
         return mController.getRawButton(button.id);
     }
 
-    double getAxis(Side side, Axis axis) {
-        boolean left = side == Side.LEFT;
-        boolean y = axis == Axis.Y;
-        return mController.getRawAxis((left ? 0 : 4) + (y ? 1 : 0));
+    double getAxis( Axises axis) {
+        boolean y = axis == Axises.Y;
+        return mController.getRawAxis((y ? 1 : 0));
       }
 
 }

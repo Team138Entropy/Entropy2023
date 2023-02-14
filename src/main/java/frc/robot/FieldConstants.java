@@ -174,7 +174,7 @@ public final class FieldConstants {
     // Initial Scoring Positions
     public static final Translation2d[] redInitScorePosition = new Translation2d[nodeRowCount];
     public static final Translation2d[] blueInitScorePosition = new Translation2d[nodeRowCount];
-    public static final double scorePosOffset = 0.15;
+    public static final double scorePosOffset = .22;
 
     // Final Scoring Positions
     public static final Translation2d[] redFinalScorePosition = new Translation2d[nodeRowCount];
@@ -200,8 +200,8 @@ public final class FieldConstants {
 
         // Arificial Scoring Positions
         // Initial Scoring Positions
-        redInitScorePosition[i] = lowTranslations[i].plus(new Translation2d(scorePosOffset, 0));
-        blueInitScorePosition[i] = oppLowTranslations[i].minus(new Translation2d(scorePosOffset, 0));
+        redInitScorePosition[i] = oppLowTranslations[i].minus(new Translation2d(scorePosOffset, 0));
+        blueInitScorePosition[i] = lowTranslations[i].plus(new Translation2d(scorePosOffset, 0));
 
         // Final Scoring Positions
         redFinalScorePosition[i] = redInitScorePosition[i].minus(new Translation2d(scoreFinalPosOffset, 0));
