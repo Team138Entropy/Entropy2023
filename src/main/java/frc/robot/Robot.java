@@ -826,7 +826,9 @@ public class Robot extends TimedRobot {
   
         // Create a Rotation
         // TODO: need to set front or back into target pose
-        result = new Pose2d(selectedXY, new Rotation2d());
+        Rotation2d faceFront = new Rotation2d();
+        Rotation2d faceBack = faceFront.fromDegrees(180);
+        result = new Pose2d(selectedXY, faceFront);
       }
 
     }

@@ -19,6 +19,7 @@ import frc.robot.Constants.Vision;
 import frc.robot.auto.TrajectoryFollower;
 import frc.robot.subsystems.Drive;
 import frc.robot.util.TuneableNumber;
+import frc.robot.util.drivers.Pigeon;
 
 // Auto Pilot System
 //      Calculates How to Drive to a Pose
@@ -64,8 +65,9 @@ public class AutoPilot {
     private final ProfiledPIDController mOmegaController = new ProfiledPIDController(2, 0, 0, mOMEGA_CONSTRAINTS);
 
     // Tolerances
-    private final TuneableNumber mXTolerance = new TuneableNumber("X Tolerance", .10);
-    private final TuneableNumber mYTolerance = new TuneableNumber("Y Tolerance", .15);
+    // Tolerances are purposefully really small, these might need to be turned up
+    private final TuneableNumber mXTolerance = new TuneableNumber("X Tolerance", .02);
+    private final TuneableNumber mYTolerance = new TuneableNumber("Y Tolerance", .02);
     private final TuneableNumber mRotationTolerance = new TuneableNumber("Rotation Tolerance", Units.degreesToRadians(3));
 
     // Type of System being used to Drive
@@ -199,6 +201,16 @@ public class AutoPilot {
 
             // Call Autonomous Chasis Speed 
             var targetSwerveModuleStates = mDrive.getSwerveKinematics().toSwerveModuleStates(mCalculatedSpeeds);
+            
+            // Sim Only
+            if(false){
+                if(Math.abs(mCalculatedSpeeds.omegaRadiansPerSecond) > 0)
+                {
+                    double sRotation = mCalculatedSpeeds.omegaRadiansPerSecond;
+                    sRotation *= -1;
+                    Pigeon.getInstance().rotateSimYaw(sRotation);
+                }  
+            }
 
             // Set Swerve to those Module States
             mDrive.setModuleStates(targetSwerveModuleStates);
