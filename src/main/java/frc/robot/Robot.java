@@ -340,7 +340,7 @@ public class Robot extends TimedRobot {
     mDrive.zeroSensors();
 
     // Close Grasper
-    mGrasper.setGrasperClosed();
+    mGrasper.setGrasperFullyClosed();
   }
 
   /** This function is called periodically during operator control. */

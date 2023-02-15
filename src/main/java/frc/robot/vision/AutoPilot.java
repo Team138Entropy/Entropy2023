@@ -92,8 +92,8 @@ public class AutoPilot {
     private double mYSpeed = 0;
     private double mRotationSpeed = 0;
 
-    private double mXSpeedFactor = 0.35;
-    private double mYSpeedFactor = 0.35;
+    private double mXSpeedFactor = 0.9;
+    private double mYSpeedFactor = 0.9;
     private double mRotationSpeedFactor = 1;
 
     private boolean mWithinToleranceX = false;
