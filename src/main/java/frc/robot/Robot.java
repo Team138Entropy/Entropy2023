@@ -98,7 +98,7 @@ public class Robot extends TimedRobot {
   private final boolean mRealRobot = Robot.isReal();
 
   // Reference to the Power Distrubtion Panel
-  //private final PowerDistribution mPowerPanel = new PowerDistribution(Constants.Talons.PowerDistribution.pdpCan, 
+  private final PowerDistribution mPowerPanel = new PowerDistribution(Constants.Talons.PowerDistribution.pdpCan, 
   //                                                                                                ModuleType.kRev);
 
   // DIO Based Analog Input
@@ -202,7 +202,7 @@ public class Robot extends TimedRobot {
     // Reset Drive Sensors
 
     // Controllable Panel (Turn on Light for Cube)
-    //mPowerPanel.setSwitchableChannel(mCurrentTargetedObject == TargetedObject.CUBE);
+    mPowerPanel.setSwitchableChannel(mCurrentTargetedObject == TargetedObject.CUBE);
     
     mArm.zeroSensors();
     mDrive.zeroHeading();
