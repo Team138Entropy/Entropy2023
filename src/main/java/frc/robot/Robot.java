@@ -214,6 +214,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    // Update Robot Field Position
+    Pose2d robotPose = mDrive.getPose();
+    mField.setRobotPose(robotPose);
+    mRobotState.setRobotPose(robotPose);
+
     // Update Robotstate
     mRobotState.update();
 
@@ -273,14 +278,17 @@ public class Robot extends TimedRobot {
     // RobotState
     mRobotState.updateSmartdashboard();
 
-    // Sim Mechanism 
-    mSimMechanism.updateSmartDashboard(); // Sim Only
-
     // Superstructure 
     mSuperStructure.updateSmartDashBoard();
 
     // Iterates each Subsystem 
     mSubsystemManager.updateSmartdashboard();
+
+    // Simulation Only 
+    if(!mRealRobot)
+    {
+      mSimMechanism.updateSmartDashboard();
+    }
   }
 
   // Fill Autonomous Modes List
@@ -615,10 +623,6 @@ public class Robot extends TimedRobot {
     // Drive the Robot
     DriveLoop(mOperatorInterface.getDrivePrecisionSteer(), true);
 
-    // Update Robot Field Position
-    Pose2d robotPose = mDrive.getPose();
-    mField.setRobotPose(robotPose);
-    mRobotState.setRobotPose(robotPose);
     
     // Get Arm Target
     if(mOperatorInterface.getArmTarget() != ArmTargets.NONE){

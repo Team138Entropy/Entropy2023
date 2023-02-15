@@ -42,18 +42,18 @@ public class Enums {
         MID_SCORING_FRONT(-7,Constants.Arm.MinExtensionPosition),
         MID_SCORING_FRONT_CUBE(-15,Constants.Arm.MinExtensionPosition),
 
-        LOW_SCORING_FRONT(-60,Constants.Arm.MinExtensionPosition),
+        LOW_SCORING_FRONT(-50,Constants.Arm.MinExtensionPosition),
         INTAKE_FRONT(-4,Constants.Arm.MinExtensionPosition),
         TOP_SCORING_BACK(170,0),
         MID_SCORING_BACK(173,Constants.Arm.MaxExtensionPosition),
         LOW_SCORING_BACK(207,186000),
         INTAKE_BACK(170,0),
-        INTAKE_GROUND_FRONT(-60,0),
+        INTAKE_GROUND_FRONT(-55,0),
         INTAKE_GROUND_BACK(210,0),
         SAFE(90,0),
         START(233, 0),
         HOME_BACKSIDE(220, 0),
-        HOME_FRONTSIDE(-60, 0),
+        HOME_FRONTSIDE(-55, 0),
         NONE(90,0);
 
 

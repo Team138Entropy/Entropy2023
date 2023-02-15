@@ -52,6 +52,7 @@ public abstract class AutoModeBase {
 
     public void runner(){
         if(!isDone()){
+            
             if(!mHasStartedAction){
                 mAutoActions.get(mCurrentAction).start();
                 mHasStartedAction = true;

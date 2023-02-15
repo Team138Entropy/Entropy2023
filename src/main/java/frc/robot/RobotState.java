@@ -246,7 +246,7 @@ public class RobotState {
         mDrivePoseEstimator = mSwerveDrivePoseEstimator.getEstimatedPosition();
 
         // Simulation Only
-        if(!mRealRobot || true)
+        if(!mRealRobot)
         {
             // Update the Visualization Field
             updateSimVisualField();

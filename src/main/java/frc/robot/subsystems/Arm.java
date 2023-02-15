@@ -54,7 +54,7 @@ public class Arm extends Subsystem {
         MasterShoulderMotor.setSensorPhase(false);
         MasterShoulderMotor.setInverted(true);
         MasterShoulderMotor.config_kF(0, 1);
-        MasterShoulderMotor.config_kP(0, 30);
+        MasterShoulderMotor.config_kP(0, 25); //was 30
         MasterShoulderMotor.config_kI(0, .01);
         MasterShoulderMotor.config_kD(0, 300);
         MasterShoulderMotor.configSelectedFeedbackCoefficient(360.0/8192.0);
