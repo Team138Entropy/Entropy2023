@@ -181,7 +181,7 @@ public class OperatorInterface {
             node = TargetedPositions.GRID_9;
         }else if (mOperatorController2.getAxis(Axises.X) == 1 || mOperatorController2.getAxis(Axises.X) == -1) {
             node = TargetedPositions.SUBSTATION_RIGHT;
-        }else if (mOperatorController2.getAxis(Axises.Y) == 1 || mOperatorController2.getAxis(Axises.Y) == 1) {
+        }else if (mOperatorController2.getAxis(Axises.Y) == 1 || mOperatorController2.getAxis(Axises.Y) == -1) {
             node = TargetedPositions.SUBSTATION_LEFT;
         }
 
@@ -372,9 +372,9 @@ public class OperatorInterface {
     public ArmTargets getArmTarget() {
         ArmTargets target = ArmTargets.NONE;
 
-        if(mOperatorController2.getAxis(Axises.X) == 1 || mOperatorController2.getAxis(Axises.Y) == 1){
+        if(mOperatorController2.getAxis(Axises.X) == 1 || mOperatorController2.getAxis(Axises.Y) == -1){
             target = ArmTargets.INTAKE_FRONT;
-        }else if(mOperatorController2.getAxis(Axises.X) == -1 || mOperatorController2.getAxis(Axises.Y) == -1){
+        }else if(mOperatorController2.getAxis(Axises.X) == -1 || mOperatorController2.getAxis(Axises.Y) == 1){
             target = ArmTargets.INTAKE_BACK;
         }else if(mOperatorController.getButton(Buttons.SW4)){
             target = ArmTargets.HOME_BACKSIDE;
@@ -488,9 +488,9 @@ public class OperatorInterface {
 
     public TargetedObject setTargetedObject(){
         if(mOperatorController.getButton(Buttons.B)){
-            return TargetedObject.CUBE;
+            return TargetedObject.CONE;
         }
-        return TargetedObject.CONE;
+        return TargetedObject.CUBE;
     }
 }
 
