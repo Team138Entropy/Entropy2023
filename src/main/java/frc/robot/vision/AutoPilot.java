@@ -64,6 +64,13 @@ public class AutoPilot {
     private final ProfiledPIDController mYController = new ProfiledPIDController(3, 0, 0, mY_CONSTRAINTS);
     private final ProfiledPIDController mOmegaController = new ProfiledPIDController(2, 0, 0, mOMEGA_CONSTRAINTS);
 
+    private final ProfiledPIDController mSnapPidController = new ProfiledPIDController(
+        Constants.Drive.SnapConstants.kP,
+        Constants.Drive.SnapConstants.kI, 
+        Constants.Drive.SnapConstants.kD,
+        Constants.Drive.SnapConstants.kThetaControllerConstraints
+      );
+
     // Tolerances
     // Tolerances are purposefully really small, these might need to be turned up
     private final TuneableNumber mXTolerance = new TuneableNumber("X Tolerance", .02);
@@ -112,6 +119,9 @@ public class AutoPilot {
         mXController.reset(0);
         mYController.reset(0);
         mOmegaController.reset(0);
+
+        mSnapPidController.enableContinuousInput(-Math.PI, Math.PI);
+
     }
 
     // Set Target Pose to Drive To
