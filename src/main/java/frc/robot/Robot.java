@@ -201,8 +201,6 @@ public class Robot extends TimedRobot {
 
     // Reset Drive Sensors
 
-    // Controllable Panel (Turn on Light for Cube)
-    mPowerPanel.setSwitchableChannel(mCurrentTargetedObject == TargetedObject.CUBE);
     
     mArm.zeroSensors();
     mDrive.zeroHeading();
@@ -233,6 +231,10 @@ public class Robot extends TimedRobot {
 
     // Currently Targeted Object
     mCurrentTargetedObject = mOperatorInterface.setTargetedObject();
+
+    // Controllable Panel (Turn on Light for Cone)
+    mPowerPanel.setSwitchableChannel(mCurrentTargetedObject == TargetedObject.CONE);
+    
   }
 
   private void updateSmartdashboard()
