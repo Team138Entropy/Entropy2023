@@ -36,7 +36,7 @@ public class BeamSensor {
         if(!mInput.get())
         {
             // Beam is Broken! 
-            mCurrentPositiveSamples++;
+            ++mCurrentPositiveSamples;
         }else 
         {
             // Beam is not broken

@@ -99,7 +99,7 @@ public class Robot extends TimedRobot {
 
   // Reference to the Power Distrubtion Panel
   private final PowerDistribution mPowerPanel = new PowerDistribution(Constants.Talons.PowerDistribution.pdpCan, 
-  //                                                                                                ModuleType.kRev);
+                                                                                                 ModuleType.kRev);
 
   // DIO Based Analog Input
   private final AnalogInput mPressureSensor = new AnalogInput(0);

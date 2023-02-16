@@ -60,11 +60,14 @@ public class AutoPilot {
             new TrapezoidProfile.Constraints(3, 2);
     private static final TrapezoidProfile.Constraints mOMEGA_CONSTRAINTS =   
             new TrapezoidProfile.Constraints(8, 8);
-    private final ProfiledPIDController mXController = new ProfiledPIDController(3, 0, 0, mX_CONSTRAINTS);
-    private final ProfiledPIDController mYController = new ProfiledPIDController(3, 0, 0, mY_CONSTRAINTS);
-    private final ProfiledPIDController mOmegaController = new ProfiledPIDController(2, 0, 0, mOMEGA_CONSTRAINTS);
+    private final ProfiledPIDController mXController = new ProfiledPIDController(3.5, 0, 0, mX_CONSTRAINTS);
+    private final ProfiledPIDController mYController = new ProfiledPIDController(3.5, 0, 0, mY_CONSTRAINTS);
 
-    private final ProfiledPIDController mSnapPidController = new ProfiledPIDController(
+    // Omega Controller
+    /*
+    private final ProfiledPIDController mOmegaController = new ProfiledPIDController(2, 0, 0, mOMEGA_CONSTRAINTS);
+    */
+    private final ProfiledPIDController mOmegaController = new ProfiledPIDController(
         Constants.Drive.SnapConstants.kP,
         Constants.Drive.SnapConstants.kI, 
         Constants.Drive.SnapConstants.kD,
@@ -99,8 +102,8 @@ public class AutoPilot {
     private double mYSpeed = 0;
     private double mRotationSpeed = 0;
 
-    private double mXSpeedFactor = 0.9;
-    private double mYSpeedFactor = 0.9;
+    private double mXSpeedFactor = 1;
+    private double mYSpeedFactor = 1;
     private double mRotationSpeedFactor = 1;
 
     private boolean mWithinToleranceX = false;
@@ -120,7 +123,8 @@ public class AutoPilot {
         mYController.reset(0);
         mOmegaController.reset(0);
 
-        mSnapPidController.enableContinuousInput(-Math.PI, Math.PI);
+        // this was from snap controlle
+        mOmegaController.enableContinuousInput(-Math.PI, Math.PI);
 
     }
 
