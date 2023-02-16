@@ -54,7 +54,7 @@ public class Arm extends Subsystem {
         MasterShoulderMotor.setSensorPhase(false);
         MasterShoulderMotor.setInverted(true);
         MasterShoulderMotor.config_kF(0, 1);
-        MasterShoulderMotor.config_kP(0, 25); //was 30
+        MasterShoulderMotor.config_kP(0, 29); //was 30
         MasterShoulderMotor.config_kI(0, .01);
         MasterShoulderMotor.config_kD(0, 300);
         MasterShoulderMotor.configSelectedFeedbackCoefficient(360.0/8192.0);
@@ -189,7 +189,7 @@ public class Arm extends Subsystem {
 
     public boolean isArmRotationAtAngle(double position)
     {
-        return isArmRotationAtAngle(position, 5); //todo: make this a constant
+        return isArmRotationAtAngle(position, 6); //todo: make this a constant
     }
 
     // Returns true if the arm is at a position

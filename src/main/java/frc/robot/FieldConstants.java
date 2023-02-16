@@ -1,16 +1,23 @@
 package frc.robot;
 
+import frc.robot.Enums;
+import frc.robot.Enums.TargetedPositions;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
  * Contains various field dimensions and useful reference points. Dimensions are in meters, and sets
@@ -31,49 +38,61 @@ public final class FieldConstants {
     public static final double tapeWidth = Units.inchesToMeters(2.0);
 
     // AprilTag IDs & Locations (do not flip for red alliance)
+    // RED: [1->4]
+    // BLUE: [5->8]
+    // RED Feeder: 4
+    // BLUE Feeder: 5
     public static final List<AprilTag> aprilTags = List.of(
-      new AprilTag(1, new Pose3d(
+      // Red LowSide (Pos 1->3)
+      new AprilTag(1, new Pose3d( 
                         Units.inchesToMeters(610.77),
                         Units.inchesToMeters(42.19),
                         Units.inchesToMeters(18.22),
                         new Rotation3d(0.0, 0.0, Math.PI))
       ),
+      // Red MidSide (Pos 4->6)
       new AprilTag(2, new Pose3d(
           Units.inchesToMeters(610.77),
           Units.inchesToMeters(108.19),
           Units.inchesToMeters(18.22),
           new Rotation3d(0.0, 0.0, Math.PI))
       ),
+      // Red TopSide (Pos 7->9)
       new AprilTag(3, new Pose3d(
           Units.inchesToMeters(610.77),
           Units.inchesToMeters(174.19), // FIRST's diagram has a typo (it says 147.19)
           Units.inchesToMeters(18.22),
           new Rotation3d(0.0, 0.0, Math.PI))
       ),
+      // Red Feeder
       new AprilTag(4, new Pose3d(
           Units.inchesToMeters(636.96),
           Units.inchesToMeters(265.74),
           Units.inchesToMeters(27.38),
           new Rotation3d(0.0, 0.0, Math.PI))
       ),
+      // Blue Feeder
       new AprilTag(5, new Pose3d(
           Units.inchesToMeters(14.25),
           Units.inchesToMeters(265.74),
           Units.inchesToMeters(27.38),
           new Rotation3d())
       ),
+      // Blue Top (Pos 1->3)
       new AprilTag(6, new Pose3d(
           Units.inchesToMeters(40.45),
           Units.inchesToMeters(174.19), // FIRST's diagram has a typo (it says 147.19)
           Units.inchesToMeters(18.22),
           new Rotation3d())
       ), 
+      // Blue Mid (Pos 4->6)
       new AprilTag(7, new Pose3d(
           Units.inchesToMeters(40.45),
           Units.inchesToMeters(108.19),
           Units.inchesToMeters(18.22),
           new Rotation3d())
       ),
+      // Blue Bottom (Pos 7->9)
       new AprilTag(8, new Pose3d(
           Units.inchesToMeters(40.45),
           Units.inchesToMeters(42.19),
@@ -97,8 +116,94 @@ public final class FieldConstants {
         return result;
     }
 
+
     // April Tag Field Locations
     public static final AprilTagFieldLayout aprilTagField = new AprilTagFieldLayout(aprilTags, fieldLength, fieldWidth);
+    
+
+    // Dimensions for loading zone and substations, including the tape
+    public static final class LoadingZone {
+        // Region dimensions
+        public static final double width = Units.inchesToMeters(99.0);
+        public static final double innerX = FieldConstants.fieldLength;
+        public static final double midX = fieldLength - Units.inchesToMeters(132.25);
+        public static final double outerX = fieldLength - Units.inchesToMeters(264.25);
+        public static final double leftY = FieldConstants.fieldWidth;
+        public static final double midY = leftY - Units.inchesToMeters(50.5);
+        public static final double rightY = leftY - width;
+        public static final Translation2d[] regionCorners =
+            new Translation2d[] {
+              new Translation2d(
+                  midX, rightY), // Start at lower left next to border with opponent community
+              new Translation2d(midX, midY),
+              new Translation2d(outerX, midY),
+              new Translation2d(outerX, leftY),
+              new Translation2d(innerX, leftY),
+              new Translation2d(innerX, rightY),
+            };
+    
+        // Double substation dimensions
+        public static final double doubleSubstationLength = Units.inchesToMeters(14.0);
+        public static final double doubleSubstationX = innerX - doubleSubstationLength;
+        public static final double doubleSubstationShelfZ = Units.inchesToMeters(37.375);
+        public static final double doubleSubstationCenterY = Units.inchesToMeters(265.74);
+
+        // Feeder Station Vision Targets 
+        public static final double substationTargetOffsetX = .2;
+        public static final double substationTargetOffsetY = .4; // todo find offset
+
+        public static final Pose3d redSubstationTargetPose = getAprilTag(4).pose;
+        public static final Translation2d redSubstationTargetTranslation = redSubstationTargetPose.getTranslation().toTranslation2d();
+        public static final Translation2d redSubstationTargetTranslationLeft = redSubstationTargetTranslation.plus(
+            new Translation2d(-substationTargetOffsetX, substationTargetOffsetY)
+        );
+        public static final Translation2d redSubstationTargetTranslationRight = redSubstationTargetTranslation.minus(
+            new Translation2d(substationTargetOffsetX, substationTargetOffsetY)
+        );
+
+        public static final Pose3d blueSubstationTargetPose = getAprilTag(5).pose;
+        public static final Translation2d blueSubstationTargetTranslation = blueSubstationTargetPose.getTranslation().toTranslation2d();
+        public static final Translation2d blueSubstationTargetTranslationLeft = redSubstationTargetTranslation.plus(
+            new Translation2d(substationTargetOffsetX, substationTargetOffsetY)
+        );
+        public static final Translation2d blueSubstationTargetTranslationRight = redSubstationTargetTranslation.minus(
+            new Translation2d(-substationTargetOffsetX, substationTargetOffsetY)
+        );
+
+    
+        // Single substation dimensions
+        public static final double singleSubstationWidth = Units.inchesToMeters(22.75);
+        public static final double singleSubstationLeftX =
+            FieldConstants.fieldLength - doubleSubstationLength - Units.inchesToMeters(88.77);
+        public static final double singleSubstationCenterX =
+            singleSubstationLeftX + (singleSubstationWidth / 2.0);
+        public static final double singleSubstationRightX =
+            singleSubstationLeftX + singleSubstationWidth;
+        public static final Translation2d singleSubstationTranslation =
+            new Translation2d(singleSubstationCenterX, leftY);
+    
+        public static final double singleSubstationHeight = Units.inchesToMeters(18.0);
+        public static final double singleSubstationLowZ = Units.inchesToMeters(27.125);
+        public static final double singleSubstationCenterZ =
+            singleSubstationLowZ + (singleSubstationHeight / 2.0);
+        public static final double singleSubstationHighZ =
+            singleSubstationLowZ + singleSubstationHeight;
+      }
+
+  // Locations of staged game pieces - for use in auto
+  public static final class StagingLocations {
+    public static final double centerOffsetX = Units.inchesToMeters(47.36);
+    public static final double positionX = fieldLength / 2.0 - Units.inchesToMeters(47.36);
+    public static final double firstY = Units.inchesToMeters(36.19);
+    public static final double separationY = Units.inchesToMeters(48.0);
+    public static final Translation2d[] translations = new Translation2d[4];
+
+    static {
+      for (int i = 0; i < translations.length; i++) {
+        translations[i] = new Translation2d(positionX, firstY + (i * separationY));
+      }
+    }
+  }
 
   // Dimensions for Community 
   public static final class Community {
@@ -210,8 +315,8 @@ public final class FieldConstants {
       
       // Use to Flip the Order to get in Grid 1 -> 9
       for (int i = 0; i < nodeRowCount; i++) {
-        redFinalScorePositionFlipped[i] = redFinalScorePosition[nodeRowCount - i - 1];
-        blueFinalScorePositionFlipped[i] = blueFinalScorePosition[i]; // blue is already flipped
+        redFinalScorePositionFlipped[i] = redFinalScorePosition[i]; // red is already flipped
+        blueFinalScorePositionFlipped[i] = blueFinalScorePosition[nodeRowCount - i - 1]; 
       }
     }
 
@@ -235,6 +340,56 @@ public final class FieldConstants {
           new Translation2d(
               complexLowXCones, nodeFirstY + nodeSeparationY * 8 + complexLowOuterYOffset),
         };
+  }
+
+
+  // Scoring Positions via the Target Position
+  //    TargetPosition [Red, Blue]
+  public static final Map<TargetedPositions, Translation2d[]> TargetPoses = 
+    new HashMap<>();
+  static {
+
+    // Add Grid Positions
+    int redPositionsLength = FieldConstants.Grids.redFinalScorePositionFlipped.length;
+    for(int i = 0; i < redPositionsLength; ++i)
+    {
+     TargetedPositions position = TargetedPositions.values()[i + 1];
+     TargetPoses.put(
+        position,
+        new Translation2d[] {
+            FieldConstants.Grids.redFinalScorePositionFlipped[i],
+            FieldConstants.Grids.blueFinalScorePositionFlipped[i]
+        }
+     );
+    }
+
+    // Substation Positions
+    TargetPoses.put(TargetedPositions.SUBSTATION_LEFT,
+        new Translation2d[] {
+            FieldConstants.LoadingZone.redSubstationTargetTranslationLeft,
+            FieldConstants.LoadingZone.blueSubstationTargetTranslationLeft,
+        }
+    );
+    TargetPoses.put(TargetedPositions.SUBSTATION_RIGHT,
+        new Translation2d[] {
+            FieldConstants.LoadingZone.redSubstationTargetTranslationRight,
+            FieldConstants.LoadingZone.blueSubstationTargetTranslationRight,
+        }
+    );
+  }
+
+  // getTargetPositionPose
+  //    Gets Target Pose by looking up target position and consider alliance color
+  public static Translation2d getTargetPositionPose(TargetedPositions pos, Alliance allianceColor)
+  {
+    Translation2d targetTrans = null;
+    Translation2d[] result = TargetPoses.getOrDefault(pos, null);
+    if(null != result)
+    {
+        // [Red, Blue]
+        targetTrans = result[(Alliance.Red == allianceColor) ? 0 : 1];
+    }
+    return targetTrans;
   }
 
 

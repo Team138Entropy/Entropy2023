@@ -122,7 +122,7 @@ public class Superstructure {
         // we are free to move the arm
         mOverridingAngle = true;
         mArmOverride = mArmTargetPosition.armAngle;       
-      } 
+      }
     }
 
     // Check if Arm made it to its target angle

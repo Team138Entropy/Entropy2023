@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj.Relay;
 import frc.robot.vision.AutoPilot;
 import frc.robot.vision.chargingStationAutoPilot;
 import frc.robot.vision.photonVision;
+import frc.robot.subsystems.Grasper.GrasperState;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -674,6 +675,18 @@ public class Robot extends TimedRobot {
       }
     }
 
+    // Arm Up After Intake
+    if(mCurrentArmTarget == ArmTargets.INTAKE_FRONT && mGrasper.getGrasperState() == GrasperState.FullyClosed){
+      mCurrentArmTarget = ArmTargets.POST_INTAKE_FRONT;
+    }else if(mCurrentArmTarget == ArmTargets.POST_INTAKE_FRONT && mGrasper.getGrasperState() == GrasperState.Open){
+      mCurrentArmTarget = ArmTargets.INTAKE_FRONT;
+    }
+    if(mCurrentArmTarget == ArmTargets.INTAKE_BACK && mGrasper.getGrasperState() == GrasperState.FullyClosed){
+      mCurrentArmTarget = ArmTargets.POST_INTAKE_BACK;
+    }else if(mCurrentArmTarget == ArmTargets.POST_INTAKE_BACK && mGrasper.getGrasperState() == GrasperState.Open){
+      mCurrentArmTarget = ArmTargets.INTAKE_BACK;
+    }
+
     // Simple Arm Control
     mSuperStructure.setTargetArmPosition(mCurrentArmTarget);
     mSuperStructure.update();
@@ -815,28 +828,13 @@ public class Robot extends TimedRobot {
     {
       // Use Targeted Position to lookup Target Translation
       // These are the translations of the targeted score position
-      Translation2d selectedXY = null;
-      int targetIndex = mTargetedPosition.ordinal()  - 1;
-      if(targetIndex < FieldConstants.Grids.blueFinalScorePositionFlipped.length)
+      Translation2d selectedXY = FieldConstants.getTargetPositionPose(pos, DriverStation.getAlliance());
+      if(null != selectedXY)
       {
-        if(Alliance.Blue == DriverStation.getAlliance())
-        {
-          // Blue Alliance
-          selectedXY = FieldConstants.Grids.blueFinalScorePositionFlipped[targetIndex];
-        }
-        else 
-        {
-          // Red Alliance
-          selectedXY = FieldConstants.Grids.redFinalScorePositionFlipped[targetIndex];
-        }
-  
-        // Create a Rotation
-        // TODO: need to set front or back into target pose
         Rotation2d faceFront = new Rotation2d();
         Rotation2d faceBack = faceFront.fromDegrees(180);
         result = new Pose2d(selectedXY, faceFront);
       }
-
     }
     return result;
   }
