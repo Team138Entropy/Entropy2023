@@ -30,6 +30,7 @@ import frc.robot.auto.modes.*;
 import frc.robot.simulation.SimMechanism;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.Drive.DriveStyle;
+import frc.robot.subsystems.Grasper.GrasperState;
 import frc.robot.util.drivers.Pigeon;
 import edu.wpi.first.wpilibj.Relay;
 import frc.robot.vision.AutoPilot;
@@ -98,8 +99,7 @@ public class Robot extends TimedRobot {
   private final boolean mRealRobot = Robot.isReal();
 
   // Reference to the Power Distrubtion Panel
-  //private final PowerDistribution mPowerPanel = new PowerDistribution(Constants.Talons.PowerDistribution.pdpCan, 
-  //                                                                                                ModuleType.kRev);
+  private final PowerDistribution mPowerPanel = new PowerDistribution(Constants.Talons.PowerDistribution.pdpCan,ModuleType.kRev);
 
   // DIO Based Analog Input
   private final AnalogInput mPressureSensor = new AnalogInput(0);
@@ -202,7 +202,7 @@ public class Robot extends TimedRobot {
     // Reset Drive Sensors
 
     // Controllable Panel (Turn on Light for Cube)
-    //mPowerPanel.setSwitchableChannel(mCurrentTargetedObject == TargetedObject.CUBE);
+    mPowerPanel.setSwitchableChannel(mCurrentTargetedObject == TargetedObject.CUBE);
     
     mArm.zeroSensors();
     mDrive.zeroHeading();
@@ -684,6 +684,18 @@ public class Robot extends TimedRobot {
     ){
       // Close Grasper by close press or by beam
       mGrasper.setGrasperClosed();
+    }
+
+    //arm up after intake
+    if(mCurrentArmTarget == ArmTargets.INTAKE_FRONT && mGrasper.getGrasperState() == GrasperState.FullyClosed){
+      mCurrentArmTarget = ArmTargets.POST_INTAKE_FRONT;
+    }else if(mCurrentArmTarget == ArmTargets.POST_INTAKE_FRONT && mGrasper.getGrasperState() == GrasperState.Open){
+      mCurrentArmTarget = ArmTargets.INTAKE_FRONT;
+    }
+    if(mCurrentArmTarget == ArmTargets.INTAKE_BACK && mGrasper.getGrasperState() == GrasperState.FullyClosed){
+      mCurrentArmTarget = ArmTargets.POST_INTAKE_BACK;
+    }else if(mCurrentArmTarget == ArmTargets.POST_INTAKE_BACK && mGrasper.getGrasperState() == GrasperState.Open){
+      mCurrentArmTarget = ArmTargets.INTAKE_BACK;
     }
     mGrasper.update();
   }
