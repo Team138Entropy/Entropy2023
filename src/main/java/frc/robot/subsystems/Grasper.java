@@ -57,6 +57,8 @@ public class Grasper {
       beamActivationTimer = new Timer();
       wheelCancellationTimer = new Timer();
       mGrasperState = GrasperState.FullyClosed;
+      // Sets brake mode
+      GrasperWheelMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
   
    // Open the Grasper
@@ -85,6 +87,7 @@ public class Grasper {
   public void cancelGrasperWheelIntake(){
     GrasperWheelMotor.set(0);
   }
+
 
   // Constant Update Function 
   public void update(){

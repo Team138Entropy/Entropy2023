@@ -630,6 +630,11 @@ public class Robot extends TimedRobot {
       mGrasper.setGrasperClosed();
     }
     mGrasper.update();
+
+    //driver feedback - beam sensor creates vibration (if getSensorBroken == true then vibrate)
+    if (mGrasper.getGrasperState() == Grasper.GrasperState.Closed) {
+      mOperatorInterface.setDriverRumble(true, 0.2);
+  }
   }
 
    /**
