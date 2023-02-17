@@ -104,6 +104,14 @@ public class Constants {
     public static final double kAllowedSecondsThreshold = 5; //seconds
   }
 
+  public static class AutoPilot {
+    //tunable PID values
+    public static TuneableNumber CSAutoPilotKP = new TuneableNumber("CSAutoPilotKP",2);
+    public static TuneableNumber CSAutoPilotKI = new TuneableNumber("CSAutoPilotKI",0);
+    public static TuneableNumber CSAutoPilotKD = new TuneableNumber("CSAutoPilotKD",0);
+    
+  }
+
   // Subsystems
   public static class Drive {
     public static boolean enabled = true;
@@ -352,6 +360,12 @@ public class Constants {
       CubeArmTargetOverrides.put(Enums.ArmTargets.TOP_SCORING_FRONT, Enums.ArmTargets.TOP_SCORING_FRONT_CUBE);
       CubeArmTargetOverrides.put(Enums.ArmTargets.MID_SCORING_FRONT, Enums.ArmTargets.MID_SCORING_FRONT_CUBE);
     }
+
+    //tunable PID values
+    public static TuneableNumber tunableArmKF = new TuneableNumber("tunableArmKF",1);
+    public static TuneableNumber tunableArmKP = new TuneableNumber("tunableArmKP",29);
+    public static TuneableNumber tunableArmKI = new TuneableNumber("tunableArmKI",.01);
+    public static TuneableNumber tunableArmKD = new TuneableNumber("tunableArmKD",300);
   }
 
   public static class Grasper {

@@ -53,10 +53,10 @@ public class Arm extends Subsystem {
         MasterShoulderMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
         MasterShoulderMotor.setSensorPhase(false);
         MasterShoulderMotor.setInverted(true);
-        MasterShoulderMotor.config_kF(0, 1);
-        MasterShoulderMotor.config_kP(0, 29); //was 30
-        MasterShoulderMotor.config_kI(0, .01);
-        MasterShoulderMotor.config_kD(0, 300);
+        MasterShoulderMotor.config_kF(0, Constants.Arm.tunableArmKF.get());
+        MasterShoulderMotor.config_kP(0, Constants.Arm.tunableArmKP.get()); //was 30
+        MasterShoulderMotor.config_kI(0, Constants.Arm.tunableArmKI.get());
+        MasterShoulderMotor.config_kD(0, Constants.Arm.tunableArmKD.get());
         MasterShoulderMotor.configSelectedFeedbackCoefficient(360.0/8192.0);
         MasterShoulderMotor.configMotionAcceleration(20);
         MasterShoulderMotor.configMotionCruiseVelocity(25, 10);
