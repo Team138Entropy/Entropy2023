@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj.Relay;
 import frc.robot.vision.AutoPilot;
 import frc.robot.vision.chargingStationAutoPilot;
 import frc.robot.vision.photonVision;
+import frc.robot.subsystems.Grasper.GrasperState;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -71,6 +72,7 @@ public class Robot extends TimedRobot {
   private final Drive mDrive = Drive.getInstance();
   private final Arm mArm = Arm.getInstance();
   private final Grasper mGrasper = Grasper.getInstance();
+  private final Superstructure mSuperStructure = Superstructure.getInstance();
 
   private final chargingStationAutoPilot mChargingStationAutoPilot = chargingStationAutoPilot.getInstance();
 
@@ -81,8 +83,11 @@ public class Robot extends TimedRobot {
   // Autonomous Modes
   private SendableChooser<AutoModeBase> mAutoModes;
 
+  // Position Target Chooser
   private SendableChooser<TargetedPositions> mTargetedPositionChooser;
 
+  // Arm Target Chooser 
+  private SendableChooser<ArmTargets> mArmTargetOverrideChooser;
 
   // Field Object
   private final Field2d mField = new Field2d();
@@ -95,7 +100,7 @@ public class Robot extends TimedRobot {
 
   // Reference to the Power Distrubtion Panel
   private final PowerDistribution mPowerPanel = new PowerDistribution(Constants.Talons.PowerDistribution.pdpCan, 
-                                                                                                  ModuleType.kRev);
+                                                                                                 ModuleType.kRev);
 
   // DIO Based Analog Input
   private final AnalogInput mPressureSensor = new AnalogInput(0);
@@ -114,6 +119,7 @@ public class Robot extends TimedRobot {
 
   // Arm Target
   public ArmTargets mCurrentArmTarget = ArmTargets.HOME_BACKSIDE;
+  public ArmTargets mArmTargetOverride = ArmTargets.NONE;
   public ArmControlType mArmControlType = ArmControlType.Simple;
 
   public int mManualTargetOffset = 0;
@@ -125,42 +131,58 @@ public class Robot extends TimedRobot {
   // Position the Auto Pilot System Wants to Drive to
   public TargetedPositions mTargetedPosition = TargetedPositions.NONE;
   public TargetedObject mCurrentTargetedObject = TargetedObject.CONE;
-
+  public Pose2d mTargetPose = new Pose2d();
 
   /**
    * On Robot Startup
    */
   @Override
   public void robotInit() {
-
-    // Temp Target Position Chooser - Eventually this will be by button!
+    // Target Position Chooser - Able to Override the Position
     mTargetedPositionChooser = new SendableChooser<TargetedPositions>();
-    mTargetedPositionChooser.setDefaultOption("GRID_BOTTOM_1", TargetedPositions.GRID_BOTTOM_1);
+    mTargetedPositionChooser.setDefaultOption("NONE", TargetedPositions.NONE);
     mTargetedPositionChooser.addOption("NONE", TargetedPositions.NONE);
-    mTargetedPositionChooser.addOption("GRID_BOTTOM_1", TargetedPositions.GRID_BOTTOM_1);
-    mTargetedPositionChooser.addOption("GRID_BOTTOM_2", TargetedPositions.GRID_BOTTOM_2);
-    mTargetedPositionChooser.addOption("GRID_BOTTOM_3", TargetedPositions.GRID_BOTTOM_3);
-    mTargetedPositionChooser.addOption("GRID_MIDDLE_1", TargetedPositions.GRID_MIDDLE_1);
-    mTargetedPositionChooser.addOption("GRID_MIDDLE_2", TargetedPositions.GRID_MIDDLE_2);
-    mTargetedPositionChooser.addOption("GRID_MIDDLE_3", TargetedPositions.GRID_MIDDLE_3);
-    mTargetedPositionChooser.addOption("GRID_TOP_1", TargetedPositions.GRID_TOP_1);
-    mTargetedPositionChooser.addOption("GRID_TOP_2", TargetedPositions.GRID_TOP_2);
-    mTargetedPositionChooser.addOption("GRID_TOP_3", TargetedPositions.GRID_TOP_3);
-    mTargetedPositionChooser.addOption("RED_SUBSTATION_LEFT", TargetedPositions.RED_SUBSTATION_LEFT);
-    mTargetedPositionChooser.addOption("RED_SUBSTATION_RIGHT", TargetedPositions.RED_SUBSTATION_RIGHT);
-    mTargetedPositionChooser.addOption("BLUE_SUBSTATION_LEFT", TargetedPositions.BLUE_SUBSTATION_LEFT);
-    mTargetedPositionChooser.addOption("BLUE_SUBSTATION_RIGHT", TargetedPositions.BLUE_SUBSTATION_RIGHT);
-    SmartDashboard.putData(mTargetedPositionChooser);
+    mTargetedPositionChooser.addOption("GRID_1", TargetedPositions.GRID_1);
+    mTargetedPositionChooser.addOption("GRID_2", TargetedPositions.GRID_2);
+    mTargetedPositionChooser.addOption("GRID_3", TargetedPositions.GRID_3);
+    mTargetedPositionChooser.addOption("GRID_4", TargetedPositions.GRID_4);
+    mTargetedPositionChooser.addOption("GRID_5", TargetedPositions.GRID_5);
+    mTargetedPositionChooser.addOption("GRID_6", TargetedPositions.GRID_6);
+    mTargetedPositionChooser.addOption("GRID_7", TargetedPositions.GRID_7);
+    mTargetedPositionChooser.addOption("GRID_8", TargetedPositions.GRID_8);
+    mTargetedPositionChooser.addOption("GRID_9", TargetedPositions.GRID_9);
+    mTargetedPositionChooser.addOption("SUBSTATION_LEFT", TargetedPositions.SUBSTATION_LEFT);
+    mTargetedPositionChooser.addOption("SUBSTATION_RIGHT", TargetedPositions.SUBSTATION_RIGHT);
+    SmartDashboard.putData("Target Position Override", mTargetedPositionChooser);
 
-    // Start Datalog Manager
-    DataLogManager.start();
+    // Arm Target Position Chooser - Able to Override the Button
+    mArmTargetOverrideChooser = new SendableChooser<ArmTargets>();
+    mArmTargetOverrideChooser.setDefaultOption("NONE", ArmTargets.NONE);
+    mArmTargetOverrideChooser.addOption("SAFE", ArmTargets.SAFE);
+    mArmTargetOverrideChooser.addOption("TOP_SCORING_FRONT", ArmTargets.TOP_SCORING_FRONT);
+    mArmTargetOverrideChooser.addOption("MID_SCORING_FRONT", ArmTargets.MID_SCORING_FRONT);
+    mArmTargetOverrideChooser.addOption("LOW_SCORING_FRONT", ArmTargets.LOW_SCORING_FRONT);
+    mArmTargetOverrideChooser.addOption("TOP_SCORING_BACK", ArmTargets.TOP_SCORING_BACK);
+    mArmTargetOverrideChooser.addOption("MID_SCORING_BACK", ArmTargets.MID_SCORING_BACK);
+    mArmTargetOverrideChooser.addOption("LOW_SCORING_BACK", ArmTargets.LOW_SCORING_BACK);
+    mArmTargetOverrideChooser.addOption("SAFE", ArmTargets.SAFE);
+    mArmTargetOverrideChooser.addOption("START", ArmTargets.START);
+    mArmTargetOverrideChooser.addOption("INTAKE_FRONT", ArmTargets.INTAKE_FRONT);
+    mArmTargetOverrideChooser.addOption("INTAKE_BACK", ArmTargets.INTAKE_BACK);
+    mArmTargetOverrideChooser.addOption("INTAKE_GROUND_FRONT", ArmTargets.INTAKE_GROUND_FRONT);
+    mArmTargetOverrideChooser.addOption("INTAKE_GROUND_BACK", ArmTargets.INTAKE_GROUND_BACK);
+    SmartDashboard.putData("Arm Target Override", mArmTargetOverrideChooser);
+
+    // Start Datalog Manager - removed until wpilib issue is resolved
+    //DataLogManager.start();
 
     // Record both DS control and joystick data
-    DriverStation.startDataLog(DataLogManager.getLog());  
+    //DriverStation.startDataLog(DataLogManager.getLog());  
     
     // Real or Simulation Robot
     mRobotState.setRealRobot(mRealRobot);
     mDrive.setRealRobot(mRealRobot);
+    mSuperStructure.setRealRobot(mRealRobot);
 
     // populate autonomous list
     populateAutonomousModes();
@@ -180,8 +202,7 @@ public class Robot extends TimedRobot {
 
     // Reset Drive Sensors
 
-    // Controllable Panel
-    mPowerPanel.setSwitchableChannel(true);
+    
     mArm.zeroSensors();
     mDrive.zeroHeading();
     mDrive.zeroEncoders();
@@ -192,36 +213,62 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    
+    // Update Odometry of Robot (only if real)
+    if(mRealRobot) mDrive.updateOdometry();
+
+    // Update Robot Field Position
+    Pose2d robotPose = mDrive.getPose();
+
+    mField.setRobotPose(robotPose);
+    mRobotState.setRobotPose(robotPose);
+
     // Update Robotstate
     mRobotState.update();
 
+    // Use Pigeon in Robot Pose for Rotation
+    Pose2d newRobotPose = new Pose2d(mRobotState.getPose().getTranslation(),
+      mRealRobot ? mPigeon.getYaw().getWPIRotation2d() : 
+        mPigeon.getSimYaw().getWPIRotation2d()
+    );
+
     // Update Auto Pilot
-    mAutoPilot.setRobotPose(mRobotState.getPose());
+    mAutoPilot.setRobotPose(newRobotPose);
 
     // Update Smartdashboard Overall and Subsystems
     updateSmartdashboard();
 
-    // Set Target Position 
-    mTargetedPosition = mTargetedPositionChooser.getSelected();
+    // Get Arm Override (if set)
+    mArmTargetOverride = mArmTargetOverrideChooser.getSelected();
+
+    // Currently Targeted Object
+    mCurrentTargetedObject = mOperatorInterface.setTargetedObject();
+
+    // Controllable Panel (Turn on Light for Cone)
+    mPowerPanel.setSwitchableChannel(mCurrentTargetedObject == TargetedObject.CONE);
+    
   }
 
   private void updateSmartdashboard()
   {
-    SmartDashboard.putData("Field", mField);
-    SmartDashboard.putString("Robot Pose", mField.getRobotPose().toString());
-    SmartDashboard.putNumber("Pigeon Degrees", mPigeon.getYaw().getDegrees());
-    SmartDashboard.putNumber("Pigeon Radians", mPigeon.getYaw().getRadians());
+    //SmartDashboard.putData("Field", mField);
+    //SmartDashboard.putString("Robot Pose", mField.getRobotPose().toString());
+    //SmartDashboard.putNumber("Pigeon Degrees", mPigeon.getYaw().getDegrees());
+    //SmartDashboard.putNumber("Pigeon Radians", mPigeon.getYaw().getRadians());
     SmartDashboard.putString("Target Position", mTargetedPosition.toString());
+    SmartDashboard.putString("Target Pose", mTargetPose.toString());
     SmartDashboard.putString("Target Arm Position", mCurrentArmTarget.toString());
     SmartDashboard.putNumber("Target Arm Angle", mCurrentArmTarget.armAngle);
     SmartDashboard.putNumber("Target Arm Extension", mCurrentArmTarget.armExtend);
     SmartDashboard.putBoolean("Automatic Mode", mPositionMode);
     SmartDashboard.putNumber("rotate offset", mManualTargetOffset);
     SmartDashboard.putNumber("extend offset", mManualExtendOffset);
+    SmartDashboard.putString("Targeted Object", mCurrentTargetedObject.toString());
+    SmartDashboard.putBoolean("balance mode", mBalanceMode);
     
     //formula to convert to PSI
     SmartDashboard.putNumber("pressure sensor", 250.0 * mPressureSensor.getVoltage() / 5.0 - 25.0);
-    SmartDashboard.putData(mPowerPanel);
+    //SmartDashboard.putData(mPowerPanel);
 
     // Controls
     final String controlsKey = "Controls/";
@@ -245,15 +292,17 @@ public class Robot extends TimedRobot {
     // RobotState
     mRobotState.updateSmartdashboard();
 
-    // Sim Mechanism 
-    mSimMechanism.updateSmartDashboard(); // Sim Only
+    // Superstructure 
+    mSuperStructure.updateSmartDashBoard();
 
     // Iterates each Subsystem 
     mSubsystemManager.updateSmartdashboard();
 
-    mGrasper.updateSmartDashBoard();
-
-
+    // Simulation Only 
+    if(!mRealRobot)
+    {
+      mSimMechanism.updateSmartDashboard();
+    }
   }
 
   // Fill Autonomous Modes List
@@ -262,7 +311,7 @@ public class Robot extends TimedRobot {
     mAutoModes = new SendableChooser<AutoModeBase>();
     //mAutoModes.setDefaultOption("Nothing", new DoNothingMode());
     mAutoModes.setDefaultOption("Test Swerve Mode", new SwerveTestAutoMode() );
-    SmartDashboard.putData(mAutoModes);
+    SmartDashboard.putData("Auto Modes", mAutoModes);
   }
 
   /***
@@ -313,13 +362,25 @@ public class Robot extends TimedRobot {
     mDrive.zeroSensors();
 
     // Close Grasper
-    mGrasper.setGrasperClosed();
+    mGrasper.setGrasperFullyClosed();
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
     mOperatorInterface.setDriverRumble(mBalanceMode, mBalanceMode ? .2 : 0);
+
+    // Target Position Chooser
+    if (mTargetedPositionChooser.getSelected() == TargetedPositions.NONE) {
+      if (mOperatorInterface.getScoringCommand() != TargetedPositions.NONE) {
+        mTargetedPosition = mOperatorInterface.getScoringCommand();
+      }
+    }else {
+      // Targeted Position Chooser is not none
+      mTargetedPosition = mTargetedPositionChooser.getSelected();
+    }
+
+    
     // Main Robot Loop!
     RobotLoop();
   }
@@ -552,7 +613,7 @@ public class Robot extends TimedRobot {
 
     // Arm
     // Current Targeted Arm into Mechanism Sim
-    // This will set the actuall commanded 
+    // This will set the actualll commanded 
     //mSimMechanism.SetArmAngle(mCurrentArmTarget.armAngle + mManualTargetOffset);
     //mSimMechanism.SetArmLength(mCurrentArmTarget.armExtend + mManualExtendOffset);
     mSimMechanism.SetArmAngle(mArm.getArmTargtedDegrees());
@@ -576,49 +637,70 @@ public class Robot extends TimedRobot {
     // Drive the Robot
     DriveLoop(mOperatorInterface.getDrivePrecisionSteer(), true);
 
-    // Update Robot Field Position
-    Pose2d robotPose = mDrive.getPose();
-    mField.setRobotPose(robotPose);
-    mRobotState.setRobotPose(robotPose);
-
-    // Operator Arm Commands
-    if(mOperatorInterface.getScoringCommand() != TargetedPositions.NONE){
-      mTargetedPosition = mOperatorInterface.getScoringCommand();
-    }
     
+    // Get Arm Target
     if(mOperatorInterface.getArmTarget() != ArmTargets.NONE){
       mCurrentArmTarget = mOperatorInterface.getArmTarget();
       mManualExtendOffset = 0;
       mManualTargetOffset = 0;
     }
 
+    // Get Arm Extension Trims
     if(mOperatorInterface.getManualArmExtendUp()){
       mManualExtendOffset += 1;
     }else if(mOperatorInterface.getManualArmExtendDown()){
       mManualExtendOffset -= 1;
     }
 
+    // Get Arm Rotation Trims
     if(mOperatorInterface.getManualArmRotateUp()){
       mManualTargetOffset += 1;
     }else if(mOperatorInterface.getManualArmRotateDown()){
       mManualTargetOffset -= 1;
     }
 
-    // Constantly tell the Arm where to go
-    if(ArmControlType.Simple == mArmControlType)
+    // Arm Override by Shuffleboard (if set)
+    if(ArmTargets.NONE != mArmTargetOverride) mCurrentArmTarget = mArmTargetOverride;
+
+    // Override for Cube Objects (if exists)
+    // Allow Cube Positions to be different
+    if(mCurrentTargetedObject == TargetedObject.CUBE)
     {
-      // Simple Arm Control Type (Do not rotate arm until extension is Retracted)
-      // If you want to move the arm to a different rotation angle, arm extension must be retracted
-      // This is still a todo! 
-      mArm.setArmAngle(mCurrentArmTarget.armAngle + mManualTargetOffset);
-      mArm.setArmExtension(mCurrentArmTarget.armExtend + mManualExtendOffset);
+      // If an override position for cube, get the cube specific target
+      if(Constants.Arm.CubeArmTargetOverrides.containsKey(mCurrentArmTarget))
+      {
+        mCurrentArmTarget = Constants.Arm.CubeArmTargetOverrides.get(mCurrentArmTarget);
+      }
+    }else {
+      // Current Object is Cone, Convert Back to Cube
+      if(Constants.Arm.CubeArmTargetOverrides.containsValue(mCurrentArmTarget))
+      {
+        // Current Arm Target is a Cube, convert back to its cone counterpart
+        for (var entry : Constants.Arm.CubeArmTargetOverrides.entrySet()) {
+          if(entry.getValue() == mCurrentArmTarget)
+          {
+            mCurrentArmTarget = entry.getKey();
+            break;
+          }
+        }
+      }
     }
-    else if(ArmControlType.Advanced == mArmControlType)
-    {
-      // TODO: Allow Arm to move with extension out
-      // This is more complicated.. we might not get to this.. or need it
+
+    // Arm Up After Intake
+    if(mCurrentArmTarget == ArmTargets.INTAKE_FRONT && mGrasper.getGrasperState() == GrasperState.FullyClosed){
+      mCurrentArmTarget = ArmTargets.POST_INTAKE_FRONT;
+    }else if(mCurrentArmTarget == ArmTargets.POST_INTAKE_FRONT && mGrasper.getGrasperState() == GrasperState.Open){
+      mCurrentArmTarget = ArmTargets.INTAKE_FRONT;
     }
- 
+    if(mCurrentArmTarget == ArmTargets.INTAKE_BACK && mGrasper.getGrasperState() == GrasperState.FullyClosed){
+      mCurrentArmTarget = ArmTargets.POST_INTAKE_BACK;
+    }else if(mCurrentArmTarget == ArmTargets.POST_INTAKE_BACK && mGrasper.getGrasperState() == GrasperState.Open){
+      mCurrentArmTarget = ArmTargets.INTAKE_BACK;
+    }
+
+    // Simple Arm Control
+    mSuperStructure.setTargetArmPosition(mCurrentArmTarget);
+    mSuperStructure.update();
 
     // Grasper Functionality
     if(mOperatorInterface.getGrasperOpen()){
@@ -652,10 +734,8 @@ public class Robot extends TimedRobot {
    if(precisionSteer) driveThrottle *= .55;
 
     boolean wantsAutoSteer = mOperatorInterface.getDriveAutoSteer();
-    if(mOperatorInterface.getBalanceMode() && mBalanceMode == false){
-      mBalanceMode = false;
-    }else if(mOperatorInterface.getBalanceMode() && mBalanceMode == true){
-      mBalanceMode = false;
+    if(mOperatorInterface.getBalanceMode()){
+      mBalanceMode = !mBalanceMode;
     }
     //wantsAutoSteer &= allowAutoSteer; //disable if autosteer isn't allowed
     SmartDashboard.putBoolean("Autosteer", wantsAutoSteer);
@@ -692,31 +772,26 @@ public class Robot extends TimedRobot {
       // Swerve Brake
       //mDrive.setBrake(mOperatorInterface.getBrake());
 
-      // Auto Pilot (and has Valid Vision Pose)
-      if(wantsAutoSteer)
+      // Get Target Pose
+      mTargetPose = getTargetPose(mTargetedPosition);
+
+      // Based on Target, Determine the Rotation
+      Rotation2d wallRotation = getClosestSideToWall(GameWalls.AllianceWall).getRotation();
+
+      // Create Pose with the corresponding rotation 
+      Pose2d calculatedPose = new Pose2d(mTargetPose.getTranslation(), wallRotation);
+      
+      // Set into AutoPilot
+      mAutoPilot.setTargetPose(calculatedPose);
+
+      // Update Auto Pilot
+      mAutoPilot.update(false);
+
+      // Auto Pilot (and has Valid Target Position)
+      if(wantsAutoSteer && mTargetedPosition != TargetedPositions.NONE)
       {
-        // Use Targeted Position to lookup Target Translation
-        // These are the translations of the targeted score position
-        Translation2d selectedXY = null;
-        int targetIndex = mTargetedPosition.ordinal()  - 1;
-        if(Alliance.Blue == DriverStation.getAlliance())
-        {
-          // Blue Alliance
-          selectedXY = FieldConstants.Grids.blueFinalScorePosition[targetIndex];
-        }
-        else 
-        {
-          // Red Alliance
-          selectedXY = FieldConstants.Grids.redFinalScorePosition[targetIndex];
-        }
-
-        // Create a Rotation
-        // TODO: need to set front or back into target pose
-        Pose2d targetedPose = new Pose2d(selectedXY, new Rotation2d());
-
-        // Target this Pose
-        mAutoPilot.targetPose(targetedPose);
-
+       // Update Auto Pilot (allow drive)
+       mAutoPilot.update(true);
       }
       else if(mBalanceMode)
       {
@@ -730,12 +805,10 @@ public class Robot extends TimedRobot {
       }
       else
       {
+        mDrive.setBrake(false);
         // Normal Swerve Operation
-
-        // Do Not AutoPilot Drive
-        //mAutoPilot.stop();
         
-        // Swerve Snap to a Direction (Button Press Quickly Moves Robot)
+        // Swerve Snap to a Direction (Butttposeon Press Quickly Moves Robot)
         SwerveCardinal snapCardinal = mOperatorInterface.getSwerveSnap();
         if(SwerveCardinal.NONE != snapCardinal) // Snap Direction Detected!
         {
@@ -762,13 +835,49 @@ public class Robot extends TimedRobot {
         mDrive.setSwerveDrive(sTrans, sRotation, true, true, precisionSteer);
 
         // Log Inputs
-        SmartDashboard.putString("Swerve Input Translation", sTrans.toString());
-        SmartDashboard.putNumber("Swerve Input Rotation", sRotation);
+        SmartDashboard.putString("Controls/Swerve Input Translation", sTrans.toString());
+        SmartDashboard.putNumber("Controls/Swerve Input Rotation", sRotation);
+
+        // Clear Auto Pilot Sequence Info (since it isn't being used)
+        mAutoPilot.clear(); 
       }
     }
+  }
 
-    // Update Odometry of Robot (only if real)
-    if(mRealRobot) mDrive.updateOdometry();
+  // Get Target Pose from Target Position
+  public Pose2d getTargetPose(TargetedPositions pos)
+  {
+    Pose2d result = new Pose2d();
+    if(TargetedPositions.NONE != pos) 
+    {
+      // Use Targeted Position to lookup Target Translation
+      // These are the translations of the targeted score position
+      Translation2d selectedXY = FieldConstants.getTargetPositionPose(pos, DriverStation.getAlliance());
+      if(null != selectedXY)
+      {
+        Rotation2d faceFront = new Rotation2d();
+        Rotation2d faceBack = faceFront.fromDegrees(180);
+        result = new Pose2d(selectedXY, faceFront);
+      }
+    }
+    return result;
+  }
+
+  // Get Closest Side to Targted Wall
+  public SwerveRotation getClosestSideToWall(Enums.GameWalls wall)
+  {
+    SwerveRotation sRot = SwerveRotation.FRONT_FACING_FORWARD;
+
+    // Get Current Rotation
+    Rotation2d curRotation = mRealRobot ? mPigeon.getYaw().getWPIRotation2d() : 
+        mPigeon.getSimYaw().getWPIRotation2d();
+    double degrees = curRotation.getDegrees();
+    double absDegrees = Math.abs(degrees);
+    if(absDegrees >= 90)
+    {
+      sRot = SwerveRotation.FRONT_FACING_GRID;
+    }
+    return sRot;
   }
 
 }

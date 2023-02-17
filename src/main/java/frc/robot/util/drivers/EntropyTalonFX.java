@@ -124,6 +124,7 @@ public class EntropyTalonFX extends TalonFX {
     public void updateSmartdashboard()
     {    
        final String key = "TalonFXs/" + deviceInfo;
+       /*
        SmartDashboard.putString(key + "/Description", description);
        SmartDashboard.putNumber(key + "/Voltage", getBusVoltage());
        SmartDashboard.putNumber(key + "/Current", getSupplyCurrent()); 
@@ -134,5 +135,7 @@ public class EntropyTalonFX extends TalonFX {
        SmartDashboard.putNumber(key + "/MotorOutputVoltage", getMotorOutputVoltage());
        SmartDashboard.putNumber(key + "/FiremwareVersion", getFirmwareVersion());
        SmartDashboard.putNumber(key + "/SelectedSensorPosition", getSelectedSensorPosition());
+       SmartDashboard.putNumber(key + "/SelectedSensorVelocity", getSelectedSensorVelocity());
+       */
     }
 }

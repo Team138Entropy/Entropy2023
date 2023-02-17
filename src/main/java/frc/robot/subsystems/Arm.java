@@ -53,16 +53,21 @@ public class Arm extends Subsystem {
         MasterShoulderMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
         MasterShoulderMotor.setSensorPhase(false);
         MasterShoulderMotor.setInverted(true);
-        MasterShoulderMotor.config_kF(0, 1);
-        MasterShoulderMotor.config_kP(0, 30);
-        MasterShoulderMotor.config_kI(0, .01);
-        MasterShoulderMotor.config_kD(0, 300);
+        // Good Motion Magic Tuning Guide Here: https://v5.docs.ctr-electronics.com/en/stable/ch16_ClosedLoop.html#motion-magic-position-velocity-current-closed-loop-closed-loop
+        MasterShoulderMotor.config_kF(0, Constants.Arm.tunableArmKF.get());
+        MasterShoulderMotor.config_kP(0, Constants.Arm.tunableArmKP.get()); //was 30
+        MasterShoulderMotor.config_kI(0, Constants.Arm.tunableArmKI.get());
+        MasterShoulderMotor.config_kD(0, Constants.Arm.tunableArmKD.get());
+        // kP: P-Gain so that the closed loop can react to error. Larger Kp would suggest responding harder to error
+        //      Typically tuned by starting at a small value and doubling until it oscilates
+        // kD: D-Gain. Helps with overshoot
+        //      Typicall starts at 10xPGain
+        // kI: I-Gain Helps the sensor settle close to the target position
         MasterShoulderMotor.configSelectedFeedbackCoefficient(360.0/8192.0);
-        MasterShoulderMotor.configMotionAcceleration(4);
-        MasterShoulderMotor.configMotionCruiseVelocity(10, 10);
+        MasterShoulderMotor.configMotionAcceleration(20);
+        MasterShoulderMotor.configMotionCruiseVelocity(25, 10);
         SecondaryShoulderMotor.follow(MasterShoulderMotor); // Secondary Motor will follow Primary Motor
         SecondaryShoulderMotor.setInverted(true);
-
 
         // Extension Motor Configuration
         ExtensionMotor.configFactoryDefault();
@@ -76,7 +81,7 @@ public class Arm extends Subsystem {
         ExtensionMotor.config_kI(0, 0);
         ExtensionMotor.config_kD(0, 0);
         ExtensionMotor.configMotionAcceleration(60000);
-        ExtensionMotor.configMotionCruiseVelocity(30000);
+        ExtensionMotor.configMotionCruiseVelocity(50000);
 
         // Rotation Min, Max, Target
         mMaximumDegreesTarget = 0;
@@ -115,7 +120,7 @@ public class Arm extends Subsystem {
         {
             // TODO: Figure out Scaling Value
             // TODO: arm extension should factor angle?
-            ExtensionMotor.set(ControlMode.MotionMagic, Inches, DemandType.ArbitraryFeedForward, 0.3); 
+            ExtensionMotor.set(ControlMode.MotionMagic, Inches, DemandType.ArbitraryFeedForward, 0.2); 
             mTargetedExtension = Inches;
         }
     }
@@ -190,7 +195,7 @@ public class Arm extends Subsystem {
 
     public boolean isArmRotationAtAngle(double position)
     {
-        return isArmRotationAtAngle(position, 5); //todo: make this a constant
+        return isArmRotationAtAngle(position, 6); //todo: make this a constant
     }
 
     // Returns true if the arm is at a position
@@ -207,6 +212,15 @@ public class Arm extends Subsystem {
     {
         return isArmExtensionAtPosition(position, 10000); //todo: make this a constant
     }
+
+    public boolean isArmSafe()
+    {
+        if (getArmAngle() <= 180 && getArmAngle() >= 0){
+            return false;
+        }
+        return true;
+    }
+
 
     public void updateSmartDashBoard(){
 

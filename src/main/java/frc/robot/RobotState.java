@@ -3,8 +3,9 @@ package frc.robot;
 import java.util.Map;
 import java.util.Optional;
 
-import org.photonvision.RobotPoseEstimator;
-import org.photonvision.RobotPoseEstimator.PoseStrategy;
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -53,7 +54,8 @@ public class RobotState {
     Pose2d mRobotPose;
 
     // Photon Vision Class to Estimate RobotPose based on last seen vision 
-    RobotPoseEstimator mRobotPoseEstimator;
+    PhotonPoseEstimator mFrontCameraPoseEstimator;
+    PhotonPoseEstimator mBackCameraPoseEstimator;
 
     // Overall Drive Pose Estimator
     /*
@@ -74,6 +76,8 @@ public class RobotState {
 
     // Robots Estimated Pose2d based 
     Pose2d mVisionBasedRobotPose;
+
+    Pose2d mVisionTargetPose;
 
     // Robots Vision Estimated Pose2d Latency
     double mVisionBasedRobotPoseLatencySeconds;
@@ -96,16 +100,33 @@ public class RobotState {
     {
        // Zero RobotState
        mRobotPose = new Pose2d(); 
+       mVisionTargetPose = new Pose2d();
 
        // Estimate the Robot's Pose on the Field
        //  Uses last seen AprilTag
        //  Various different strategies are available (AverageBestTargets, Closest_To_Camera_Height, Closest_To_Last_Pose,
        //                                              Closest_To_Reference_Pose, Lowest_Ambiguity)
        //  ref: https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html
-       mRobotPoseEstimator = new RobotPoseEstimator(FieldConstants.aprilTagField, 
-                                                        PoseStrategy.CLOSEST_TO_REFERENCE_POSE, photonVision.CameraList
+       PoseStrategy chosenStrategy = PoseStrategy.AVERAGE_BEST_TARGETS;
+       // FRONT CAMERA ONLY.. to do do back camera
+       mFrontCameraPoseEstimator = new PhotonPoseEstimator(
+        FieldConstants.aprilTagField, 
+        chosenStrategy, 
+        photonVision.CameraList.get(0).getFirst(),
+        photonVision.CameraList.get(0).getSecond()
+       );
+       mBackCameraPoseEstimator = new PhotonPoseEstimator(
+        FieldConstants.aprilTagField,
+        chosenStrategy,
+        photonVision.CameraList.get(1).getFirst(),
+        photonVision.CameraList.get(1).getSecond()
+       );
+       
+       /*
+       mFrontCameraPoseEstimator = new RobotPoseEstimator(FieldConstants.aprilTagField, 
+                                                        PoseStrategy.AVERAGE_BEST_TARGETS, photonVision.CameraList
                                                     );
-
+*/
         // Robot Pose Calculated off of Vision
         mVisionBasedRobotPose = new Pose2d();
         mVisionBasedRobotPoseLatencySeconds = -1;
@@ -136,12 +157,13 @@ public class RobotState {
     // Get Vision Estimated Robot Pose
     // Returns a Pair of the Pose2D of the Robot with a Latency Value
     public Pair<Pose2d, Double> getVisionEstimatedPose(Pose2d prevEstimatedRobotPose) {
-        mRobotPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+       // mFrontCameraPoseEstimator.setReferencePose(prevEstimatedRobotPose);
     
         double currentTime = Timer.getFPGATimestamp();
-        Optional<Pair<Pose3d, Double>> result = mRobotPoseEstimator.update();
-        if (result.isPresent() && null != result.get().getFirst()) {
-            return new Pair<Pose2d, Double>(result.get().getFirst().toPose2d(), currentTime - result.get().getSecond());
+        
+        Optional<EstimatedRobotPose> result = mFrontCameraPoseEstimator.update();
+        if (result.isPresent() && null != result.get().estimatedPose) {
+            return new Pair<Pose2d, Double>(result.get().estimatedPose.toPose2d(), currentTime - 0);
         } else {
             return new Pair<Pose2d, Double>(null, 0.0);
         }
@@ -183,13 +205,16 @@ public class RobotState {
             // No Pose2d Able to be found, zero the vision pose
             mVisionBasedRobotPose = new Pose2d();
             mVisionBasedRobotPoseLatencySeconds = -1;
+            mIsValidVisionPose = false;
         } else {
             // Valid Pose2D
             mVisionBasedRobotPose = VisionBasedEstimate.getFirst();
             mVisionBasedRobotPoseLatencySeconds = VisionBasedEstimate.getSecond();
+            mIsValidVisionPose = true;
         }
 
         // Evaluate if Latency is within Range
+        /*
         if(mVisionBasedRobotPoseLatencySeconds != -1
             && Constants.Vision.kAllowedSecondsThreshold <= mVisionBasedRobotPoseLatencySeconds)
         {
@@ -199,12 +224,21 @@ public class RobotState {
             // Either no Robot Pose or Outside of Latency
             mIsValidVisionPose = false;
         }
+        */
 
         // Feed Valid Pose into System
         // Todo: Recomended to only feed vision pose within 1 meter or so of robot
         if(mIsValidVisionPose)
         {
-            mSwerveDrivePoseEstimator.addVisionMeasurement(mVisionBasedRobotPose, mVisionBasedRobotPoseLatencySeconds);
+            try {
+                
+                mSwerveDrivePoseEstimator.addVisionMeasurement(mVisionBasedRobotPose, mVisionBasedRobotPoseLatencySeconds);
+            
+            } catch (Exception ex)
+            {
+                System.out.println(ex.getMessage());
+                System.out.println("CONCURRENT EXCEPTION?");
+            }
         }
 
         // Get Overall System Pose Estimate
@@ -247,17 +281,17 @@ public class RobotState {
         // Iterate Node Scoring Positions (In Front of the Lowest Node)
         for(int i = 0; i < FieldConstants.Grids.lowTranslations.length; i++)
         {
-            // Red Node
+            // Blue Node
             Translation2d currTrans = FieldConstants.Grids.lowTranslations[i];
             Pose2d nodePose = new Pose2d(currTrans, new Rotation2d());
-            FieldObject2d nodePoseObj = mVisualField.getObject("Red Node " + i);
+            FieldObject2d nodePoseObj = mVisualField.getObject("Blue Node " + i);
             nodePoseObj.setPose(nodePose);
 
-            // Blue Node
-            Translation2d currTransBlue = FieldConstants.Grids.oppLowTranslations[i];
-            Pose2d newPoseBlue = new Pose2d(currTransBlue, new Rotation2d());
-            FieldObject2d nodePoseBlueObj = mVisualField.getObject("Blue Node " + i);
-            nodePoseBlueObj.setPose(newPoseBlue);
+            // Red Node
+            Translation2d currTransRed = FieldConstants.Grids.oppLowTranslations[i];
+            Pose2d newPoseRed = new Pose2d(currTransRed, new Rotation2d());
+            FieldObject2d nodePoseRedObj = mVisualField.getObject("Red Node " + i);
+            nodePoseRedObj.setPose(newPoseRed);
 
             // Score Nodes
                    
@@ -279,15 +313,25 @@ public class RobotState {
         simVisionPose.setPose(mVisionBasedRobotPose);
 
         // Vision Following Trajectory if applicable
+        /*
         Trajectory driveTraj = AutoPilot.getInstance().getTrajectory();
         if(null != driveTraj)
         {
             mVisualField.getObject("Trajectory").setTrajectory(driveTraj);
         }
+        */
 
         // WPILIB Pose Estimator
         FieldObject2d wpiLibPoseObject = mVisualField.getObject("WpilibPose");
         wpiLibPoseObject.setPose(mDrivePoseEstimator);
+
+        FieldObject2d targetPose2d = mVisualField.getObject("TargetedPose");
+        targetPose2d.setPose(mVisionTargetPose);
+    }
+
+    public void setTargetPose(Pose2d pose)
+    {
+        mVisionTargetPose = pose;
     }
 
     // Return the Drive/Vision Based Pose Estimate
@@ -306,5 +350,7 @@ public class RobotState {
         SmartDashboard.putBoolean(key + "Vision Pose Valid", mIsValidVisionPose);
         SmartDashboard.putData(key + "Visual Field", mVisualField);
         SmartDashboard.putString(key + "Pose Estimation", mDrivePoseEstimator.toString());
+        SmartDashboard.putString(key + "Overall Estimation", mDrivePoseEstimator.toString());
+        SmartDashboard.putString(key + "Target Pose", mVisionTargetPose.toString());
     }
 }

@@ -16,7 +16,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-public class Grasper {
+public class Grasper extends Subsystem {
     private static Grasper mInstance;
 
     //Grasper pneumatics
@@ -74,18 +74,26 @@ public class Grasper {
    // Stop the Beam Activiation Timer
    // Allow the Grasper Motor to run for 1 Second to help pull in!
    public void setGrasperClosed(){
+    if (mGrasperState == GrasperState.Open){
     mGrasperState = GrasperState.Closed;
     beamActivationTimer.stop();
+    wheelCancellationTimer.reset();
+    wheelCancellationTimer.start();
+    }
+   }
+
+   public void setGrasperFullyClosed(){
+    mGrasperState = GrasperState.FullyClosed;
    }
 
   // Start the Intake Motor
   public void setGrasperWheelIntake(){
-    GrasperWheelMotor.set(0.2);
+    GrasperWheelMotor.set(0);
   }
 
   // Stop the Intake Motor
   public void cancelGrasperWheelIntake(){
-    GrasperWheelMotor.set(0);
+   GrasperWheelMotor.set(0);
   }
 
 
@@ -138,7 +146,7 @@ public class Grasper {
   }
   // Timer for the wheels when closing the Grasper
   public boolean getGrasperTimeElapsed1(){
-    return wheelCancellationTimer.hasElapsed(1);
+    return wheelCancellationTimer.hasElapsed(0.25);
   }
 
   public boolean getBeamSensorBroken(){
@@ -157,6 +165,16 @@ public class Grasper {
   // Get Current Grasper State
   public GrasperState getGrasperState(){
     return mGrasperState;
+  }
+
+  public void zeroSensors()
+  {
+
+  }
+
+  public void checkSubsystem()
+  {
+    
   }
 
   public void updateSmartDashBoard(){

@@ -5,17 +5,23 @@ import java.util.List;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.Vision;
 import frc.robot.auto.TrajectoryFollower;
 import frc.robot.subsystems.Drive;
+import frc.robot.util.TuneableNumber;
+import frc.robot.util.drivers.Pigeon;
 
 // Auto Pilot System
 //      Calculates How to Drive to a Pose
@@ -43,12 +49,11 @@ public class AutoPilot {
     private boolean mRunning;
     private Trajectory mTrajectory;
     private boolean mTrajectorySet;
-    private Pose2d mStartingPose;
-    private Pose2d mTargetedPose;
-    private Pose2d mGoalPose;
+    private Pose2d mTargetedPose = new Pose2d();
+    private Pose2d mGoalPose = new Pose2d();
 
     // Current Robot Pose
-    private Pose2d mRobotPose;
+    private Pose2d mRobotPose = new Pose2d();
 
     // Motion Control
     private static final TrapezoidProfile.Constraints mX_CONSTRAINTS = 
@@ -57,9 +62,27 @@ public class AutoPilot {
             new TrapezoidProfile.Constraints(3, 2);
     private static final TrapezoidProfile.Constraints mOMEGA_CONSTRAINTS =   
             new TrapezoidProfile.Constraints(8, 8);
-    private final ProfiledPIDController mXController = new ProfiledPIDController(3, 0, 0, mX_CONSTRAINTS);
-    private final ProfiledPIDController mYController = new ProfiledPIDController(3, 0, 0, mY_CONSTRAINTS);
+
+            
+    private final ProfiledPIDController mXController = new ProfiledPIDController(6, 0, 0, mX_CONSTRAINTS);
+    private final ProfiledPIDController mYController = new ProfiledPIDController(6, 0, 0, mY_CONSTRAINTS);
+
+    // Omega Controller
+    /*
     private final ProfiledPIDController mOmegaController = new ProfiledPIDController(2, 0, 0, mOMEGA_CONSTRAINTS);
+    */
+    private final ProfiledPIDController mOmegaController = new ProfiledPIDController(
+        Constants.Drive.SnapConstants.kP,
+        Constants.Drive.SnapConstants.kI, 
+        Constants.Drive.SnapConstants.kD,
+        Constants.Drive.SnapConstants.kThetaControllerConstraints
+      );
+
+    // Tolerances
+    // Tolerances are purposefully really small, these might need to be turned up
+    private final TuneableNumber mXTolerance = new TuneableNumber("X Tolerance", .01);
+    private final TuneableNumber mYTolerance = new TuneableNumber("Y Tolerance", .01);
+    private final TuneableNumber mRotationTolerance = new TuneableNumber("Rotation Tolerance", Units.degreesToRadians(2));
 
     // Type of System being used to Drive
     enum AutoPilotMode {
@@ -69,6 +92,343 @@ public class AutoPilot {
     };
     private AutoPilotMode mDriveMode;
 
+    // Driving Related Variables
+    private final boolean mDrawField = true;
+    private final boolean mInvertX = false;
+    private final boolean mInvertY = false;
+    private final boolean mInvertRotation = false;
+
+    private double mXDistance = 0;
+    private double mYDistance = 0;
+    private double mRotationDistance = 0;
+
+    private double mXSpeed = 0;
+    private double mYSpeed = 0;
+    private double mRotationSpeed = 0;
+
+    private double mXSpeedFactor = 1;
+    private double mYSpeedFactor = 1;
+    private double mRotationSpeedFactor = 1;
+
+    private boolean mWithinToleranceX = false;
+    private boolean mWithinToleranceY = false;
+    private boolean mWithinToleranceRotation = false;
+
+    // Calculated Chasis Speeds
+    private ChassisSpeeds mCalculatedSpeeds = new ChassisSpeeds();
+
+    // Visual Field for Debugging
+    private final Field2d mVisualField = new Field2d();
+
+    // Final Scoring Squence
+    private boolean mAllowFinalScoring = true;
+    private boolean mInFinalScoringSequence = false;
+    private Translation2d mFinalSquenceTranslation = new Translation2d(.2, 0);
+
+
+    // Sample if robot has reached target position
+    // This should be clearance once at target position
+    // This can also be used to kickoff the final scoring position
+    private int mAtTargetPositionCount = 0;
+    private final int mAtTargetPositionThreshold = 5;
+    private boolean mAtTarget = false;
+    public Pigeon mPigeon = Pigeon.getInstance();
+
+    private AutoPilot()
+    {
+        mXController.reset(0);
+        mYController.reset(0);
+        mOmegaController.reset(0);
+
+        // Reset all Speed and Tolerances
+        mXSpeed = 0;
+        mYSpeed = 0;
+        mRotationSpeed = 0;
+        mWithinToleranceX = true;
+        mWithinToleranceY = true;
+        mWithinToleranceRotation = true;
+
+        // this was from snap controlle
+        mOmegaController.enableContinuousInput(-Math.PI, Math.PI);
+
+    }
+
+    // Set Target Pose to Drive To
+    public void setTargetPose(Pose2d targPose)
+    {
+        // Detect if this is a new target
+        if(targPose.getX() != mTargetedPose.getX() ||
+            targPose.getY() != mTargetedPose.getY()
+        )
+        {
+            resetTolerances();
+        }
+
+        // Set to the Target Pose
+        mTargetedPose = targPose;
+    }
+
+    // Set Current Robot Pose
+    public void setRobotPose(Pose2d currentRobotPose)
+    {
+        mRobotPose = currentRobotPose;
+    }
+
+    public void resetTolerances()
+    {
+        mWithinToleranceX = false;
+        mWithinToleranceY = false;
+        mWithinToleranceRotation = false;
+
+        // Reset Target Indicators
+        updateAtTarget();
+    }
+
+    /*
+     * 
+
+         private boolean mAllowFinalScoring = true;
+    private boolean mInFinalScoringSequence = false;
+
+    // Sample if robot has reached target position
+    // This should be clearance once at target position
+    // This can also be used to kickoff the final scoring position
+    private int mAtTargetPositionCount = 0;
+    private final int mAtTargetPositionThreshold = 5;
+    private boolean mAtTarget = false;
+
+    private double mFinalSequenceXDis = 1.0;
+    private double mFinalSequenceYDis = 0.0;
+
+     */
+
+     private boolean mRealRobot = false;
+     private boolean fieldRelative = true;
+
+    // Main Update Loop
+    public void update(boolean allowDrive) 
+    {
+        // Calculate if at Target
+        updateAtTarget();
+
+        // Pose Targeting
+        Pose2d targPose2d = mTargetedPose;
+
+        // If already at target pose, activate final scoring sequence
+        if(false && mAllowFinalScoring && mInFinalScoringSequence)
+        {
+            // Create a new translation compensating for the final target
+            Translation2d trans = 
+                targPose2d.getTranslation().minus(mFinalSquenceTranslation);
+
+            // Set Translation into new Pose
+            targPose2d = new Pose2d(trans, targPose2d.getRotation());
+        }
+
+        // Robot Pose will be constantly updated
+        // Calculate Distances between target and robot
+        mXDistance = Math.abs(mRobotPose.getX() - targPose2d.getX());
+        mYDistance = Math.abs(mRobotPose.getY() - targPose2d.getY());
+        mRotationDistance = Math.abs(mRobotPose.getRotation().getRadians() - targPose2d.getRotation().getRadians());
+
+        // Update X if outside Tolerance
+        if(mXDistance > mXTolerance.get())
+        {
+            mXSpeed = mXController.calculate(mRobotPose.getX(), targPose2d.getX());
+            mXSpeed *= mXSpeedFactor;
+            if(mInvertX) mXSpeed *= -1;
+            mWithinToleranceX = false;
+        } else {
+            // Within Tolerance
+            mWithinToleranceX = true;
+            mXSpeed = 0;
+        }
+
+        // Update Y if outside Tolerance
+        if(mYDistance > mYTolerance.get())
+        {
+            mYSpeed = mYController.calculate(mRobotPose.getY(), targPose2d.getY());
+            mYSpeed *= mYSpeedFactor;
+            if(mInvertY) mYSpeed *= -1;
+            mWithinToleranceY = false;
+        } else {
+            // Within Tolerance
+            mWithinToleranceY = true;
+            mYSpeed = 0;
+        }
+
+        // Update Rotation if outside Tolerance
+        if(mRotationDistance > mRotationTolerance.get())
+        {
+            mRotationSpeed = mOmegaController.calculate(mRobotPose.getRotation().getRadians(), targPose2d.getRotation().getRadians());
+            mRotationSpeed *= mRotationSpeedFactor;
+            if(mInvertRotation) mRotationSpeed *= -1;
+            mWithinToleranceRotation = false;
+        }else{
+            // Within Tolerance
+            mWithinToleranceRotation = true;
+            mRotationSpeed = 0;
+        }
+
+        // Set Speeds into Swerve System
+        //mCalculatedSpeeds = new ChassisSpeeds(mXSpeed, mYSpeed, mRotationSpeed);
+
+        mCalculatedSpeeds = fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
+            mXSpeed, 
+            mYSpeed, 
+            mRotationSpeed, 
+            mRealRobot ? mPigeon.getYaw().getWPIRotation2d() : mPigeon.getSimYaw().getWPIRotation2d()
+        )
+        : new ChassisSpeeds(
+            mXSpeed, 
+            mYSpeed, 
+            mRotationSpeed
+        );
+
+        // Allow Driving - Posible to just use update for data
+        if(allowDrive)
+        {
+            // Call Autonomous Chasis Speed 
+            var targetSwerveModuleStates = mDrive.getSwerveKinematics().toSwerveModuleStates(mCalculatedSpeeds);
+            
+            // Sim Only
+            if(!mRealRobot){
+                if(Math.abs(mCalculatedSpeeds.omegaRadiansPerSecond) > 0)
+                {
+                    double sRotation = mCalculatedSpeeds.omegaRadiansPerSecond;
+                    sRotation *= -1;
+                    Pigeon.getInstance().rotateSimYaw(sRotation);
+                }  
+            }
+
+            // Set Swerve to those Module States
+            mDrive.setModuleStates(targetSwerveModuleStates);
+        }
+    }
+
+    // Has Auto Pilot Reached its Target!
+    public boolean atTarget()
+    {
+        return (mWithinToleranceX 
+            && mWithinToleranceY
+            && mWithinToleranceRotation
+        );
+    }
+
+    // Update if the Robot is at Target
+    private void updateAtTarget()
+    {
+        if(atTarget())
+        {
+            // at target
+            if(mAtTargetPositionCount < mAtTargetPositionThreshold)
+            {
+                ++mAtTargetPositionCount;
+            } 
+
+            // check if threshold is now okaay
+            if(mAtTargetPositionCount >= mAtTargetPositionThreshold)
+            {
+                mAtTarget = true;
+            } 
+
+            // Activate final socring sequence
+            if(mAllowFinalScoring)
+            {
+                mInFinalScoringSequence = true;
+            }             
+        }else {
+            // not at target 
+            mAtTargetPositionCount = 0;
+            mAtTarget = false;
+
+    
+        }
+    }
+
+    // Clear Squence Specific Unformation
+    public void clear()
+    {
+        mInFinalScoringSequence = false;
+    }
+
+    
+    /*
+         private final boolean mDrawField = true;
+    private final boolean mInvertX = false;
+    private final boolean mInvertY = false;
+    private final boolean mInvertRotation = false;
+
+    private double mXDistance = 0;
+    private double mYDistance = 0;
+    private double mRotationDistance = 0;
+
+    private double mXSpeedFactor = 0.3;
+    private double mYSpeedFactor = 0.3;
+
+        private double mXSpeed = 0;
+    private double mYSpeed = 0;
+    private double mRotationSpeed = 0;
+
+
+        private boolean mAllowFinalScoring = false;
+    private boolean mInFinalScoringSequence = false;
+
+    // Sample if robot has reached target position
+    // This should be clearance once at target position
+    // This can also be used to kickoff the final scoring position
+    private int mAtTargetPositionCount = 0;
+    private final int mAtTargetPositionThreshold = 5;
+    private boolean mAtTarget = false;
+     */
+
+    public void updateSmartDashBoard()
+    {
+        final String key = "AutoPilot/";
+        //SmartDashboard.putString(key + "Mode", mDriveMode.toString());
+        SmartDashboard.putString(key + "Target Pose", mTargetedPose.toString());
+        SmartDashboard.putString(key + "Robot Pose", mRobotPose.toString());
+        SmartDashboard.putBoolean(key + "At Target", mAtTarget);
+        SmartDashboard.putBoolean(key + "FinalSeq/InSquence", mInFinalScoringSequence);
+        SmartDashboard.putBoolean(key + "FinalSeq/AllowSequence", mAllowFinalScoring);
+        SmartDashboard.putNumber(key + "FinalSeq/Count", mAtTargetPositionCount);
+        SmartDashboard.putNumber(key + "FinalSeq/Threshold", mAtTargetPositionThreshold);
+        SmartDashboard.putNumber(key + "Speeds/X", mXSpeed);
+        SmartDashboard.putNumber(key + "Speeds/Y", mYSpeed);
+        SmartDashboard.putNumber(key + "Speeds/Rotation", mRotationSpeed);
+        SmartDashboard.putNumber(key + "Distance/X", mXDistance);
+        SmartDashboard.putNumber(key + "Distance/Y", mYDistance);
+        SmartDashboard.putNumber(key + "Distance/Rotation", mRotationDistance);
+        SmartDashboard.putBoolean(key + "DistanceTolerance/X", mWithinToleranceX);
+        SmartDashboard.putBoolean(key + "DistanceTolerance/Y", mWithinToleranceY);
+        SmartDashboard.putBoolean(key + "DistanceTolerance/Rotation", mWithinToleranceRotation);
+        SmartDashboard.putNumber(key + "CalculatedSpeeds/X", mCalculatedSpeeds.vxMetersPerSecond);
+        SmartDashboard.putNumber(key + "CalculatedSpeeds/Y", mCalculatedSpeeds.vyMetersPerSecond);
+        SmartDashboard.putNumber(key + "CalculatedSpeeds/Rotation", mCalculatedSpeeds.omegaRadiansPerSecond);
+
+
+
+        // Debug Field Drawing
+        if(mDrawField)
+        {
+            // Robot Pose
+            FieldObject2d fieldRobotPose = mVisualField.getObject("Robot");
+            fieldRobotPose.setPose(mRobotPose);
+
+            // Target Pose
+            FieldObject2d fieldTargetPose = mVisualField.getObject("TargetPose");
+            fieldTargetPose.setPose(mTargetedPose);     
+
+            // Put in Smartdashboard
+            SmartDashboard.putData(key + "Field", mVisualField);
+        }
+        
+    }
+}
+
+
+// OLD LOGIC
+/*
     private AutoPilot()
     {
         init();
@@ -154,11 +514,7 @@ public class AutoPilot {
             mYController.setGoal(mGoalPose.getY());
             mOmegaController.setGoal(mGoalPose.getRotation().getRadians());
 
-            /*
-             TODO: Need to generate a list of Poses to Drive
-              
-             
-             */
+   
         } else if(AutoPilotMode.HoldPose == mDriveMode)
         {
             mGoalPose = mTargetedPose;
@@ -201,11 +557,38 @@ public class AutoPilot {
         } else if(AutoPilotMode.HoldPose == mDriveMode)
         {
             // Robot Pose will be constantly updated
-            // Calculate Speeds to Reach Goal
-            double xSpeed = !mXController.atGoal() ? mXController.calculate(mRobotPose.getX()) : 0;
-            double ySpeed = !mYController.atGoal() ? mYController.calculate(mRobotPose.getY()) : 0;
-            double omegaSpeed = !mOmegaController.atGoal() ? mOmegaController.calculate(mRobotPose.getRotation().getRadians()) : 0;
+            // Calculate Distances between target and robot
+            double xDistance = Math.abs(mRobotPose.getX() - mTargetedPose.getX());
+            double yDistance = Math.abs(mRobotPose.getY() - mTargetedPose.getY());
+            double rotationDistance = Math.abs(mRobotPose.getRotation().getRadians() - mTargetedPose.getRotation().getRadians());
 
+            // Speeds
+            double xSpeed = 0;
+            double ySpeed = 0;
+            double omegaSpeed = 0;
+
+            // Update X if outside Tolerance
+            if(xDistance > mXTolerance.get())
+            {
+                xSpeed = mXController.calculate(mRobotPose.getX(), mTargetedPose.getX());
+                xSpeed *= .22;
+                //xSpeed *= -1;
+            }
+
+            // Update Y if outside Tolerance
+            if(yDistance > mYTolerance.get())
+            {
+                ySpeed = mYController.calculate(mRobotPose.getY(), mTargetedPose.getY());
+                ySpeed *= .22;
+                ySpeed *= -1;
+            }
+
+            // Update Rotation if outside Tolerance
+            if(rotationDistance > mRotationTolerance.get())
+            {
+                omegaSpeed = mOmegaController.calculate(mRobotPose.getRotation().getRadians(), mTargetedPose.getRotation().getRadians());
+            }
+        
             // Set Speeds into Swerve System
             ChassisSpeeds calculatedSpeeds = new ChassisSpeeds(xSpeed, ySpeed, omegaSpeed);
 
@@ -246,6 +629,8 @@ public class AutoPilot {
         mYController.setGoal(targetPose.getY());
         mOmegaController.setGoal(targetPose.getRotation().getRadians());
 
+        
+
         // Calculate Speeds based on Robot Pose
         double xSpeed = !mXController.atGoal() ? mXController.calculate(mRobotPose.getX()) : 0;
         double ySpeed = !mYController.atGoal() ? mYController.calculate(mRobotPose.getY()) : 0;
@@ -269,20 +654,7 @@ public class AutoPilot {
     public Trajectory getTrajectory()
     {
         return mTrajectorySet ? mTrajectory : null;
-    }
+    } 
 
-    public void updateSmartDashBoard()
-    {
-        final String key = "AutoPilot/";
-        SmartDashboard.putBoolean(key + "Running", mRunning);
-        SmartDashboard.putString(key + "Mode", mDriveMode.toString());
-        SmartDashboard.putBoolean(key + "Has Trajectory", mTrajectorySet);
-        SmartDashboard.putString(key + "Trajectory Starting Pose", 
-            mTrajectorySet ? mTrajectory.getInitialPose().toString() : ""
-        );
-        SmartDashboard.putString(key + "Target Pose", mTargetedPose.toString());
-        SmartDashboard.putString(key + "Starting Pose", mStartingPose.toString());
-        SmartDashboard.putString(key + "Goal Pose", mGoalPose.toString());
-        
-    }
-}
+
+ */

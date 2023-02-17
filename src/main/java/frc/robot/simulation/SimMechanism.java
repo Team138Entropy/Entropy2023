@@ -37,8 +37,12 @@ public class SimMechanism {
     // Sim Arm Length Constraints
     private final double mArmMinLength = .3;
     private final double mArmMaxLength = 2;
-    private final double mArmMaxDelta = .05;
+    private final double mArmMaxDelta = .01;
     private double mCurrentArmLength = mArmMinLength;
+
+    // Sim Arm Angle
+    private final double mArmAngleDelta = .5;
+    private double mCurrentArmAngle = 45;
 
     private SimMechanism()
     {
@@ -58,7 +62,7 @@ public class SimMechanism {
         mTower.setColor(new Color8Bit(Color.kSilver));
 
         // Arm which pivots on top of the tower
-        mArm = mArmRoot.append(new MechanismLigament2d("arm", mCurrentArmLength, 45));
+        mArm = mArmRoot.append(new MechanismLigament2d("arm", mCurrentArmLength, mCurrentArmAngle));
 
         // Grasper Mechanism Canvas
         mGrasperMech = new Mechanism2d(9, 9); //Canvas Size (10,10)
@@ -82,12 +86,13 @@ public class SimMechanism {
     }
 public void SetArmAngle (double angle ){
     if(angle <= 0 && angle >= -360){
-        angle = angle +360;
+       // angle = angle +360;
 
     }
         
     if(angle <= 230 || angle >= 310){
         mArm.setAngle(angle);
+        mCurrentArmAngle = angle;
     }
 
 }
@@ -137,6 +142,23 @@ public void SetArmAngle (double angle ){
             // Set Arm Length
             mArm.setLength(mCurrentArmLength);
         }
+    }
+    
+    // Get a Real World Estimation of Angle
+    public double getArmAngle()
+    {
+        return mCurrentArmAngle;
+    }
+
+    // Get a Real World Estimation of Extension
+    public double getArmExtension()
+    {
+        double actualArmRange = (Constants.Arm.MaxExtensionPosition - Constants.Arm.MinExtensionPosition);
+        double simArmRange = (mArmMaxLength - mArmMinLength);
+        double simLength = mCurrentArmLength;
+        double targetArmPercentage = (simLength - mArmMinLength)/simArmRange;
+        double actualLength = targetArmPercentage * actualArmRange;
+        return actualLength;
     }
 
     // Close Grasper

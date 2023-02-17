@@ -1,5 +1,9 @@
 package frc.robot;
 
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Map;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -14,22 +18,19 @@ public class Enums {
 
     // scoring nodes
     public enum TargetedPositions {
-        //bottom, middle, and top are refering to the grids not the scoring hights
-        //top and bottom are fliped on one side 
+        //Numbered left to right as if you are standing behind it
         NONE,
-        GRID_BOTTOM_1,
-        GRID_BOTTOM_2,
-        GRID_BOTTOM_3,
-        GRID_MIDDLE_1,
-        GRID_MIDDLE_2,
-        GRID_MIDDLE_3,
-        GRID_TOP_1,
-        GRID_TOP_2,
-        GRID_TOP_3,
-        RED_SUBSTATION_LEFT,
-        RED_SUBSTATION_RIGHT,
-        BLUE_SUBSTATION_LEFT,
-        BLUE_SUBSTATION_RIGHT;
+        GRID_1,
+        GRID_2,
+        GRID_3,
+        GRID_4,
+        GRID_5,
+        GRID_6,
+        GRID_7,
+        GRID_8,
+        GRID_9,
+        SUBSTATION_LEFT,
+        SUBSTATION_RIGHT;
     }
 
     // arm targets
@@ -37,21 +38,25 @@ public class Enums {
         //NAME_OF_POSITION(armAngle, armExtension),
         //THESE ARE PLACEHOLDER VALUES
         TOP_SCORING_FRONT(10, Constants.Arm.MaxExtensionPosition),
+        TOP_SCORING_FRONT_CUBE(-1, Constants.Arm.MaxExtensionPosition),
         MID_SCORING_FRONT(-7,Constants.Arm.MinExtensionPosition),
-        LOW_SCORING_FRONT(-60,Constants.Arm.MinExtensionPosition),
-        INTAKE_FRONT(-6,Constants.Arm.MinExtensionPosition),
+        MID_SCORING_FRONT_CUBE(-15,Constants.Arm.MinExtensionPosition),
+
+        LOW_SCORING_FRONT(-50,Constants.Arm.MinExtensionPosition),
+        INTAKE_FRONT(-4,Constants.Arm.MinExtensionPosition),
+        POST_INTAKE_FRONT(-1,Constants.Arm.MinExtensionPosition),
         TOP_SCORING_BACK(170,0),
         MID_SCORING_BACK(173,Constants.Arm.MaxExtensionPosition),
         LOW_SCORING_BACK(207,186000),
         INTAKE_BACK(170,0),
-        INTAKE_GROUND_FRONT(-60,0),
+        POST_INTAKE_BACK(167,0),
+        INTAKE_GROUND_FRONT(-55,0),
         INTAKE_GROUND_BACK(210,0),
         SAFE(90,0),
         START(233, 0),
-        HOME_BACKSIDE(215, 0),
-        HOME_FRONTSIDE(0, 0),
+        HOME_BACKSIDE(220, 0),
+        HOME_FRONTSIDE(-55, 0),
         NONE(90,0);
-
 
 
         public final double armAngle;
@@ -107,6 +112,26 @@ public class Enums {
         }
     }
 
+    // Swerve Rotation
+    // Useful for getting rotations
+    public enum SwerveRotation {
+        FRONT_FACING_FORWARD(0),
+        FRONT_FACING_GRID(180),
+        BACK_FACING_GRID(0)
+        ;
+
+        public final double degrees; 
+
+        Rotation2d getRotation()
+        {
+            return Rotation2d.fromDegrees(degrees);
+        }
+
+        SwerveRotation(double degrees) {
+            this.degrees = degrees;
+        }
+    }
+
     // SwerveQuickAdjust
     //  Similar to the Swerve Snapping System, 
     //      Swerve system will button adjust
@@ -147,6 +172,12 @@ public class Enums {
     public enum GamePiece {
         Cone,
         Cube
+    };
+
+    // Game Walls
+    public enum GameWalls {
+        AllianceWall,
+        OpponentWall
     };
 
     // Arm Control Type
