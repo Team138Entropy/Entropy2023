@@ -53,10 +53,16 @@ public class Arm extends Subsystem {
         MasterShoulderMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
         MasterShoulderMotor.setSensorPhase(false);
         MasterShoulderMotor.setInverted(true);
+        // Good Motion Magic Tuning Guide Here: https://v5.docs.ctr-electronics.com/en/stable/ch16_ClosedLoop.html#motion-magic-position-velocity-current-closed-loop-closed-loop
         MasterShoulderMotor.config_kF(0, Constants.Arm.tunableArmKF.get());
         MasterShoulderMotor.config_kP(0, Constants.Arm.tunableArmKP.get()); //was 30
         MasterShoulderMotor.config_kI(0, Constants.Arm.tunableArmKI.get());
         MasterShoulderMotor.config_kD(0, Constants.Arm.tunableArmKD.get());
+        // kP: P-Gain so that the closed loop can react to error. Larger Kp would suggest responding harder to error
+        //      Typically tuned by starting at a small value and doubling until it oscilates
+        // kD: D-Gain. Helps with overshoot
+        //      Typicall starts at 10xPGain
+        // kI: I-Gain Helps the sensor settle close to the target position
         MasterShoulderMotor.configSelectedFeedbackCoefficient(360.0/8192.0);
         MasterShoulderMotor.configMotionAcceleration(20);
         MasterShoulderMotor.configMotionCruiseVelocity(25, 10);

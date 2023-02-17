@@ -213,9 +213,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    
+    // Update Odometry of Robot (only if real)
+    if(mRealRobot) mDrive.updateOdometry();
+
     // Update Robot Field Position
     Pose2d robotPose = mDrive.getPose();
-//Pose2d testPose = new Pose2d(robotPose.getTranslation(), Rotation2d.fromDegrees(180));
 
     mField.setRobotPose(robotPose);
     mRobotState.setRobotPose(robotPose);
@@ -223,11 +226,10 @@ public class Robot extends TimedRobot {
     // Update Robotstate
     mRobotState.update();
 
-    
-
-    
+    // Use Pigeon in Robot Pose for Rotation
     Pose2d newRobotPose = new Pose2d(mRobotState.getPose().getTranslation(),
-    mPigeon.getYaw().getWPIRotation2d()
+      mRealRobot ? mPigeon.getYaw().getWPIRotation2d() : 
+        mPigeon.getSimYaw().getWPIRotation2d()
     );
 
     // Update Auto Pilot
@@ -767,12 +769,15 @@ public class Robot extends TimedRobot {
 
       // Get Target Pose
       mTargetPose = getTargetPose(mTargetedPosition);
-      //Rotation2 
-      Rotation2d testRotation = mPigeon.getYaw().getWPIRotation2d();
-      SmartDashboard.putString("Joes Yaw", testRotation.toString());
-      Pose2d testPose = new Pose2d(mTargetPose.getTranslation(), Rotation2d.fromDegrees(180));
-      ;
-      mAutoPilot.setTargetPose(testPose);
+
+      // Based on Target, Determine the Rotation
+      Rotation2d wallRotation = getClosestSideToWall(GameWalls.AllianceWall).getRotation();
+
+      // Create Pose with the corresponding rotation 
+      Pose2d calculatedPose = new Pose2d(mTargetPose.getTranslation(), wallRotation);
+      
+      // Set into AutoPilot
+      mAutoPilot.setTargetPose(calculatedPose);
 
       // Update Auto Pilot
       mAutoPilot.update(false);
@@ -827,11 +832,11 @@ public class Robot extends TimedRobot {
         // Log Inputs
         SmartDashboard.putString("Controls/Swerve Input Translation", sTrans.toString());
         SmartDashboard.putNumber("Controls/Swerve Input Rotation", sRotation);
+
+        // Clear Auto Pilot Sequence Info (since it isn't being used)
+        mAutoPilot.clear(); 
       }
     }
-
-    // Update Odometry of Robot (only if real)
-    if(mRealRobot) mDrive.updateOdometry();
   }
 
   // Get Target Pose from Target Position
@@ -851,6 +856,23 @@ public class Robot extends TimedRobot {
       }
     }
     return result;
+  }
+
+  // Get Closest Side to Targted Wall
+  public SwerveRotation getClosestSideToWall(Enums.GameWalls wall)
+  {
+    SwerveRotation sRot = SwerveRotation.FRONT_FACING_FORWARD;
+
+    // Get Current Rotation
+    Rotation2d curRotation = mRealRobot ? mPigeon.getYaw().getWPIRotation2d() : 
+        mPigeon.getSimYaw().getWPIRotation2d();
+    double degrees = curRotation.getDegrees();
+    double absDegrees = Math.abs(degrees);
+    if(absDegrees >= 90)
+    {
+      sRot = SwerveRotation.FRONT_FACING_GRID;
+    }
+    return sRot;
   }
 
 }

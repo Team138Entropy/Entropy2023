@@ -112,6 +112,26 @@ public class Enums {
         }
     }
 
+    // Swerve Rotation
+    // Useful for getting rotations
+    public enum SwerveRotation {
+        FRONT_FACING_FORWARD(0),
+        FRONT_FACING_GRID(180),
+        BACK_FACING_GRID(0)
+        ;
+
+        public final double degrees; 
+
+        Rotation2d getRotation()
+        {
+            return Rotation2d.fromDegrees(degrees);
+        }
+
+        SwerveRotation(double degrees) {
+            this.degrees = degrees;
+        }
+    }
+
     // SwerveQuickAdjust
     //  Similar to the Swerve Snapping System, 
     //      Swerve system will button adjust
@@ -152,6 +172,12 @@ public class Enums {
     public enum GamePiece {
         Cone,
         Cube
+    };
+
+    // Game Walls
+    public enum GameWalls {
+        AllianceWall,
+        OpponentWall
     };
 
     // Arm Control Type
