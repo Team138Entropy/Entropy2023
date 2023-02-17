@@ -215,14 +215,23 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     // Update Robot Field Position
     Pose2d robotPose = mDrive.getPose();
+//Pose2d testPose = new Pose2d(robotPose.getTranslation(), Rotation2d.fromDegrees(180));
+
     mField.setRobotPose(robotPose);
     mRobotState.setRobotPose(robotPose);
 
     // Update Robotstate
     mRobotState.update();
 
+    
+
+    
+    Pose2d newRobotPose = new Pose2d(mRobotState.getPose().getTranslation(),
+    mPigeon.getYaw().getWPIRotation2d()
+    );
+
     // Update Auto Pilot
-    mAutoPilot.setRobotPose(mRobotState.getPose());
+    mAutoPilot.setRobotPose(newRobotPose);
 
     // Update Smartdashboard Overall and Subsystems
     updateSmartdashboard();
@@ -240,10 +249,10 @@ public class Robot extends TimedRobot {
 
   private void updateSmartdashboard()
   {
-    SmartDashboard.putData("Field", mField);
-    SmartDashboard.putString("Robot Pose", mField.getRobotPose().toString());
-    SmartDashboard.putNumber("Pigeon Degrees", mPigeon.getYaw().getDegrees());
-    SmartDashboard.putNumber("Pigeon Radians", mPigeon.getYaw().getRadians());
+    //SmartDashboard.putData("Field", mField);
+    //SmartDashboard.putString("Robot Pose", mField.getRobotPose().toString());
+    //SmartDashboard.putNumber("Pigeon Degrees", mPigeon.getYaw().getDegrees());
+    //SmartDashboard.putNumber("Pigeon Radians", mPigeon.getYaw().getRadians());
     SmartDashboard.putString("Target Position", mTargetedPosition.toString());
     SmartDashboard.putString("Target Pose", mTargetPose.toString());
     SmartDashboard.putString("Target Arm Position", mCurrentArmTarget.toString());
@@ -758,7 +767,12 @@ public class Robot extends TimedRobot {
 
       // Get Target Pose
       mTargetPose = getTargetPose(mTargetedPosition);
-      mAutoPilot.setTargetPose(mTargetPose);
+      //Rotation2 
+      Rotation2d testRotation = mPigeon.getYaw().getWPIRotation2d();
+      SmartDashboard.putString("Joes Yaw", testRotation.toString());
+      Pose2d testPose = new Pose2d(mTargetPose.getTranslation(), Rotation2d.fromDegrees(180));
+      ;
+      mAutoPilot.setTargetPose(testPose);
 
       // Update Auto Pilot
       mAutoPilot.update(false);
@@ -784,7 +798,7 @@ public class Robot extends TimedRobot {
         mDrive.setBrake(false);
         // Normal Swerve Operation
         
-        // Swerve Snap to a Direction (Button Press Quickly Moves Robot)
+        // Swerve Snap to a Direction (Butttposeon Press Quickly Moves Robot)
         SwerveCardinal snapCardinal = mOperatorInterface.getSwerveSnap();
         if(SwerveCardinal.NONE != snapCardinal) // Snap Direction Detected!
         {

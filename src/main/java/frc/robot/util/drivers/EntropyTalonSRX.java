@@ -41,7 +41,7 @@ public class EntropyTalonSRX extends TalonSRX{
        SmartDashboard.putNumber(key + "/ClosedLoopError", getClosedLoopError());
        SmartDashboard.putNumber(key + "/MotorOutputPercent", getMotorOutputPercent());
        SmartDashboard.putNumber(key + "/MotorOutputVoltage", getMotorOutputVoltage());
-       SmartDashboard.putNumber(key + "/FiremwareVersion", getFirmwareVersion());
+       SmartDashboaPrd.putNumber(key + "/FiremwareVersion", getFirmwareVersion());
        SmartDashboard.putNumber(key + "/SelectedSensorPosition", getSelectedSensorPosition());
        SmartDashboard.putNumber(key + "/SelectedSensorVelocity", getSelectedSensorVelocity());
        */

@@ -322,8 +322,13 @@ public class OperatorInterface {
 
     public boolean getArmJogExtended() {
         //return mOperatorController.getButton(Button.RB);
-        return mOperatorController2.getButton(Buttons.SW5);
+        return mOperatorController.getAxis(Axises.X) > .25;
     }
+    
+    public boolean getArmJogRetracted() {
+        // return mDriverController.getButton(Button.A);
+         return mOperatorController.getAxis(Axises.X) < -.25;
+     } 
 
     public boolean getArmExtended2() {
         return (0 == mDriverController.getDPad());
@@ -339,11 +344,6 @@ public class OperatorInterface {
 
     public boolean getArmExtended0() {
         return (270 == mDriverController.getDPad());
-    }
-
-    public boolean getArmJogRetracted() {
-       // return mDriverController.getButton(Button.A);
-        return mOperatorController2.getButton(Buttons.SW4);
     }
 
     public boolean getArmRotateForward() {

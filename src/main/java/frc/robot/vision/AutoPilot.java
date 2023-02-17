@@ -60,8 +60,8 @@ public class AutoPilot {
             new TrapezoidProfile.Constraints(3, 2);
     private static final TrapezoidProfile.Constraints mOMEGA_CONSTRAINTS =   
             new TrapezoidProfile.Constraints(8, 8);
-    private final ProfiledPIDController mXController = new ProfiledPIDController(3.5, 0, 0, mX_CONSTRAINTS);
-    private final ProfiledPIDController mYController = new ProfiledPIDController(3.5, 0, 0, mY_CONSTRAINTS);
+    private final ProfiledPIDController mXController = new ProfiledPIDController(6, 0, 0, mX_CONSTRAINTS);
+    private final ProfiledPIDController mYController = new ProfiledPIDController(6, 0, 0, mY_CONSTRAINTS);
 
     // Omega Controller
     /*
@@ -76,9 +76,9 @@ public class AutoPilot {
 
     // Tolerances
     // Tolerances are purposefully really small, these might need to be turned up
-    private final TuneableNumber mXTolerance = new TuneableNumber("X Tolerance", .02);
-    private final TuneableNumber mYTolerance = new TuneableNumber("Y Tolerance", .02);
-    private final TuneableNumber mRotationTolerance = new TuneableNumber("Rotation Tolerance", Units.degreesToRadians(3));
+    private final TuneableNumber mXTolerance = new TuneableNumber("X Tolerance", .01);
+    private final TuneableNumber mYTolerance = new TuneableNumber("Y Tolerance", .01);
+    private final TuneableNumber mRotationTolerance = new TuneableNumber("Rotation Tolerance", Units.degreesToRadians(2));
 
     // Type of System being used to Drive
     enum AutoPilotMode {

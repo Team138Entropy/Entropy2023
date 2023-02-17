@@ -12,7 +12,7 @@ import frc.robot.auto.AutoModeEndedException;
 import frc.robot.auto.actions.Action;
 import frc.robot.auto.actions.DriveToPose;
 import frc.robot.auto.actions.DriveTrajectoryAction;
-import frc.robot.auto.actions.SetPose;
+//import frc.robot.auto.actions.SetPose;
 import frc.robot.auto.actions.WaitAction;
 
 public class SwerveTestAutoMode extends AutoModeBase {
@@ -29,7 +29,7 @@ public class SwerveTestAutoMode extends AutoModeBase {
         ), Constants.SwerveConstants.AutoConstants.slowSwerveSpeedConfig);
 
         addAction(new DriveTrajectoryAction(genTraj));
-        */
+        
 
         addAction(new SetPose(new Pose2d(
             new Translation2d(3, 5),
@@ -48,6 +48,7 @@ public class SwerveTestAutoMode extends AutoModeBase {
             new Translation2d(5,6),
             new Rotation2d()        
         )));
+        */
 
 
 

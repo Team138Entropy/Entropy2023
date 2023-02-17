@@ -86,7 +86,7 @@ public class Grasper extends Subsystem {
 
   // Start the Intake Motor
   public void setGrasperWheelIntake(){
-    GrasperWheelMotor.set(0.6);
+    GrasperWheelMotor.set(0);
   }
 
   // Stop the Intake Motor
