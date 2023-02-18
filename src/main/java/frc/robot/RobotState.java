@@ -56,6 +56,7 @@ public class RobotState {
     // Photon Vision Class to Estimate RobotPose based on last seen vision 
     PhotonPoseEstimator mFrontCameraPoseEstimator;
     PhotonPoseEstimator mBackCameraPoseEstimator;
+    boolean hasInitVision = false;
 
     // Overall Drive Pose Estimator
     /*
@@ -232,8 +233,17 @@ public class RobotState {
         {
             try {
                 
-                mSwerveDrivePoseEstimator.addVisionMeasurement(mVisionBasedRobotPose, mVisionBasedRobotPoseLatencySeconds);
+                double dis = mRobotPose.getTranslation().getDistance(mVisionBasedRobotPose.getTranslation());
+                dis = Math.abs(dis);
+                if(true || dis <= 2 || !hasInitVision)
+                {
+                    mSwerveDrivePoseEstimator.addVisionMeasurement(mVisionBasedRobotPose, mVisionBasedRobotPoseLatencySeconds);
+                    hasInitVision = true;
+
+                }
+                
             
+                
             } catch (Exception ex)
             {
                 System.out.println(ex.getMessage());

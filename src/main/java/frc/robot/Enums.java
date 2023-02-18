@@ -55,7 +55,8 @@ public class Enums {
         SAFE(90,0),
         START(233, 0),
         HOME_BACKSIDE(220, 0),
-        HOME_FRONTSIDE(-55, 0),
+        HOME_FRONTSIDE(-50, 0),
+
         NONE(90,0);
 
 

@@ -269,7 +269,7 @@ public class Robot extends TimedRobot {
     
     //formula to convert to PSI
     SmartDashboard.putNumber("pressure sensor", 250.0 * mPressureSensor.getVoltage() / 5.0 - 25.0);
-    //SmartDashboard.putData(mPowerPanel);
+    SmartDashboard.putData(mPowerPanel);
 
     // Controls
     final String controlsKey = "Controls/";
@@ -449,10 +449,10 @@ public class Robot extends TimedRobot {
 
       //Manual extension of the arm using RB/LB
       if (mOperatorInterface.getArmJogExtended()){
-        mArm.setExtensionJog(0.7);
+        mArm.setExtensionJog(1);
       } 
       else if (mOperatorInterface.getArmJogRetracted()){
-        mArm.setExtensionJog(-0.7);
+        mArm.setExtensionJog(-1);
       }      
       else {
         mArm.setExtensionJog(0);

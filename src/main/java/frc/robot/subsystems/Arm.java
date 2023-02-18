@@ -238,6 +238,9 @@ public class Arm extends Subsystem {
         SmartDashboard.putNumber(key + "Minimum Arm Extension", mMinimumExtensionTarget);
         SmartDashboard.putNumber(key + "Target Arm Extension", mTargetedExtension);
         SmartDashboard.putString(key + "extension control mode", ExtensionMotor.getControlMode().name());
+        SmartDashboard.putNumber(key + "extension current", ExtensionMotor.getSupplyCurrent());
+
+        SmartDashboard.putNumber(key + "Extension Velocity", ExtensionMotor.getSelectedSensorVelocity());
 
         MasterShoulderMotor.updateSmartdashboard();
         SecondaryShoulderMotor.updateSmartdashboard();

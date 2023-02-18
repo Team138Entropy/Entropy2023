@@ -77,6 +77,7 @@ public class Grasper extends Subsystem {
     wheelDelayTimer.start();
     sensorDelayOn = false;
     BeamSensorOn = false;
+    GrasperWheelMotor.set(-0.15);
    }
 
    // Close the Grasper

@@ -58,9 +58,9 @@ public class AutoPilot {
 
     // Motion Control
     private static final TrapezoidProfile.Constraints mX_CONSTRAINTS = 
-            new TrapezoidProfile.Constraints(.5, 1);
+            new TrapezoidProfile.Constraints(6, 2);
     private static final TrapezoidProfile.Constraints mY_CONSTRAINTS = 
-            new TrapezoidProfile.Constraints(.5, 1);
+            new TrapezoidProfile.Constraints(6, 2);
     private static final TrapezoidProfile.Constraints mOMEGA_CONSTRAINTS =   
             new TrapezoidProfile.Constraints(8, 8);
 
@@ -76,14 +76,14 @@ public class AutoPilot {
         Constants.Drive.SnapConstants.kP,
         Constants.Drive.SnapConstants.kI, 
         Constants.Drive.SnapConstants.kD,
-        Constants.Drive.SnapConstants.kThetaControllerConstraints
+        Constants.Drive.SnapConstants.kAutoPilotThetaControllerConstraints
       );
 
     // Tolerances
     // Tolerances are purposefully really small, these might need to be turned up
-    private final TuneableNumber mXTolerance = new TuneableNumber("X Tolerance", .25);
-    private final TuneableNumber mYTolerance = new TuneableNumber("Y Tolerance", .2);
-    private final TuneableNumber mRotationTolerance = new TuneableNumber("Rotation Tolerance", Units.degreesToRadians(2));
+    private final TuneableNumber mXTolerance = new TuneableNumber("X Tolerance", .1);
+    private final TuneableNumber mYTolerance = new TuneableNumber("Y Tolerance", .08);
+    private final TuneableNumber mRotationTolerance = new TuneableNumber("Rotation Tolerance", Units.degreesToRadians(5));
 
     // Type of System being used to Drive
     enum AutoPilotMode {
@@ -107,8 +107,8 @@ public class AutoPilot {
     private double mYSpeed = 0;
     private double mRotationSpeed = 0;
 
-    private double mXSpeedFactor = .2;
-    private double mYSpeedFactor = .2;
+    private double mXSpeedFactor = 1;
+    private double mYSpeedFactor = 1;
     private double mRotationSpeedFactor = 1;
 
     private boolean mWithinToleranceX = false;
@@ -274,6 +274,24 @@ public class AutoPilot {
         // Set Speeds into Swerve System
         //mCalculatedSpeeds = new ChassisSpeeds(mXSpeed, mYSpeed, mRotationSpeed);
 
+        // Cap X Speed
+        
+        if(mXSpeed > 2){
+            mXSpeed = 1;
+        } else if(mXSpeed < -2)
+        {
+            mXSpeed = -1;
+        }
+
+        // Cap Y Speed
+        if(mYSpeed > 2){
+            mYSpeed = 1;
+        } else if(mYSpeed < -2)
+        {
+            mYSpeed = -1;
+        }
+        
+
         mCalculatedSpeeds = fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
             mXSpeed, 
             mYSpeed, 
@@ -293,7 +311,7 @@ public class AutoPilot {
             var targetSwerveModuleStates = mDrive.getSwerveKinematics().toSwerveModuleStates(mCalculatedSpeeds);
 
             // Desaturate wheel speeds - keeps speed below a maximum speed
-            SwerveDriveKinematics.desaturateWheelSpeeds(targetSwerveModuleStates, Constants.SwerveConstants.maxSpeed);
+            SwerveDriveKinematics.desaturateWheelSpeeds(targetSwerveModuleStates,1);
             
             // Sim Only
             if(!mRealRobot){
@@ -413,7 +431,7 @@ public class AutoPilot {
 
 
         // Debug Field Drawing
-        if(false)
+        if(true)
         {
             // Robot Pose
             FieldObject2d fieldRobotPose = mVisualField.getObject("Robot");

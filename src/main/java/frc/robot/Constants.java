@@ -192,11 +192,16 @@ public class Constants {
       public static final double kEpsilon = 1.0;
 
       // Constraints for the profiled angle controller
-      public static final double kMaxAngularSpeedRadiansPerSecond = 2.0 * Math.PI;
+      public static final double kMaxAngularSpeedRadiansPerSecond = 1.4 * Math.PI;
       public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.pow(kMaxAngularSpeedRadiansPerSecond, 2);
+
+      public static final double kAutoPilotMaxAngularSpeedRadiansPerSecond = 2 * Math.PI;
+      public static final double kAutoPilotMaxAngularSpeedRadiansPerSecondSquared = Math.pow(kMaxAngularSpeedRadiansPerSecond, 2);
 
       public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
               new TrapezoidProfile.Constraints(kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
+              public static final TrapezoidProfile.Constraints kAutoPilotThetaControllerConstraints =
+              new TrapezoidProfile.Constraints(kAutoPilotMaxAngularSpeedRadiansPerSecond, kAutoPilotMaxAngularSpeedRadiansPerSecondSquared);
   }
 
     /* Swerve Modules */
@@ -365,7 +370,7 @@ public class Constants {
     public static TuneableNumber tunableArmKF = new TuneableNumber("tunableArmKF",1);
     public static TuneableNumber tunableArmKP = new TuneableNumber("tunableArmKP",29);
     public static TuneableNumber tunableArmKI = new TuneableNumber("tunableArmKI",.01);
-    public static TuneableNumber tunableArmKD = new TuneableNumber("tunableArmKD",400);
+    public static TuneableNumber tunableArmKD = new TuneableNumber("tunableArmKD",600);
   }
 
   public static class Grasper {
