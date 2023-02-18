@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -57,9 +58,9 @@ public class AutoPilot {
 
     // Motion Control
     private static final TrapezoidProfile.Constraints mX_CONSTRAINTS = 
-            new TrapezoidProfile.Constraints(1, 1);
+            new TrapezoidProfile.Constraints(.5, 1);
     private static final TrapezoidProfile.Constraints mY_CONSTRAINTS = 
-            new TrapezoidProfile.Constraints(1, 1);
+            new TrapezoidProfile.Constraints(.5, 1);
     private static final TrapezoidProfile.Constraints mOMEGA_CONSTRAINTS =   
             new TrapezoidProfile.Constraints(8, 8);
 
@@ -106,8 +107,8 @@ public class AutoPilot {
     private double mYSpeed = 0;
     private double mRotationSpeed = 0;
 
-    private double mXSpeedFactor = 1;
-    private double mYSpeedFactor = 1;
+    private double mXSpeedFactor = .2;
+    private double mYSpeedFactor = .2;
     private double mRotationSpeedFactor = 1;
 
     private boolean mWithinToleranceX = false;
@@ -290,6 +291,9 @@ public class AutoPilot {
         {
             // Call Autonomous Chasis Speed 
             var targetSwerveModuleStates = mDrive.getSwerveKinematics().toSwerveModuleStates(mCalculatedSpeeds);
+
+            // Desaturate wheel speeds - keeps speed below a maximum speed
+            SwerveDriveKinematics.desaturateWheelSpeeds(targetSwerveModuleStates, Constants.SwerveConstants.maxSpeed);
             
             // Sim Only
             if(!mRealRobot){
