@@ -27,11 +27,14 @@ public class Grasper extends Subsystem {
     private final BeamSensor mBeamSensor;
     //Beam Timer
     private final Timer beamActivationTimer;
+    private final Timer sensorDelayTimer;
     private boolean BeamSensorOn = true;
     //Wheel Timer
     private final Timer wheelCancellationTimer;
     //Grasper Open/Closed
     private boolean mGrasperOpen = false;
+    //Wheel Delay Timer
+    private final Timer wheelDelayTimer;
 
     // Grasper State
     public enum GrasperState {
@@ -55,8 +58,12 @@ public class Grasper extends Subsystem {
       GrasperWheelMotor = new EntropyCANSparkMax(Constants.Talons.Grasper.IntakeMotor, MotorType.kBrushless);
       mBeamSensor = new BeamSensor(0);
       beamActivationTimer = new Timer();
+      sensorDelayTimer = new Timer();
       wheelCancellationTimer = new Timer();
+      wheelDelayTimer = new Timer();
       mGrasperState = GrasperState.FullyClosed;
+      // Sets brake mode
+      GrasperWheelMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
   
    // Open the Grasper
@@ -65,6 +72,8 @@ public class Grasper extends Subsystem {
     mGrasperState = GrasperState.Open;
     beamActivationTimer.reset();
     beamActivationTimer.start();
+    wheelDelayTimer.reset();
+    wheelDelayTimer.start();
     BeamSensorOn = false;
    }
 
@@ -94,6 +103,7 @@ public class Grasper extends Subsystem {
   public void cancelGrasperWheelIntake(){
    GrasperWheelMotor.set(0);
   }
+
 
   // Constant Update Function 
   public void update(){
@@ -125,11 +135,20 @@ public class Grasper extends Subsystem {
       case Open:
         // TODO - Do we need to do anything here?
         GrasperSolenoid.set(false);
-        setGrasperWheelIntake();
         mGrasperOpen = true;
 
+        if (getGrasperWheelTimeElapsed() == true){
+          setGrasperWheelIntake();
+          wheelDelayTimer.stop();
+        }
+
         if (getBeamSensorBroken() == true){
-          mGrasperState = GrasperState.Closed;
+          sensorDelayTimer.reset();
+          sensorDelayTimer.start();
+            if (sensorDelayOver() == true){
+            sensorDelayTimer.stop();
+            mGrasperState = GrasperState.Closed;
+          }
         }
 
       break;
@@ -145,6 +164,14 @@ public class Grasper extends Subsystem {
   // Timer for the wheels when closing the Grasper
   public boolean getGrasperTimeElapsed1(){
     return wheelCancellationTimer.hasElapsed(0.25);
+  }
+  // Delays the wheel intake when you open the grasper
+  public boolean getGrasperWheelTimeElapsed(){
+    return wheelDelayTimer.hasElapsed(0.5);
+  }
+  // Codes a delay in the sensor when triggered
+  public boolean sensorDelayOver(){
+    return sensorDelayTimer.hasElapsed(0.15);
   }
 
   public boolean getBeamSensorBroken(){
