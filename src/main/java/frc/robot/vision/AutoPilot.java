@@ -57,15 +57,15 @@ public class AutoPilot {
 
     // Motion Control
     private static final TrapezoidProfile.Constraints mX_CONSTRAINTS = 
-            new TrapezoidProfile.Constraints(3, 2);
+            new TrapezoidProfile.Constraints(1, 1);
     private static final TrapezoidProfile.Constraints mY_CONSTRAINTS = 
-            new TrapezoidProfile.Constraints(3, 2);
+            new TrapezoidProfile.Constraints(1, 1);
     private static final TrapezoidProfile.Constraints mOMEGA_CONSTRAINTS =   
             new TrapezoidProfile.Constraints(8, 8);
 
             
-    private final ProfiledPIDController mXController = new ProfiledPIDController(6, 0, 0, mX_CONSTRAINTS);
-    private final ProfiledPIDController mYController = new ProfiledPIDController(6, 0, 0, mY_CONSTRAINTS);
+    private final ProfiledPIDController mXController = new ProfiledPIDController(4, 0, 0, mX_CONSTRAINTS);
+    private final ProfiledPIDController mYController = new ProfiledPIDController(4, 0, 0, mY_CONSTRAINTS);
 
     // Omega Controller
     /*
@@ -80,8 +80,8 @@ public class AutoPilot {
 
     // Tolerances
     // Tolerances are purposefully really small, these might need to be turned up
-    private final TuneableNumber mXTolerance = new TuneableNumber("X Tolerance", .01);
-    private final TuneableNumber mYTolerance = new TuneableNumber("Y Tolerance", .01);
+    private final TuneableNumber mXTolerance = new TuneableNumber("X Tolerance", .25);
+    private final TuneableNumber mYTolerance = new TuneableNumber("Y Tolerance", .2);
     private final TuneableNumber mRotationTolerance = new TuneableNumber("Rotation Tolerance", Units.degreesToRadians(2));
 
     // Type of System being used to Drive
@@ -202,7 +202,7 @@ public class AutoPilot {
 
      */
 
-     private boolean mRealRobot = false;
+     private boolean mRealRobot = true;
      private boolean fieldRelative = true;
 
     // Main Update Loop
@@ -409,7 +409,7 @@ public class AutoPilot {
 
 
         // Debug Field Drawing
-        if(mDrawField)
+        if(false)
         {
             // Robot Pose
             FieldObject2d fieldRobotPose = mVisualField.getObject("Robot");

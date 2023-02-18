@@ -265,6 +265,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("extend offset", mManualExtendOffset);
     SmartDashboard.putString("Targeted Object", mCurrentTargetedObject.toString());
     SmartDashboard.putBoolean("balance mode", mBalanceMode);
+    SmartDashboard.putNumber("pigeon pitch", mPigeon.getUnadjustedPitch().getDegrees());
     
     //formula to convert to PSI
     SmartDashboard.putNumber("pressure sensor", 250.0 * mPressureSensor.getVoltage() / 5.0 - 25.0);

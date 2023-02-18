@@ -35,7 +35,7 @@ public class Pigeon {
 
     private Pigeon(int port, String busId) {        
         mGyro = new Pigeon2(port, busId);
-        mGyro.configFactoryDefault();
+        //mGyro.configFactoryDefault();
     }
 
     public Rotation2d getYaw() {

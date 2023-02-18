@@ -52,6 +52,9 @@ public class chargingStationAutoPilot {
     }
 
     public void update(Boolean slowDrive,boolean leftStrafe, boolean rightStrafe) {
+        balanceController.setP(Constants.AutoPilot.CSAutoPilotKP.get());
+        balanceController.setI(Constants.AutoPilot.CSAutoPilotKI.get());
+        balanceController.setD(Constants.AutoPilot.CSAutoPilotKD.get());
         pitchAngleDegrees = mPigeon.getUnadjustedPitch().getDegrees();
         
 

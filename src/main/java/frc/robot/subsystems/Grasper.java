@@ -25,6 +25,7 @@ public class Grasper extends Subsystem {
     private final EntropyCANSparkMax GrasperWheelMotor;
     //Beam Sensor
     private final BeamSensor mBeamSensor;
+    private boolean sensorDelayOn = false;
     //Beam Timer
     private final Timer beamActivationTimer;
     private final Timer sensorDelayTimer;
@@ -74,6 +75,7 @@ public class Grasper extends Subsystem {
     beamActivationTimer.start();
     wheelDelayTimer.reset();
     wheelDelayTimer.start();
+    sensorDelayOn = false;
     BeamSensorOn = false;
    }
 
@@ -96,7 +98,7 @@ public class Grasper extends Subsystem {
 
   // Start the Intake Motor
   public void setGrasperWheelIntake(){
-    GrasperWheelMotor.set(0);
+    GrasperWheelMotor.set(0.6);
   }
 
   // Stop the Intake Motor
@@ -143,8 +145,11 @@ public class Grasper extends Subsystem {
         }
 
         if (getBeamSensorBroken() == true){
-          sensorDelayTimer.reset();
-          sensorDelayTimer.start();
+          if (sensorDelayOn == false){
+            sensorDelayTimer.reset();
+            sensorDelayTimer.start();
+            sensorDelayOn = true;
+          }
             if (sensorDelayOver() == true){
             sensorDelayTimer.stop();
             mGrasperState = GrasperState.Closed;
