@@ -365,7 +365,7 @@ public class Constants {
     public static TuneableNumber tunableArmKF = new TuneableNumber("tunableArmKF",1);
     public static TuneableNumber tunableArmKP = new TuneableNumber("tunableArmKP",29);
     public static TuneableNumber tunableArmKI = new TuneableNumber("tunableArmKI",.01);
-    public static TuneableNumber tunableArmKD = new TuneableNumber("tunableArmKD",300);
+    public static TuneableNumber tunableArmKD = new TuneableNumber("tunableArmKD",400);
   }
 
   public static class Grasper {
