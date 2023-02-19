@@ -466,10 +466,10 @@ public class Robot extends TimedRobot {
 
       //Manual extension of the arm using RB/LB
       if (mOperatorInterface.getArmJogExtended()){
-        mArm.setShoulderJog(mTestArmVoltage.get());
+        mArm.setExtensionJog(1);
       } 
       else if (mOperatorInterface.getArmJogRetracted()){
-        //mArm.setExtensionJog(-1);
+        mArm.setExtensionJog(-1);
       }      
       else {
         mArm.setExtensionJog(0);
@@ -478,10 +478,10 @@ public class Robot extends TimedRobot {
 
       //Manual rotation of the arm using Y/A
     if (mOperatorInterface.getArmRotateForward()){
-      mArm.setShoulderJog(0.95);  
+      mArm.setShoulderJog(mTestArmVoltage.get());  
     } 
     else if (mOperatorInterface.getArmRotateBackward()) {
-      mArm.setShoulderJog(-0.95);
+      mArm.setShoulderJog(-mTestArmVoltage.get());
     }
     else {
       mArm.setShoulderJog(0);
