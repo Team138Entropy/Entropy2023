@@ -30,6 +30,7 @@ import frc.robot.auto.modes.*;
 import frc.robot.simulation.SimMechanism;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.Drive.DriveStyle;
+import frc.robot.util.TuneableNumber;
 import frc.robot.util.drivers.Pigeon;
 import edu.wpi.first.wpilibj.Relay;
 import frc.robot.vision.AutoPilot;
@@ -127,6 +128,8 @@ public class Robot extends TimedRobot {
   public int mManualExtendOffset = 0;
 
   public boolean mBalanceMode = false;
+
+  public static TuneableNumber mTestArmVoltage = new TuneableNumber("TestArmVoltage",0);
 
   // Position the Auto Pilot System Wants to Drive to
   public TargetedPositions mTargetedPosition = TargetedPositions.NONE;
@@ -431,6 +434,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
+    
     DriveLoop(mOperatorInterface.getDrivePrecisionSteer(), true);
 
       //Allows the operator to swap freely between both test modes by pressing START
@@ -462,10 +466,10 @@ public class Robot extends TimedRobot {
 
       //Manual extension of the arm using RB/LB
       if (mOperatorInterface.getArmJogExtended()){
-        mArm.setExtensionJog(1);
+        mArm.setShoulderJog(mTestArmVoltage.get());
       } 
       else if (mOperatorInterface.getArmJogRetracted()){
-        mArm.setExtensionJog(-1);
+        //mArm.setExtensionJog(-1);
       }      
       else {
         mArm.setExtensionJog(0);

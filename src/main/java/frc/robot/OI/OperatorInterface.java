@@ -347,11 +347,11 @@ public class OperatorInterface {
     }
 
     public boolean getArmRotateForward() {
-        return mOperatorController.getButton(Buttons.SW7);
+        return mOperatorController.getAxis(Axises.Y) > .25;
     }
 
     public boolean getArmRotateBackward() {
-        return mOperatorController.getButton(Buttons.SW6);
+        return mOperatorController.getAxis(Axises.Y) < -.25;
     }
 
     public boolean getGrasperModeSwap() {
