@@ -43,9 +43,11 @@ public class AutoPilot {
         return mInstance;
     }
 
-    
-
+    // Singelton References
+    private final Pigeon mPigeon = Pigeon.getInstance();
     private final Drive mDrive = Drive.getInstance();
+
+
     private final TrajectoryFollower mTrajectoryFollower = TrajectoryFollower.getInstance();
     private boolean mRunning;
     private Trajectory mTrajectory;
@@ -133,7 +135,6 @@ public class AutoPilot {
     private int mAtTargetPositionCount = 0;
     private final int mAtTargetPositionThreshold = 5;
     private boolean mAtTarget = false;
-    public Pigeon mPigeon = Pigeon.getInstance();
 
     private AutoPilot()
     {
@@ -205,6 +206,12 @@ public class AutoPilot {
 
      private boolean mRealRobot = true;
      private boolean fieldRelative = true;
+
+    // Main Update Loop (Allow Drive)
+    public void update()
+    {
+        update(true);
+    }
 
     // Main Update Loop
     public void update(boolean allowDrive) 
@@ -372,6 +379,12 @@ public class AutoPilot {
     public void clear()
     {
         mInFinalScoringSequence = false;
+    }
+
+    // Set if Real Robot
+    public void setRealRobot(boolean value)
+    {
+        mRealRobot = value;
     }
 
     

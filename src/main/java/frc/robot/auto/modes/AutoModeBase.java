@@ -1,14 +1,20 @@
 package frc.robot.auto.modes;
 
+import frc.robot.FieldConstants;
+import frc.robot.Enums.SwerveRotation;
+import frc.robot.Enums.TargetedPositions;
 import frc.robot.auto.AutoModeEndedException;
 import frc.robot.auto.actions.Action;
 import frc.robot.auto.actions.NoopAction;
 
+import java.lang.StackWalker.Option;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -22,7 +28,13 @@ public abstract class AutoModeBase {
     public List<Action> mAutoActions = new ArrayList<>();
     public int mCurrentAction = 0;
     public boolean mHasStartedAction = false;
+
+    // Starting Pose 
+    public Optional<Pose2d> mStartingPose = Optional.empty();   
     
+    // Starting Position 
+    public Optional<TargetedPositions> mStartingPosition = Optional.empty();
+    public Optional<SwerveRotation> mStartingRotation = Optional.empty();
 
     protected abstract void routine() throws AutoModeEndedException;
 
@@ -76,12 +88,6 @@ public abstract class AutoModeBase {
     public void registerAction(Action a)
     {
         mAutoActions.add(a);
-    }
-
-    // Add Starting Pose
-    public void setStartingPose(Pose2d targetPose)
-    {
-
     }
 
     // Pose to Drive To
@@ -198,6 +204,62 @@ public abstract class AutoModeBase {
         return mIsInterrupted;
     }
 
+    // This adds a starting Pose Action
+    public void setStartingPose(Pose2d pose)
+    {
+        mStartingPose = Optional.of(pose);
+    }
+
+    // Starting Position (if applicable)
+    public void setStartingPosition(
+        TargetedPositions pos, SwerveRotation rot
+    )
+    {
+        mStartingPosition = Optional.of(pos);
+        mStartingRotation = Optional.of(rot);
+    }
+
+    // Has a Starting Position been set?
+    public boolean hasStartingPosition()
+    {
+        return (!mStartingPosition.isEmpty() &&
+            !mStartingRotation.isEmpty()
+        );
+    }
+
+    // Calculate the Starting Position
+    // Alliance Color is needed to know this
+    public void calculateStartingPosition(Alliance allianceColor) 
+    {
+        if(hasStartingPosition())
+        {
+            // Has a Starting Position, find the pose for it
+            Pose2d pose = FieldConstants.Auto.getStartingPose(
+                mStartingPosition.get(), 
+                mStartingRotation.get(),
+                allianceColor
+            );
+            mStartingPose = Optional.of(pose);
+        }
+    }
+
+    // Has a Starting Pose
+    public boolean hasStartingPose()
+    {
+        return !mStartingPose.isEmpty();
+    }
+
+    // Get a Starting Pose (otherwise returns empty)
+    public Pose2d getStartingPose()
+    {
+        return hasStartingPose() ? mStartingPose.get() : new Pose2d();
+    }
+
+    // Set Alliance Color
+    public void setAllianceColor(Alliance allianceColor)
+    {
+        calculateStartingPosition(allianceColor);
+    }
 
     public void updateSmartDashboard(String key)
     {

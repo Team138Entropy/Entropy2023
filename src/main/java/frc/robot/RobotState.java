@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -72,6 +73,10 @@ public class RobotState {
     */
     SwerveDrivePoseEstimator mSwerveDrivePoseEstimator;
 
+    // Drive Only Pose Estimator
+    // Pose that does not take Vision into account and only uses Odometry
+    SwerveDrivePoseEstimator mSwerveDriveOnlyPoseEstimator;
+
     // Pose Estimator Based Pose
     Pose2d mDrivePoseEstimator;
 
@@ -87,10 +92,13 @@ public class RobotState {
     boolean mIsValidVisionPose;
 
     // Simulation or Real
-    boolean mRealRobot;
+    private boolean mRealRobot;
+
+    // Alliance Color
+    private Alliance mAlliance;
 
     // Visulation Field
-    Field2d mVisualField;
+    private Field2d mVisualField;
 
     private RobotState()
     {
@@ -139,7 +147,19 @@ public class RobotState {
             mRealRobot ? mDrive.getModulePositions() : mDrive.getSimSwerveModulePositions(),
             new Pose2d()
         );
+        
+        // Swerive Drive Only Pose Estimator
+        mSwerveDriveOnlyPoseEstimator = new SwerveDrivePoseEstimator(mDrive.getSwerveKinematics(), 
+            mRealRobot ? mPigeon.getYaw().getWPIRotation2d() : mPigeon.getSimYaw().getWPIRotation2d(), 
+            mRealRobot ? mDrive.getModulePositions() : mDrive.getSimSwerveModulePositions(),
+            new Pose2d()
+        );
+
+
         mDrivePoseEstimator = new Pose2d();
+
+        // Default to Blue Alliance 
+        mAlliance = Alliance.Blue;
 
         // Visulation Field
         mVisualField = new Field2d();
@@ -193,10 +213,19 @@ public class RobotState {
     public void update()
     {
         // Update with Robot Odometry
+        // Drive Pose Estimator with Vision
         mSwerveDrivePoseEstimator.update(
             mRealRobot ? mPigeon.getYaw().getWPIRotation2d() : mPigeon.getSimYaw().getWPIRotation2d(), 
             mRealRobot ? mDrive.getModulePositions() : mDrive.getSimSwerveModulePositions()
         );
+
+        // Drive Pose Estimator without Vision
+        mSwerveDriveOnlyPoseEstimator.update(
+            mRealRobot ? mPigeon.getYaw().getWPIRotation2d() : mPigeon.getSimYaw().getWPIRotation2d(), 
+            mRealRobot ? mDrive.getModulePositions() : mDrive.getSimSwerveModulePositions()
+        );
+
+        // OVerall Swerve Drive Estimated Position
         Pose2d currentSwervePose = mSwerveDrivePoseEstimator.getEstimatedPosition();
         
         // Update Pose2D based off of Vision
@@ -261,6 +290,18 @@ public class RobotState {
             // Update the Visualization Field
             updateSimVisualField();
         }
+    }
+
+    // Gets Overall Pose of the Robot
+    public Pose2d getPose()
+    {
+        return mSwerveDrivePoseEstimator.getEstimatedPosition();
+    }
+
+    // Gets Drive Only Pose Estimation
+    public Pose2d getOverallPose()
+    {
+        return mSwerveDriveOnlyPoseEstimator.getEstimatedPosition();
     }
 
 
@@ -344,12 +385,19 @@ public class RobotState {
         mVisionTargetPose = pose;
     }
 
-    // Return the Drive/Vision Based Pose Estimate
-    // This should be the best estimate of where the robot is on the field
-    public Pose2d getPose()
+    // Set Current Alliance
+    public void setAlliance(Alliance allianceC)
     {
-        return mDrivePoseEstimator;
+        mAlliance = allianceC;
     }
+
+    // Get Current Alliance
+    public Alliance getAlliance()
+    {
+        return mAlliance;
+    }
+
+   
 
     // Update Robot State Related Smart Dashboard
     public void updateSmartdashboard()

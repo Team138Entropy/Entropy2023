@@ -1,7 +1,9 @@
 package frc.robot;
 
 import frc.robot.Enums;
+import frc.robot.Enums.SwerveRotation;
 import frc.robot.Enums.TargetedPositions;
+import frc.robot.util.Waypoint;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +15,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -342,6 +345,45 @@ public final class FieldConstants {
           new Translation2d(
               complexLowXCones, nodeFirstY + nodeSeparationY * 8 + complexLowOuterYOffset),
         };
+  }
+
+  // Autonomous Points of interest
+  public static final class Auto {
+
+    // Waypoints - Points of Interest
+    //      These might be different based on what side the field is
+    public static final class Waypoints {
+
+        // Left Exit Point of the Community (left of Charging Station)
+        public static final Waypoint CommunityExitLeft;
+
+        // Right Exit Point of the Community (right of Charging Station)
+        public static final Waypoint CommunityExitRight;
+
+        static {
+            Pose2d testPose = new Pose2d(
+                new Translation2d(5,5),
+                new Rotation2d()
+            );
+            CommunityExitLeft = new Waypoint();
+            CommunityExitLeft.setPose(testPose, Alliance.Blue);
+            CommunityExitLeft.setPose(testPose, Alliance.Red);
+
+
+            CommunityExitRight = new Waypoint();
+        }
+    };
+
+    // Helper Function to get a Starting Pose
+    public static Pose2d getStartingPose(TargetedPositions pos, SwerveRotation rotation, Alliance allianceColor)
+    {
+        Pose2d result = new Pose2d(
+            getTargetPositionPose(pos, allianceColor),
+            rotation.getRotation()
+        );
+        return result;
+    }
+
   }
 
 

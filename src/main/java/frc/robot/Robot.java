@@ -182,6 +182,7 @@ public class Robot extends TimedRobot {
     // Real or Simulation Robot
     mRobotState.setRealRobot(mRealRobot);
     mDrive.setRealRobot(mRealRobot);
+    mAutoPilot.setRealRobot(mRealRobot);
     mSuperStructure.setRealRobot(mRealRobot);
 
     // populate autonomous list
@@ -222,6 +223,9 @@ public class Robot extends TimedRobot {
 
     mField.setRobotPose(robotPose);
     mRobotState.setRobotPose(robotPose);
+
+    // Set Alliance Color
+    mRobotState.setAlliance(DriverStation.getAlliance());
 
     // Update Robotstate
     mRobotState.update();
@@ -306,7 +310,7 @@ public class Robot extends TimedRobot {
     }
   }
 
-  // Fill Autonomous Modes List
+  // Populate Sendable Chooser of Auto Modes
   private void populateAutonomousModes(){
     // Auto Mode
     mAutoModes = new SendableChooser<AutoModeBase>();
@@ -330,6 +334,15 @@ public class Robot extends TimedRobot {
     mAutoModeExecutor.setAutoMode(mAutoModes.getSelected());
     mAutoModeBase = mAutoModes.getSelected();
     mAutoModeBase.reset();
+
+    // Consider alliance Color
+    mAutoModeBase.setAllianceColor(mRobotState.getAlliance());
+
+    // Set Starting Pose if Specified
+    if(mAutoModeBase.hasStartingPose())
+    {
+      mDrive.resetOdometry(mAutoModeBase.getStartingPose());
+    }
 
     // Close Grasper
     mGrasper.setGrasperClosed();
