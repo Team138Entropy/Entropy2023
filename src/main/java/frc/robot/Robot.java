@@ -225,7 +225,6 @@ public class Robot extends TimedRobot {
     Pose2d robotPose = mDrive.getPose();
 
     mField.setRobotPose(robotPose);
-    mRobotState.setRobotPose(robotPose);
 
     // Set Alliance Color
     mRobotState.setAlliance(DriverStation.getAlliance());
@@ -233,14 +232,8 @@ public class Robot extends TimedRobot {
     // Update Robotstate
     mRobotState.update();
 
-    // Use Pigeon in Robot Pose for Rotation
-    Pose2d newRobotPose = new Pose2d(mRobotState.getPose().getTranslation(),
-      mRealRobot ? mPigeon.getYaw().getWPIRotation2d() : 
-        mPigeon.getSimYaw().getWPIRotation2d()
-    );
-
     // Update Auto Pilot
-    mAutoPilot.setRobotPose(newRobotPose);
+    mAutoPilot.setRobotPose(mRobotState.getPose());
 
     // Update Smartdashboard Overall and Subsystems
     updateSmartdashboard();
@@ -344,7 +337,7 @@ public class Robot extends TimedRobot {
     // Set Starting Pose if Specified
     if(mAutoModeBase.hasStartingPose())
     {
-      mDrive.resetOdometry(mAutoModeBase.getStartingPose());
+      mRobotState.resetPosition(mAutoModeBase.getStartingPose());
     }
 
     // Close Grasper
@@ -802,6 +795,9 @@ public class Robot extends TimedRobot {
       // Set into AutoPilot
       mAutoPilot.setTargetPose(calculatedPose);
 
+      // Set Final Translation (if applicable)
+      mAutoPilot.setFinalTranslation(getFinalTranslation(mTargetedPosition));
+
       // Update Auto Pilot
       mAutoPilot.update(false);
 
@@ -873,11 +869,16 @@ public class Robot extends TimedRobot {
       Translation2d selectedXY = FieldConstants.getTargetPositionPose(pos, DriverStation.getAlliance());
       if(null != selectedXY)
       {
-        Rotation2d faceFront = new Rotation2d();
-        Rotation2d faceBack = faceFront.fromDegrees(180);
-        result = new Pose2d(selectedXY, faceFront);
+        result = new Pose2d(selectedXY, new Rotation2d());
       }
     }
+    return result;
+  }
+
+  // Get Final Translation for Position (if it exists)
+  public Translation2d getFinalTranslation(TargetedPositions pos)
+  {
+    Translation2d result = FieldConstants.getTargetPositionFinalTranslation(pos, DriverStation.getAlliance());
     return result;
   }
 

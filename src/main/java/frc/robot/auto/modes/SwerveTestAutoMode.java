@@ -38,6 +38,11 @@ public class SwerveTestAutoMode extends AutoModeBase {
         // Drive to the Pickup Section
         addAction(new TargetWaypoint(FieldConstants.Auto.Waypoints.CommunityExitLeft));
 
+        addAction(new WaitAction(2));
+
+        // Test a few more points
+        addAction(new TargetWaypoint(FieldConstants.Auto.Waypoints.TestWayPoint));
+
         /*
         addAction(new SetPose(new Pose2d(
             new Translation2d(3, 5),

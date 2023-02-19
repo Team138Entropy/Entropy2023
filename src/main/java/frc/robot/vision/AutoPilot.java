@@ -22,6 +22,7 @@ import frc.robot.Constants.Vision;
 import frc.robot.auto.TrajectoryFollower;
 import frc.robot.subsystems.Drive;
 import frc.robot.util.TuneableNumber;
+import frc.robot.util.Util;
 import frc.robot.util.drivers.Pigeon;
 
 // Auto Pilot System
@@ -60,9 +61,9 @@ public class AutoPilot {
 
     // Motion Control
     private static final TrapezoidProfile.Constraints mX_CONSTRAINTS = 
-            new TrapezoidProfile.Constraints(6, 2);
+            new TrapezoidProfile.Constraints(3, 4);
     private static final TrapezoidProfile.Constraints mY_CONSTRAINTS = 
-            new TrapezoidProfile.Constraints(6, 2);
+            new TrapezoidProfile.Constraints(3, 4);
     private static final TrapezoidProfile.Constraints mOMEGA_CONSTRAINTS =   
             new TrapezoidProfile.Constraints(8, 8);
 
@@ -84,8 +85,8 @@ public class AutoPilot {
     // Tolerances
     // Tolerances are purposefully really small, these might need to be turned up
     private final TuneableNumber mXTolerance = new TuneableNumber("X Tolerance", .1);
-    private final TuneableNumber mYTolerance = new TuneableNumber("Y Tolerance", .08);
-    private final TuneableNumber mRotationTolerance = new TuneableNumber("Rotation Tolerance", Units.degreesToRadians(5));
+    private final TuneableNumber mYTolerance = new TuneableNumber("Y Tolerance", .1);
+    private final TuneableNumber mRotationTolerance = new TuneableNumber("Rotation Tolerance", Units.degreesToRadians(3));
 
     // Type of System being used to Drive
     enum AutoPilotMode {
@@ -126,8 +127,7 @@ public class AutoPilot {
     // Final Scoring Squence
     private boolean mAllowFinalScoring = true;
     private boolean mInFinalScoringSequence = false;
-    private Translation2d mFinalSquenceTranslation = new Translation2d(.2, 0);
-
+    private Translation2d mFinalSquenceTranslation = new Translation2d(0, 0);
 
     // Sample if robot has reached target position
     // This should be clearance once at target position
@@ -160,9 +160,11 @@ public class AutoPilot {
     {
         // Detect if this is a new target
         if(targPose.getX() != mTargetedPose.getX() ||
-            targPose.getY() != mTargetedPose.getY()
+            targPose.getY() != mTargetedPose.getY() 
         )
         {
+            //mXController.se
+
             resetTolerances();
         }
 
@@ -223,7 +225,7 @@ public class AutoPilot {
         Pose2d targPose2d = mTargetedPose;
 
         // If already at target pose, activate final scoring sequence
-        if(false && mAllowFinalScoring && mInFinalScoringSequence)
+        if(mAllowFinalScoring && mInFinalScoringSequence)
         {
             // Create a new translation compensating for the final target
             Translation2d trans = 
@@ -278,27 +280,11 @@ public class AutoPilot {
             mRotationSpeed = 0;
         }
 
-        // Set Speeds into Swerve System
-        //mCalculatedSpeeds = new ChassisSpeeds(mXSpeed, mYSpeed, mRotationSpeed);
-
-        // Cap X Speed
+        // Cap Speed
+        Util.limit(mXSpeed, -1, 1);
+        Util.limit(mYSpeed, -1, 1);
         
-        if(mXSpeed > 2){
-            mXSpeed = 1;
-        } else if(mXSpeed < -2)
-        {
-            mXSpeed = -1;
-        }
-
-        // Cap Y Speed
-        if(mYSpeed > 2){
-            mYSpeed = 1;
-        } else if(mYSpeed < -2)
-        {
-            mYSpeed = -1;
-        }
-        
-
+        // Calculate Speeds to Set into Swerve Drive
         mCalculatedSpeeds = fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
             mXSpeed, 
             mYSpeed, 
@@ -332,6 +318,22 @@ public class AutoPilot {
 
             // Set Swerve to those Module States
             mDrive.setModuleStates(targetSwerveModuleStates);
+        }
+    }
+
+    // Optional Final Translation
+    public void setFinalTranslation(Translation2d trans)
+    {
+        if(null == trans)
+        {
+            // No Value
+            mAllowFinalScoring = false;
+            mFinalSquenceTranslation = new Translation2d();
+        }
+        else {
+            // Real Value
+            mFinalSquenceTranslation = trans;
+            mAllowFinalScoring = true;
         }
     }
 

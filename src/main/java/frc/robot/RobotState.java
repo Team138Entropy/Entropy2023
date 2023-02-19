@@ -42,22 +42,28 @@ public class RobotState {
         return mInstance;
     }
 
-    // Reference to Photonvision
-    photonVision mPhotonVision = photonVision.getInstance();
-
     // Pigeon
-    Pigeon mPigeon = Pigeon.getInstance();
+    private final Pigeon mPigeon = Pigeon.getInstance();
 
     // Drive
-    Drive mDrive = Drive.getInstance();
+    private final Drive mDrive = Drive.getInstance();
 
-    // Robots Pose2d
-    Pose2d mRobotPose;
+    // Reference to Photonvision
+    private final photonVision mPhotonVision = photonVision.getInstance();
 
-    // Photon Vision Class to Estimate RobotPose based on last seen vision 
-    PhotonPoseEstimator mFrontCameraPoseEstimator;
-    PhotonPoseEstimator mBackCameraPoseEstimator;
-    boolean hasInitVision = false;
+    // Vision Pose Estimators 
+    enum PoseCameras {
+        FrontCamera, 
+        BackCamera,
+        Count
+    };
+    private final int mPhotonPoseEstimatorCount = PoseCameras.Count.ordinal();
+    private PhotonPoseEstimator[] mPhotonPoseEstimators;
+    private Pose2d[] mVisionEstimatedPoses;
+    private boolean[] mVisionEstimatedPosesValid;
+    private double[] mVisionEstimatedPoseTimestamp;
+
+    boolean mHasInitialVision = false;
 
     // Overall Drive Pose Estimator
     /*
@@ -77,22 +83,17 @@ public class RobotState {
     // Pose that does not take Vision into account and only uses Odometry
     SwerveDrivePoseEstimator mSwerveDriveOnlyPoseEstimator;
 
-    // Pose Estimator Based Pose
-    Pose2d mDrivePoseEstimator;
+    // Pose Estimate Based Pose (Using Vision + Drive)
+    Pose2d mRobotPose;
 
-    // Robots Estimated Pose2d based 
-    Pose2d mVisionBasedRobotPose;
+    // Pose Estimated based on Drive only
+    Pose2d mRobotPoseDriveOnly;
 
-    Pose2d mVisionTargetPose;
-
-    // Robots Vision Estimated Pose2d Latency
-    double mVisionBasedRobotPoseLatencySeconds;
-
-    // Valid Target 
-    boolean mIsValidVisionPose;
+    // Target Pose
+    Pose2d mTargetPose;
 
     // Simulation or Real
-    private boolean mRealRobot;
+    private boolean mRealRobot = true;
 
     // Alliance Color
     private Alliance mAlliance;
@@ -107,39 +108,35 @@ public class RobotState {
 
     private void init()
     {
-       // Zero RobotState
-       mRobotPose = new Pose2d(); 
-       mVisionTargetPose = new Pose2d();
-
        // Estimate the Robot's Pose on the Field
        //  Uses last seen AprilTag
        //  Various different strategies are available (AverageBestTargets, Closest_To_Camera_Height, Closest_To_Last_Pose,
        //                                              Closest_To_Reference_Pose, Lowest_Ambiguity)
        //  ref: https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html
-       PoseStrategy chosenStrategy = PoseStrategy.AVERAGE_BEST_TARGETS;
-       // FRONT CAMERA ONLY.. to do do back camera
-       mFrontCameraPoseEstimator = new PhotonPoseEstimator(
-        FieldConstants.aprilTagField, 
-        chosenStrategy, 
-        photonVision.CameraList.get(0).getFirst(),
-        photonVision.CameraList.get(0).getSecond()
-       );
-       mBackCameraPoseEstimator = new PhotonPoseEstimator(
-        FieldConstants.aprilTagField,
-        chosenStrategy,
-        photonVision.CameraList.get(1).getFirst(),
-        photonVision.CameraList.get(1).getSecond()
-       );
-       
-       /*
-       mFrontCameraPoseEstimator = new RobotPoseEstimator(FieldConstants.aprilTagField, 
-                                                        PoseStrategy.AVERAGE_BEST_TARGETS, photonVision.CameraList
-                                                    );
-*/
-        // Robot Pose Calculated off of Vision
-        mVisionBasedRobotPose = new Pose2d();
-        mVisionBasedRobotPoseLatencySeconds = -1;
-        mIsValidVisionPose = false;
+       // https://en.wikipedia.org/wiki/Perspective-n-Point?fbclid=IwAR17ci8IfdLgKKkdBSUazSIzoDU9U2vXsbaae1qVZvg4o5O0mpnjKTY5KMQ
+       // PnP seems to be the best startegy - use all visble tags to compute single best
+       // https://www.chiefdelphi.com/t/photonvision-2023-official-release/421061/70?fbclid=IwAR0O3sD70Zu8DkXqv3nPMKKDqF2eyeo_wpO0Hgh_pa3g4OH6Ft-lEyQSNtc
+       PoseStrategy chosenStrategy = PoseStrategy.MULTI_TAG_PNP;
+       // Initialize Each Pose Estimator [FrontCamera, BackCamera]
+       mPhotonPoseEstimators = new PhotonPoseEstimator[mPhotonPoseEstimatorCount];
+       mVisionEstimatedPoses = new Pose2d[mPhotonPoseEstimatorCount];
+       mVisionEstimatedPosesValid = new boolean[mPhotonPoseEstimatorCount];
+       mVisionEstimatedPoseTimestamp = new double[mPhotonPoseEstimatorCount];
+       for(int i = 0; i < mPhotonPoseEstimatorCount; ++i)
+       {
+            // Create Pose Estimator
+            mPhotonPoseEstimators[i] = new PhotonPoseEstimator(
+                FieldConstants.aprilTagField, 
+                chosenStrategy, 
+                photonVision.CameraList.get(i).getFirst(), //PhotonCamera
+                photonVision.CameraList.get(i).getSecond() //Transform3d
+            );
+
+            // Zero Estimated Poses and if the Poses are valid
+            mVisionEstimatedPoses[i] = new Pose2d();
+            mVisionEstimatedPosesValid[i] = false;
+            mVisionEstimatedPoseTimestamp[i] = 0;
+       }
 
         // Swerve Drive Pose Estimator
         mSwerveDrivePoseEstimator = new SwerveDrivePoseEstimator(mDrive.getSwerveKinematics(), 
@@ -155,8 +152,12 @@ public class RobotState {
             new Pose2d()
         );
 
+        // Default Pose Estimations
+        mRobotPose = new Pose2d();
+        mRobotPoseDriveOnly = new Pose2d();
 
-        mDrivePoseEstimator = new Pose2d();
+        // Target Pose 
+        mTargetPose = new Pose2d();
 
         // Default to Blue Alliance 
         mAlliance = Alliance.Blue;
@@ -168,45 +169,65 @@ public class RobotState {
     // Simulation or Real Robot
     public void setRealRobot(boolean value) {
         mRealRobot = value;
+
+        // Change Pose Stategy if sim robot
+        if(!mRealRobot)
+        {
+            for(int i = 0; i < mPhotonPoseEstimatorCount; ++i) 
+            {
+                mPhotonPoseEstimators[i].setPrimaryStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+            }
+        }
     }
 
-    // Set Robot Pose
-    public void setRobotPose(Pose2d pose) {
-        mRobotPose = pose;
+
+
+    // Resets Odometry and Robot State
+    public void resetPosition(Pose2d pose)
+    {
+        // Move Odometry
+        mDrive.resetOdometry(pose);
+
+        // Simulation 
+        // Since the Robot will have been physically moved, need to update in sim
+        if(!mRealRobot)
+        {
+            mPigeon.setSimYaw((pose.getRotation().getDegrees()));
+        }
+
+        // Reset Pose Estimators
+        // Drive Pose Estimator with Vision
+        mSwerveDrivePoseEstimator.resetPosition(
+            mRealRobot ? mPigeon.getYaw().getWPIRotation2d() : mPigeon.getSimYaw().getWPIRotation2d(), 
+            mRealRobot ? mDrive.getModulePositions() : mDrive.getSimSwerveModulePositions(),
+            pose
+        );
+
+        // Drive Pose Estimator without Vision
+        mSwerveDriveOnlyPoseEstimator.resetPosition(
+            mRealRobot ? mPigeon.getYaw().getWPIRotation2d() : mPigeon.getSimYaw().getWPIRotation2d(), 
+            mRealRobot ? mDrive.getModulePositions() : mDrive.getSimSwerveModulePositions(),
+            pose
+        );
     }
 
     // Get Vision Estimated Robot Pose
     // Returns a Pair of the Pose2D of the Robot with a Latency Value
-    public Pair<Pose2d, Double> getVisionEstimatedPose(Pose2d prevEstimatedRobotPose) {
-       // mFrontCameraPoseEstimator.setReferencePose(prevEstimatedRobotPose);
-    
-        double currentTime = Timer.getFPGATimestamp();
-        
-        Optional<EstimatedRobotPose> result = mFrontCameraPoseEstimator.update();
+    // Sets a Reference pose for some algorithms that use the pose
+    public Pair<Pose2d, Double> getVisionEstimatedPose(int poseEstimatorIndex, Pose2d referencePose) {
+        // Set Reference Pose (don't think this is used for chosen stategy)
+        mPhotonPoseEstimators[poseEstimatorIndex].setReferencePose(referencePose);
+
+        // Timestamp back from photonVision should be in terms of fpga timestamp     
+        Optional<EstimatedRobotPose> result = mPhotonPoseEstimators[poseEstimatorIndex].update();
         if (result.isPresent() && null != result.get().estimatedPose) {
-            return new Pair<Pose2d, Double>(result.get().estimatedPose.toPose2d(), currentTime - 0);
+            return new Pair<Pose2d, Double>(result.get().estimatedPose.toPose2d(), result.get().timestampSeconds);
         } else {
             return new Pair<Pose2d, Double>(null, 0.0);
         }
     }
 
     // Get Vision Estimated Pose Latency (Seconds)
-    public double getVisionEstimatedPoseLatency()
-    {
-        return mVisionBasedRobotPoseLatencySeconds;
-    }
-
-    // Get Vision Estimated Pose
-    public Pose2d getVisionEstimatedPose()
-    {
-        return mVisionBasedRobotPose;
-    }
-
-    // Get if Vision Estimated Pose is Valid
-    public boolean getVisionEstimatedPoseValid()
-    {
-        return mIsValidVisionPose;
-    }
 
     // Update Robotstate
     // Called from Robot Periodic
@@ -227,62 +248,50 @@ public class RobotState {
 
         // OVerall Swerve Drive Estimated Position
         Pose2d currentSwervePose = mSwerveDrivePoseEstimator.getEstimatedPosition();
-        
-        // Update Pose2D based off of Vision
-        Pair<Pose2d, Double> VisionBasedEstimate = getVisionEstimatedPose(currentSwervePose);
-        if(VisionBasedEstimate.getFirst() == null)
-        {
-            // No Pose2d Able to be found, zero the vision pose
-            mVisionBasedRobotPose = new Pose2d();
-            mVisionBasedRobotPoseLatencySeconds = -1;
-            mIsValidVisionPose = false;
-        } else {
-            // Valid Pose2D
-            mVisionBasedRobotPose = VisionBasedEstimate.getFirst();
-            mVisionBasedRobotPoseLatencySeconds = VisionBasedEstimate.getSecond();
-            mIsValidVisionPose = true;
-        }
 
-        // Evaluate if Latency is within Range
-        /*
-        if(mVisionBasedRobotPoseLatencySeconds != -1
-            && Constants.Vision.kAllowedSecondsThreshold <= mVisionBasedRobotPoseLatencySeconds)
+        // Iterate each PhotonVisionPose Estimator and 
+        // Initialize Each Pose Estimator [FrontCamera, BackCamera]
+        for(int i = 0; i < mPhotonPoseEstimatorCount; ++i)
         {
-            // Has a Vision Based Robot Pose and it is within acceptable latency
-            mIsValidVisionPose = true;
-        }else {
-            // Either no Robot Pose or Outside of Latency
-            mIsValidVisionPose = false;
-        }
-        */
+            // Get the Latest Pose with Latency Compensation
+            // Pass in a reference pose in case the algorithm calls for it
+            Pair<Pose2d, Double> VisionBasedEstimate = getVisionEstimatedPose(i, currentSwervePose);
 
-        // Feed Valid Pose into System
-        // Todo: Recomended to only feed vision pose within 1 meter or so of robot
-        if(mIsValidVisionPose)
-        {
-            try {
-                
-                double dis = mRobotPose.getTranslation().getDistance(mVisionBasedRobotPose.getTranslation());
-                dis = Math.abs(dis);
-                if(true || dis <= 2 || !hasInitVision)
-                {
-                    mSwerveDrivePoseEstimator.addVisionMeasurement(mVisionBasedRobotPose, mVisionBasedRobotPoseLatencySeconds);
-                    hasInitVision = true;
-
-                }
-                
-            
-                
-            } catch (Exception ex)
+            // If Valid Vision Pose Estimate is Returned
+            if(null != VisionBasedEstimate.getFirst())
             {
-                System.out.println(ex.getMessage());
-                System.out.println("CONCURRENT EXCEPTION?");
+                // Pose Estimator Reconmends not adding a pose more then a meter away
+                // for now just add it
+                boolean addPose = true;
+
+
+                // Add Vision Pose 
+                if(addPose)
+                {
+                    mSwerveDrivePoseEstimator.addVisionMeasurement(
+                        VisionBasedEstimate.getFirst(), // Pose2d
+                        VisionBasedEstimate.getSecond() // Timestamp Seconds
+                    );
+
+                    // Set Valid and Store Pose
+                    mVisionEstimatedPoses[i] = VisionBasedEstimate.getFirst();
+                    mVisionEstimatedPosesValid[i] = true;
+                    mVisionEstimatedPoseTimestamp[i] = VisionBasedEstimate.getSecond();
+                }
+            } else {
+                // No Valid Vision Pose
+                mVisionEstimatedPoses[i] = new Pose2d();
+                mVisionEstimatedPosesValid[i] = false;
+                mVisionEstimatedPoseTimestamp[i] = 0;
             }
         }
 
         // Get Overall System Pose Estimate
         // Accounts for Swerve System Odometry and Vision Poses
-        mDrivePoseEstimator = mSwerveDrivePoseEstimator.getEstimatedPosition();
+        mRobotPose = mSwerveDrivePoseEstimator.getEstimatedPosition();
+
+        // Get the Drive Pose Estimate
+        mRobotPoseDriveOnly = mSwerveDriveOnlyPoseEstimator.getEstimatedPosition();
 
         // Simulation Only
         if(!mRealRobot)
@@ -293,19 +302,17 @@ public class RobotState {
     }
 
     // Gets Overall Pose of the Robot
+    //  This Pose uses the Vision System
     public Pose2d getPose()
     {
-        return mSwerveDrivePoseEstimator.getEstimatedPosition();
+        return mRobotPose;
     }
 
-    // Gets Drive Only Pose Estimation
-    public Pose2d getOverallPose()
+    // Gets Drive Only Robot Pose
+    public Pose2d getDriveOnlyPose()
     {
-        return mSwerveDriveOnlyPoseEstimator.getEstimatedPosition();
+        return mRobotPoseDriveOnly;
     }
-
-
-    // TODO - Function to get Translation2D to a Node? 
 
     // Visual Plotting Field for Debug Perposes
     private void updateSimVisualField()
@@ -316,7 +323,7 @@ public class RobotState {
         mVisualField.setRobotPose(new Pose2d(FieldConstants.fieldLength/2, 
                                 FieldConstants.fieldWidth/2, new Rotation2d()));
         */
-        mVisualField.setRobotPose(mRobotPose);
+        mVisualField.setRobotPose(getPose());
 
         // Iterate April Tags and Plot
         for(int i = 0; i < FieldConstants.aprilTags.size(); i++)
@@ -358,11 +365,6 @@ public class RobotState {
             cornerPoseObj.setPose(cornerPose);
         }
         
-
-        // Vision Estimated Robot Pose
-        FieldObject2d simVisionPose = mVisualField.getObject("VisionEstimatedPose");
-        simVisionPose.setPose(mVisionBasedRobotPose);
-
         // Vision Following Trajectory if applicable
         /*
         Trajectory driveTraj = AutoPilot.getInstance().getTrajectory();
@@ -372,17 +374,22 @@ public class RobotState {
         }
         */
 
-        // WPILIB Pose Estimator
-        FieldObject2d wpiLibPoseObject = mVisualField.getObject("WpilibPose");
-        wpiLibPoseObject.setPose(mDrivePoseEstimator);
-
+        // Vision Poses
+        for(int i = 0; i < mPhotonPoseEstimatorCount; ++i) 
+        {
+            PoseCameras currentCamera = PoseCameras.values()[i];
+            final String cameraPoseKey = currentCamera.toString() + "_VisionPose";
+            FieldObject2d visionPoseObject = mVisualField.getObject(cameraPoseKey);
+            visionPoseObject.setPose(mVisionEstimatedPoses[i]);
+        }
+       
+        // Desired Pose
         FieldObject2d targetPose2d = mVisualField.getObject("TargetedPose");
-        targetPose2d.setPose(mVisionTargetPose);
     }
 
     public void setTargetPose(Pose2d pose)
     {
-        mVisionTargetPose = pose;
+        mTargetPose = pose;
     }
 
     // Set Current Alliance
@@ -403,12 +410,18 @@ public class RobotState {
     public void updateSmartdashboard()
     {
         final String key = "RobotState/";
-        SmartDashboard.putString(key + "Vision Pose", mVisionBasedRobotPose.toString());
-        SmartDashboard.putNumber(key + "Vision Pose Latency", mVisionBasedRobotPoseLatencySeconds);
-        SmartDashboard.putBoolean(key + "Vision Pose Valid", mIsValidVisionPose);
         SmartDashboard.putData(key + "Visual Field", mVisualField);
-        SmartDashboard.putString(key + "Pose Estimation", mDrivePoseEstimator.toString());
-        SmartDashboard.putString(key + "Overall Estimation", mDrivePoseEstimator.toString());
-        SmartDashboard.putString(key + "Target Pose", mVisionTargetPose.toString());
+        SmartDashboard.putString(key + "Robot Pose", mRobotPose.toString());
+        SmartDashboard.putString(key + "Robot Pose Drive Only", mRobotPoseDriveOnly.toString());
+        SmartDashboard.putString(key + "Target Pose", mTargetPose.toString());
+
+        // Each Individual Vision Pose
+        final String visionPoses = key + "Vision Poses/";
+        for(int i = 0; i < mPhotonPoseEstimatorCount; ++i) 
+        {
+            PoseCameras currentCamera = PoseCameras.values()[i];
+            final String cameraPoseKey = visionPoses + currentCamera.toString() + "_VisionPose";
+            SmartDashboard.putString(cameraPoseKey, mVisionEstimatedPoses[i].toString());
+        }
     }
 }

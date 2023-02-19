@@ -118,12 +118,15 @@ public class Enums {
     public enum SwerveRotation {
         FRONT_FACING_FORWARD(0),
         FRONT_FACING_GRID(180),
-        BACK_FACING_GRID(0)
+        BACK_FACING_GRID(0),
+        FRONT_FACING_RIGHT(90),
+        FRONT_FACING_LEFT(90)
         ;
 
         public final double degrees; 
 
-        Rotation2d getRotation()
+        // Get Degrees Value to Rotation
+        public Rotation2d getRotation()
         {
             return Rotation2d.fromDegrees(degrees);
         }

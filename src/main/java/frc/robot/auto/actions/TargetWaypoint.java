@@ -1,6 +1,7 @@
 package frc.robot.auto.actions;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.RobotState;
 import frc.robot.Enums.SwerveRotation;
 import frc.robot.util.Waypoint;
@@ -14,9 +15,18 @@ public class TargetWaypoint implements Action {
     private final Waypoint mTargetWaypoint;
     private Pose2d mTargetPose;
 
+    // Target Waypoint
     public TargetWaypoint(Waypoint wp)
     {
         mTargetWaypoint = wp;
+    }
+
+    // Target Waypoint, Swwerve Rotations
+    public TargetWaypoint(Waypoint wp, SwerveRotation blueRotation, SwerveRotation redRotation)
+    {
+        mTargetWaypoint = wp;
+        mTargetWaypoint.setRotation(blueRotation.getRotation(), Alliance.Blue);
+        mTargetWaypoint.setRotation(redRotation.getRotation(), Alliance.Red);
     }
 
     @Override
@@ -25,6 +35,9 @@ public class TargetWaypoint implements Action {
         // Get Pose to Target based on Alliance Color
         //  Because the field is flipped this must be accounted for
         mTargetPose = mTargetWaypoint.getPose(mRobotState.getAlliance());
+
+        // Force Tolerances to Clear
+        mAutoPilot.resetTolerances();
 
         // Set Target Pose
         mAutoPilot.setTargetPose(mTargetPose);
@@ -42,7 +55,7 @@ public class TargetWaypoint implements Action {
 
     @Override 
     public boolean isFinished() {
-        return false;
+        return mAutoPilot.atTarget();
     }
 
    

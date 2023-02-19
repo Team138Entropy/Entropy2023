@@ -358,6 +358,11 @@ public class Constants {
     public static final double MaxExtensionPosition = 245000.0;
     public static final double MinExtensionPosition = 0;
 
+    // Arbitary Feedforwards
+    //  Values should be the same but a second value is available in case 1 side behaves differently
+    public static final double mArmRotationBacksideFF = 0; // This should be positive to get it to go up
+    public static final double mArmRotationFrontsideFF = 0; // This should be negative to get it to go up
+
     // Overrides of the Arm Targets if Targetting Cube
     public static final Map<ArmTargets,ArmTargets> CubeArmTargetOverrides = new HashMap<ArmTargets, ArmTargets>();
     static {
@@ -367,6 +372,7 @@ public class Constants {
     }
 
     //tunable PID values
+    // Originally was 1 - 29 - .01 - 600
     public static TuneableNumber tunableArmKF = new TuneableNumber("tunableArmKF",1);
     public static TuneableNumber tunableArmKP = new TuneableNumber("tunableArmKP",29);
     public static TuneableNumber tunableArmKI = new TuneableNumber("tunableArmKI",.01);

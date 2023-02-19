@@ -360,9 +360,12 @@ public final class FieldConstants {
         // Right Exit Point of the Community (right of Charging Station)
         public static final Waypoint CommunityExitRight;
 
+
+        public static final Waypoint TestWayPoint;
+
         static {
             Pose2d testPose = new Pose2d(
-                new Translation2d(5,5),
+                new Translation2d(6,6),
                 new Rotation2d()
             );
             CommunityExitLeft = new Waypoint();
@@ -371,6 +374,18 @@ public final class FieldConstants {
 
 
             CommunityExitRight = new Waypoint();
+
+            // Remove Eventually
+            Pose2d testPose2 = new Pose2d(
+                new Translation2d(6,2),
+                new Rotation2d()
+            );
+            TestWayPoint = new Waypoint();
+            TestWayPoint.setPose(testPose2, Alliance.Blue);
+            TestWayPoint.setPose(testPose2, Alliance.Red);
+            TestWayPoint.setRotation(SwerveRotation.FRONT_FACING_LEFT.getRotation(), Alliance.Blue);
+            TestWayPoint.setRotation(SwerveRotation.FRONT_FACING_LEFT.getRotation(), Alliance.Red);
+
         }
     };
 
@@ -434,6 +449,26 @@ public final class FieldConstants {
         targetTrans = result[(Alliance.Red == allianceColor) ? 0 : 1];
     }
     return targetTrans;
+  }
+
+  // Get Target Position Final Translation
+  public static Translation2d getTargetPositionFinalTranslation(TargetedPositions pos, Alliance allianceColor)
+  {
+    Translation2d trans = null;
+
+    // Is this a targeted grid position
+    // Blue goes further up field so it will increase X Value, Red goes close to 0
+    if(pos.ordinal() >= TargetedPositions.GRID_1.ordinal() && 
+      pos.ordinal() <= TargetedPositions.GRID_9.ordinal()
+    ){
+        trans = new Translation2d(
+            (Alliance.Blue == allianceColor) ? .1 : .1,
+            0
+        );
+    }
+
+
+    return trans;
   }
 
 
