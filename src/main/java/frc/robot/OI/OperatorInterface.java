@@ -189,11 +189,11 @@ public class OperatorInterface {
     }
 
     public boolean getResetOdometry(){
-        return mDriverController.getButton(Button.START);
+        return mDriverController.getButton(Button.BACK);
     }
     
     public boolean getZeroGyro(){
-        return mDriverController.getButton(Button.START);
+        return mDriverController.getButton(Button.BACK);
     }
 
     public boolean getSlowBalance(){
@@ -347,11 +347,11 @@ public class OperatorInterface {
     }
 
     public boolean getArmRotateForward() {
-        return mOperatorController.getAxis(Axises.Y) > .25;
+        return mOperatorController2.getButton(Buttons.SW1);
     }
 
     public boolean getArmRotateBackward() {
-        return mOperatorController.getAxis(Axises.Y) < -.25;
+        return mOperatorController2.getButton(Buttons.SW2);
     }
 
     public boolean getGrasperModeSwap() {

@@ -209,7 +209,7 @@ public class Constants {
     // More information detailed in the Swerve Module Class 
     public static class SwerveModules {
       public static class Module0 {
-        public static double AngleOffset = 205;
+        public static double AngleOffset = 205.4;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
@@ -224,7 +224,7 @@ public class Constants {
       }
 
       public static class Module1 {
-        public static double AngleOffset = 225;
+        public static double AngleOffset = 223.33;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
@@ -239,7 +239,7 @@ public class Constants {
       }
 
       public static class Module2 {
-        public static double AngleOffset = 158;
+        public static double AngleOffset = 156.5;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
@@ -254,7 +254,7 @@ public class Constants {
       }
 
       public static class Module3 {
-        public static double AngleOffset = 34;
+        public static double AngleOffset = 37.08;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
@@ -373,10 +373,10 @@ public class Constants {
 
     //tunable PID values
     // Originally was 1 - 29 - .01 - 600
-    public static TuneableNumber tunableArmKF = new TuneableNumber("tunableArmKF",1);
+    public static TuneableNumber tunableArmKF = new TuneableNumber("tunableArmKF",0);
     public static TuneableNumber tunableArmKP = new TuneableNumber("tunableArmKP",29);
     public static TuneableNumber tunableArmKI = new TuneableNumber("tunableArmKI",.01);
-    public static TuneableNumber tunableArmKD = new TuneableNumber("tunableArmKD",600);
+    public static TuneableNumber tunableArmKD = new TuneableNumber("tunableArmKD",4000);
   }
 
   public static class Grasper {

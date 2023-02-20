@@ -165,7 +165,7 @@ public class Grasper extends Subsystem {
 
   // Has the Grasper stay open long enough to use beam sensor
   public boolean getGrasperTimeElapsed3(){
-    return beamActivationTimer.hasElapsed(3);
+    return beamActivationTimer.hasElapsed(1.5);
   }
   // Timer for the wheels when closing the Grasper
   public boolean getGrasperTimeElapsed1(){
@@ -173,7 +173,7 @@ public class Grasper extends Subsystem {
   }
   // Delays the wheel intake when you open the grasper
   public boolean getGrasperWheelTimeElapsed(){
-    return wheelDelayTimer.hasElapsed(0.5);
+    return wheelDelayTimer.hasElapsed(0.75);
   }
   // Codes a delay in the sensor when triggered
   public boolean sensorDelayOver(){

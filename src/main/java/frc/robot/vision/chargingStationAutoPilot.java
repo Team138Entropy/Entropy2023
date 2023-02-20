@@ -29,6 +29,8 @@ public class chargingStationAutoPilot {
 
     public boolean autoBalanceXMode = false;
 
+    public double respondRate = 0.1;
+
     
 
     //placeholder PID values
@@ -63,6 +65,8 @@ public class chargingStationAutoPilot {
         }
         else{
             autoBalanceXMode = false;
+            xAxisRate = 0;
+    
         }
         SmartDashboard.putBoolean("autoBalanceX mode", autoBalanceXMode);
         SmartDashboard.putNumber("chargeStation threshold", chargingStationDegreeThreshold);
@@ -89,7 +93,7 @@ public class chargingStationAutoPilot {
 
         
         if(true){
-            xAxisRate = xAxisRate*.01;
+            xAxisRate = xAxisRate*respondRate;
         }
 
         // Set Speeds into Swerve System

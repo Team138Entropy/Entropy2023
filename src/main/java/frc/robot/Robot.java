@@ -697,6 +697,9 @@ public class Robot extends TimedRobot {
       }
     }
 
+    if (mGrasper.getGrasperState() == Grasper.GrasperState.Closed){
+      mOperatorInterface.setDriverRumble(true, 0.2);
+    }
     // Arm Up After Intake
     if(mCurrentArmTarget == ArmTargets.INTAKE_FRONT && mGrasper.getGrasperState() == GrasperState.FullyClosed){
       mCurrentArmTarget = ArmTargets.POST_INTAKE_FRONT;
@@ -726,7 +729,9 @@ public class Robot extends TimedRobot {
 
     //driver feedback - beam sensor creates vibration (if getSensorBroken == true then vibrate)
     if (mGrasper.getGrasperState() == Grasper.GrasperState.Closed) {
-      mOperatorInterface.setDriverRumble(true, 0.2);
+      mOperatorInterface.setDriverRumble(true, 1);
+  } else {
+    mOperatorInterface.setDriverRumble(false, 0);
   }
   }
 

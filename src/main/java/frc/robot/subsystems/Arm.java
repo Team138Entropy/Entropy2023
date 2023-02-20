@@ -65,7 +65,7 @@ public class Arm extends Subsystem {
         // kI: I-Gain Helps the sensor settle close to the target position
         MasterShoulderMotor.configSelectedFeedbackCoefficient(360.0/8192.0);
         MasterShoulderMotor.configMotionAcceleration(20);
-        MasterShoulderMotor.configMotionCruiseVelocity(25, 10);
+        MasterShoulderMotor.configMotionCruiseVelocity(15, 10);
         SecondaryShoulderMotor.follow(MasterShoulderMotor); // Secondary Motor will follow Primary Motor
         SecondaryShoulderMotor.setInverted(true);
 
@@ -98,9 +98,10 @@ public class Arm extends Subsystem {
     //      90 & 270 are straight up and straight down. No KF
     //      0 & 180 are completely horizontal. Maximum KF
     public double getGravity(){
+        double FF = .1;
         double currentRadians = MasterShoulderMotor.getSelectedSensorPosition() * Constants.Misc.degreeToRadian;
         // todo - that KF value might have to change by length of the robot
-        double feedForward = 0.2 * Math.cos(currentRadians);
+        double feedForward = FF * Math.cos(currentRadians);
         return feedForward;
     }
 

@@ -84,8 +84,8 @@ public class AutoPilot {
 
     // Tolerances
     // Tolerances are purposefully really small, these might need to be turned up
-    private final TuneableNumber mXTolerance = new TuneableNumber("X Tolerance", .1);
-    private final TuneableNumber mYTolerance = new TuneableNumber("Y Tolerance", .1);
+    private final TuneableNumber mXTolerance = new TuneableNumber("X Tolerance", .05);
+    private final TuneableNumber mYTolerance = new TuneableNumber("Y Tolerance", .05);
     private final TuneableNumber mRotationTolerance = new TuneableNumber("Rotation Tolerance", Units.degreesToRadians(3));
 
     // Type of System being used to Drive
