@@ -21,6 +21,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.Vision;
 import frc.robot.auto.TrajectoryFollower;
 import frc.robot.subsystems.Drive;
+import frc.robot.util.GeoUtil;
 import frc.robot.util.TuneableNumber;
 import frc.robot.util.Util;
 import frc.robot.util.drivers.Pigeon;
@@ -88,6 +89,32 @@ public class AutoPilot {
     private final TuneableNumber mYTolerance = new TuneableNumber("Y Tolerance", .05);
     private final TuneableNumber mRotationTolerance = new TuneableNumber("Rotation Tolerance", Units.degreesToRadians(3));
 
+    // Update Loop Period
+    public final double mLoopPeriodSecs = 0.02;
+
+    // Just Distance and Rotation Controllers
+    private final ProfiledPIDController mDriveController =
+        new ProfiledPIDController(
+        2.5, 0.0, 0.0, new TrapezoidProfile.Constraints(2.5, 8), mLoopPeriodSecs);
+    
+    private final ProfiledPIDController mThetaController =
+    new ProfiledPIDController(
+        7, 0.0, 0.0, new TrapezoidProfile.Constraints(8, 0.8), mLoopPeriodSecs);
+
+    // First approach was a profiled PID Controller indepdent on X, Y
+    // But dosent work very well because axis tend to converge
+    // New approach is to use a singled profile PID controller for the distance to target
+
+    // Magnitude of the Velocity is the output of the controller
+    // and the direction of the angle from the target to the robot
+    // Profiled PID Controller dosen't limit the output velocity because output units are arbitary
+    // Max Velocity only sets max velocity of the setpoint along the trapezoid profile
+    // Can output any units to track the set point. 
+
+    // Maximum Speed Overall
+    private double mMaxSpeed = 2;
+
+
     // Type of System being used to Drive
     enum AutoPilotMode {
         TrajectoryFollower,
@@ -150,8 +177,16 @@ public class AutoPilot {
         mWithinToleranceY = true;
         mWithinToleranceRotation = true;
 
-        // this was from snap controlle
+        // this was from snap controller
         mOmegaController.enableContinuousInput(-Math.PI, Math.PI);
+
+        // different controller
+        mThetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+        
+        // Tolerances
+        mDriveController.setTolerance(0.08);
+        mThetaController.setTolerance(Units.degreesToRadians(2.0));
 
     }
 
@@ -280,21 +315,46 @@ public class AutoPilot {
             mRotationSpeed = 0;
         }
 
-        // Cap Speed
-        Util.limit(mXSpeed, -1, 1);
-        Util.limit(mYSpeed, -1, 1);
+        // === New Concept with combined vectors
+
+        // Current Pose (Likely Robot Pose)
+        var currentPose = getCurrentPose();
+
+        // Distance Scalar to the Goal
+        double driveVelocityScalar =
+        mDriveController.calculate(
+            currentPose.getTranslation().getDistance(mTargetedPose.getTranslation()), 0.0);
+
+        // Theta Velocity
+        double thetaVelocity =
+            mThetaController.calculate(
+                currentPose.getRotation().getRadians(), mTargetedPose.getRotation().getRadians());
+
+        // If already at goal, zero
+        if (mDriveController.atGoal()) driveVelocityScalar = 0.0;
+        if (mDriveController.atGoal()) thetaVelocity = 0.0;
+
+        // Drive Velocity Vector (Translation2d)
+        var driveVelocity =
+            new Pose2d(
+                    new Translation2d(),
+                    currentPose.getTranslation().minus(mTargetedPose.getTranslation()).getAngle())
+                .transformBy(GeoUtil.translationToTransform(driveVelocityScalar, 0.0))
+                .getTranslation();
+
+        // Set in to Speed Variables
+        mXSpeed = driveVelocity.getX(); 
+        mYSpeed = driveVelocity.getY();
+        mRotationSpeed = thetaVelocity; 
+
+        // === End New Concept
         
         // Calculate Speeds to Set into Swerve Drive
-        mCalculatedSpeeds = fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
+        mCalculatedSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
             mXSpeed, 
             mYSpeed, 
             mRotationSpeed, 
             mRealRobot ? mPigeon.getYaw().getWPIRotation2d() : mPigeon.getSimYaw().getWPIRotation2d()
-        )
-        : new ChassisSpeeds(
-            mXSpeed, 
-            mYSpeed, 
-            mRotationSpeed
         );
 
         // Allow Driving - Posible to just use update for data
@@ -304,7 +364,7 @@ public class AutoPilot {
             var targetSwerveModuleStates = mDrive.getSwerveKinematics().toSwerveModuleStates(mCalculatedSpeeds);
 
             // Desaturate wheel speeds - keeps speed below a maximum speed
-            SwerveDriveKinematics.desaturateWheelSpeeds(targetSwerveModuleStates,1);
+            SwerveDriveKinematics.desaturateWheelSpeeds(targetSwerveModuleStates, mMaxSpeed);
             
             // Sim Only
             if(!mRealRobot){
@@ -389,35 +449,22 @@ public class AutoPilot {
         mRealRobot = value;
     }
 
-    
-    /*
-         private final boolean mDrawField = true;
-    private final boolean mInvertX = false;
-    private final boolean mInvertY = false;
-    private final boolean mInvertRotation = false;
+    // reset controller positions
+    public void reset() 
+    {
+        // Reset the Controllers to the current Distance for the Target
+        mDriveController.reset(
+            getCurrentPose().getTranslation().getDistance(mTargetedPose.getTranslation()));
 
-    private double mXDistance = 0;
-    private double mYDistance = 0;
-    private double mRotationDistance = 0;
+        mThetaController.reset(mTargetedPose.getRotation().getRadians());
+    }
 
-    private double mXSpeedFactor = 0.3;
-    private double mYSpeedFactor = 0.3;
-
-        private double mXSpeed = 0;
-    private double mYSpeed = 0;
-    private double mRotationSpeed = 0;
-
-
-        private boolean mAllowFinalScoring = false;
-    private boolean mInFinalScoringSequence = false;
-
-    // Sample if robot has reached target position
-    // This should be clearance once at target position
-    // This can also be used to kickoff the final scoring position
-    private int mAtTargetPositionCount = 0;
-    private final int mAtTargetPositionThreshold = 5;
-    private boolean mAtTarget = false;
-     */
+    // Get Current Pose (Robot Pose)
+    // This is for future expension to use different poses (maybe a non vision influence pose)
+    private Pose2d getCurrentPose()
+    {
+        return mRobotPose;
+    }
 
     public void updateSmartDashBoard()
     {

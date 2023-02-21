@@ -859,6 +859,9 @@ public class Robot extends TimedRobot {
 
         // Clear Auto Pilot Sequence Info (since it isn't being used)
         mAutoPilot.clear(); 
+
+        // Reset to current targeted position
+        mAutoPilot.reset();
       }
     }
   }
