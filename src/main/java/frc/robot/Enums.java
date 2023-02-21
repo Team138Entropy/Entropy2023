@@ -189,4 +189,19 @@ public class Enums {
         Simple, 
         Advanced
     };
+
+    public enum ArmRotationSpeed {
+        DEFAULT(15, 20),
+        OVER_TOP_FORWARDS(10, 5),
+        OVER_TOP_BACKWARDS(15, 10);
+
+        public final double velocity;
+        public final double acceleration;
+        
+        ArmRotationSpeed(double vel, double accel)
+        {
+            this.velocity = vel;
+            this.acceleration = accel;
+        }
+    }
 }

@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.Enums.ArmRotationSpeed;
 import frc.robot.Enums.ArmTargets;
 import frc.robot.util.drivers.EntropyTalonSRX;
 
@@ -64,8 +65,7 @@ public class Arm extends Subsystem {
         //      Typicall starts at 10xPGain
         // kI: I-Gain Helps the sensor settle close to the target position
         MasterShoulderMotor.configSelectedFeedbackCoefficient(360.0/8192.0);
-        MasterShoulderMotor.configMotionAcceleration(20);
-        MasterShoulderMotor.configMotionCruiseVelocity(15, 10);
+        setArmSpeeds(ArmRotationSpeed.DEFAULT);
         SecondaryShoulderMotor.follow(MasterShoulderMotor); // Secondary Motor will follow Primary Motor
         SecondaryShoulderMotor.setInverted(true);
 
@@ -94,12 +94,24 @@ public class Arm extends Subsystem {
         mTargetedExtension = 0;
     }
 
+    // Sets Arm Speeds
+    public void setArmSpeeds(ArmRotationSpeed rotSpeed)
+    {
+        MasterShoulderMotor.configMotionCruiseVelocity(rotSpeed.velocity);
+        MasterShoulderMotor.configMotionAcceleration(rotSpeed.acceleration);
+    }
+
     // Gets the Feed Forward Value based on Gravity
     //      90 & 270 are straight up and straight down. No KF
     //      0 & 180 are completely horizontal. Maximum KF
     public double getGravity(){
-        double FF = .1;
-        double currentRadians = MasterShoulderMotor.getSelectedSensorPosition() * Constants.Misc.degreeToRadian;
+        double angle = MasterShoulderMotor.getSelectedSensorPosition();
+        double FF = .2;
+        if(angle <= 180 && angle >= 90)
+        {
+            FF = .35;
+        }
+        double currentRadians = angle * Constants.Misc.degreeToRadian;
         // todo - that KF value might have to change by length of the robot
         double feedForward = FF * Math.cos(currentRadians);
         return feedForward;

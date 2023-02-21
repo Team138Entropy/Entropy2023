@@ -4,6 +4,7 @@ import java.util.Vector;
 import frc.robot.Constants;
 import frc.robot.subsystems.Arm;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Enums.ArmRotationSpeed;
 import frc.robot.Enums.ArmTargets;
 import frc.robot.simulation.SimMechanism;
 
@@ -105,6 +106,9 @@ public class Superstructure {
     boolean isAtTargetArmAngle = evaluateArmAngle();
     boolean isAtTargetOverallPosition = (mCurrentTargetPosition == mArmTargetPosition);
 
+    // Set Arm Speed
+    mArm.setArmSpeeds(getRotationSpeed(mArmTargetPosition, mCurrentTargetPosition));
+
     // Arm Target does not match current position
     if(!isAtTargetOverallPosition)
     {
@@ -146,7 +150,29 @@ public class Superstructure {
     mArmTargetPosition = targetPosition;
   }
 
-  
+  // Changes the Arm Rotation Speed Based on what is needed
+  public ArmRotationSpeed getRotationSpeed(ArmTargets targetPosition, ArmTargets currentPosition)
+  {
+    ArmRotationSpeed result = ArmRotationSpeed.DEFAULT;
+    if(
+      null != targetPosition &&
+      null != currentPosition &&
+      targetPosition != currentPosition
+    )
+    {
+      // Greater than 90 is towards the backside, less than 90 is toward the front
+      if(targetPosition.armAngle > 90 && currentPosition.armAngle < 90)
+      {
+        // Target Position is greater than 90, heading to backside
+        result = ArmRotationSpeed.OVER_TOP_BACKWARDS;
+      } else if(targetPosition.armAngle < 90 && currentPosition.armAngle > 90)
+      {
+        // Target Position is less than 90, heading to frontside
+        result = ArmRotationSpeed.OVER_TOP_FORWARDS;
+      }
+    }
+    return result;
+  }  
 
   public void updateSmartDashBoard()
   {
