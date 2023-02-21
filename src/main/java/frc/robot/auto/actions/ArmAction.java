@@ -26,8 +26,7 @@ public class ArmAction implements Action{
   
     @Override
     public boolean isFinished() {
-
-        return Math.abs(mArm.getArmAngle() - mTargetAngle) < 10 && Math.abs(mArm.getArmExtension() - mTargetExtend) < 10;
+      return Math.abs(mArm.getArmAngle() - mTargetAngle) < 10 && Math.abs(mArm.getArmExtension() - mTargetExtend) < 10;
     }
   
     @Override
