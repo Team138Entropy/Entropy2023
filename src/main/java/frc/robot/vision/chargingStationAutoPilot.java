@@ -42,7 +42,7 @@ public class chargingStationAutoPilot {
         Constants.AutoPilot.CSAutoPilotKI.get(),
         Constants.AutoPilot.CSAutoPilotKD.get());
 
-    static final double chargingStationDegreeThreshold = 5;
+    static final double chargingStationDegreeThreshold = 4;
 
     double xAxisRate = 0;
 
@@ -71,21 +71,19 @@ public class chargingStationAutoPilot {
         // Get Pitch Angle and Pitch Rate
         pitchAngleDegrees = mPigeon.getUnadjustedPitch().getDegrees();
         pitchAngleRate = mPigeon.getUnadjustedPitchRate().getDegrees();
-        
-
-        if (
-            !isDone && 
-        (Math.abs(pitchAngleDegrees) > Math.abs(chargingStationDegreeThreshold))) {
-            // Continue Balancing
+        xAxisRate = 0;
+        autoBalanceXMode = false;
+        if((Math.abs(pitchAngleDegrees) <= Math.abs(chargingStationDegreeThreshold))
+         || (Math.abs(pitchAngleRate) > 15)) 
+        {
+            // Pitch Angle Rate is Greater than 15 or Angle is less than 5 Degree THreashold
+            // Stop! Were done!
+            isDone = true;
+        } else if(!isDone) {
             autoBalanceXMode = true;
         }
-        else{
-            // Balancing is Complete
-            autoBalanceXMode = false;
-            xAxisRate = 0;
-            isDone = true;
-    
-        }
+
+
         SmartDashboard.putBoolean("autoBalanceX mode", autoBalanceXMode);
         SmartDashboard.putNumber("chargeStation threshold", chargingStationDegreeThreshold);
         SmartDashboard.putNumber("pitch angle", pitchAngleDegrees);
