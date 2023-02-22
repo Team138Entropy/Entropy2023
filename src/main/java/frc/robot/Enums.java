@@ -37,9 +37,9 @@ public class Enums {
     public enum ArmTargets {
         //NAME_OF_POSITION(armAngle, armExtension),
         //THESE ARE PLACEHOLDER VALUES
-        TOP_SCORING_FRONT(10, Constants.Arm.MaxExtensionPosition),
+        TOP_SCORING_FRONT(12, Constants.Arm.MaxExtensionPosition),
         TOP_SCORING_FRONT_CUBE(-1, Constants.Arm.MaxExtensionPosition),
-        MID_SCORING_FRONT(-7,Constants.Arm.MinExtensionPosition),
+        MID_SCORING_FRONT(-5,Constants.Arm.MinExtensionPosition),
         MID_SCORING_FRONT_CUBE(-15,Constants.Arm.MinExtensionPosition),
 
         LOW_SCORING_FRONT(-50,Constants.Arm.MinExtensionPosition),
