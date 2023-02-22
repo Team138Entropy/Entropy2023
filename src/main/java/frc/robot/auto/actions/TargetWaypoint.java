@@ -29,6 +29,11 @@ public class TargetWaypoint implements Action {
         mTargetWaypoint.setRotation(redRotation.getRotation(), Alliance.Red);
     }
 
+    public TargetWaypoint(Waypoint wp, SwerveRotation rotation) 
+    {
+        this(wp, rotation, rotation);
+    }
+
     @Override
     public void start()
     {
@@ -38,6 +43,9 @@ public class TargetWaypoint implements Action {
 
         // Force Tolerances to Clear
         mAutoPilot.resetTolerances();
+
+        // Reset Goal
+        mAutoPilot.reset();
 
         // Set Target Pose
         mAutoPilot.setTargetPose(mTargetPose);

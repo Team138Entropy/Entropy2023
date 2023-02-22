@@ -196,14 +196,19 @@ public final class FieldConstants {
   // Locations of staged game pieces - for use in auto
   public static final class StagingLocations {
     public static final double centerOffsetX = Units.inchesToMeters(47.36);
-    public static final double positionX = fieldLength / 2.0 - Units.inchesToMeters(47.36);
+    public static final double positionXBlue = fieldLength / 2.0 - Units.inchesToMeters(47.36);
+    public static final double positionXRed = fieldLength / 2.0 + Units.inchesToMeters(47.36);
+
     public static final double firstY = Units.inchesToMeters(36.19);
     public static final double separationY = Units.inchesToMeters(48.0);
-    public static final Translation2d[] translations = new Translation2d[4];
+    public static final Translation2d[] blueStagingLocations = new Translation2d[4];
+    public static final Translation2d[] redStagingLocations = new Translation2d[4];
 
     static {
-      for (int i = 0; i < translations.length; i++) {
-        translations[i] = new Translation2d(positionX, firstY + (i * separationY));
+      for (int i = 0; i < blueStagingLocations.length; i++) {
+        blueStagingLocations[i] = new Translation2d(positionXBlue, firstY + (i * separationY));
+        redStagingLocations[i] = new Translation2d(positionXRed, firstY + (i * separationY));
+
       }
     }
   }
@@ -237,13 +242,25 @@ public final class FieldConstants {
             chargingStationOuterX - chargingStationLength;
         public static final double chargingStationLeftY = midY - tapeWidth;
         public static final double chargingStationRightY = chargingStationLeftY - chargingStationWidth;
-        public static final Translation2d[] chargingStationCorners =
+        public static final Translation2d[] chargingStationCornersBlue =
             new Translation2d[] {
               new Translation2d(chargingStationInnerX, chargingStationRightY),
               new Translation2d(chargingStationInnerX, chargingStationLeftY),
               new Translation2d(chargingStationOuterX, chargingStationRightY),
               new Translation2d(chargingStationOuterX, chargingStationLeftY)
-            };
+        };
+
+        public static final double redChargingStationOuterX = fieldLength - outerX;
+        public static final double redChargingStationInnerX =
+        redChargingStationOuterX + chargingStationLength;
+
+        public static final Translation2d[] chargingStationCornersRed =
+        new Translation2d[] {
+          new Translation2d(redChargingStationInnerX, chargingStationRightY),
+          new Translation2d(redChargingStationInnerX, chargingStationLeftY),
+          new Translation2d(redChargingStationOuterX, chargingStationRightY),
+          new Translation2d(redChargingStationOuterX, chargingStationLeftY)
+    };
     
   }
 
@@ -356,35 +373,80 @@ public final class FieldConstants {
 
         // Left Exit Point of the Community (left of Charging Station)
         public static final Waypoint CommunityExitLeft;
+        //public static final Waypoint CommunityEntranceLeft;
 
-        // Right Exit Point of the Community (right of Charging Station)
+
+        // Entrance/Exit Points of the Community
+        // Exit is by the grid, Entrance is by the Middle of the Field
         public static final Waypoint CommunityExitRight;
+        public static final Waypoint CommunityEntranceRight;
 
+        /*
+         * 
+         *   public static final class StagingLocations {
+    public static final double centerOffsetX = Units.inchesToMeters(47.36);
+    public static final double positionXBlue = fieldLength / 2.0 - Units.inchesToMeters(47.36);
+    public static final double positionXRed = fieldLength / 2.0 + Units.inchesToMeters(47.36);
 
-        public static final Waypoint TestWayPoint;
+    public static final double firstY = Units.inchesToMeters(36.19);
+    public static final double separationY = Units.inchesToMeters(48.0);
+    public static final Translation2d[] blueStagingLocations = new Translation2d[4];
+    public static final Translation2d[] redStagingLocations = new Translation2d[4];
+         */
+        // Scoring Positions 
+        public static final Waypoint[] StagingWaypoints = new Waypoint[4];
 
         static {
-            Pose2d testPose = new Pose2d(
+            // Comunity Exit Left
+            CommunityExitLeft = new Waypoint();
+            CommunityExitLeft.setPose(new Pose2d(
                 new Translation2d(6,6),
                 new Rotation2d()
-            );
-            CommunityExitLeft = new Waypoint();
-            CommunityExitLeft.setPose(testPose, Alliance.Blue);
-            CommunityExitLeft.setPose(testPose, Alliance.Red);
+            ), Alliance.Blue);
+            CommunityExitLeft.setPose(new Pose2d(
+                new Translation2d(6,6),
+                new Rotation2d()
+            ), Alliance.Red);
 
 
-            CommunityExitRight = new Waypoint();
+            //  public static Translation2d getTargetPositionPose(TargetedPositions pos, Alliance allianceColor)
 
-            // Remove Eventually
-            Pose2d testPose2 = new Pose2d(
-                new Translation2d(6,2),
+            
+            Pose2d CommunityExitRightBluePose = new Pose2d(
+                getTargetPositionPose(TargetedPositions.GRID_9, Alliance.Blue),
                 new Rotation2d()
             );
-            TestWayPoint = new Waypoint();
-            TestWayPoint.setPose(testPose2, Alliance.Blue);
-            TestWayPoint.setPose(testPose2, Alliance.Red);
-            TestWayPoint.setRotation(SwerveRotation.FRONT_FACING_LEFT.getRotation(), Alliance.Blue);
-            TestWayPoint.setRotation(SwerveRotation.FRONT_FACING_LEFT.getRotation(), Alliance.Red);
+
+            Pose2d CommunityEntranceRightBluePose = new Pose2d(
+                Community.chargingStationCornersBlue[2].plus(new Translation2d(0, -1)),
+                new Rotation2d()
+            );
+            
+            CommunityExitRight = new Waypoint();
+            CommunityExitRight.setPose(CommunityExitRightBluePose, Alliance.Blue);
+            CommunityExitRight.setPose(CommunityExitRightBluePose, Alliance.Red);
+            CommunityExitRight.setRotation(SwerveRotation.FRONT_FACING_FORWARD.getRotation(), Alliance.Blue);
+            CommunityExitRight.setRotation(SwerveRotation.FRONT_FACING_FORWARD.getRotation(), Alliance.Red);
+            CommunityEntranceRight = new Waypoint();
+            CommunityEntranceRight.setPose(CommunityEntranceRightBluePose, Alliance.Blue);
+            CommunityEntranceRight.setPose(CommunityEntranceRightBluePose, Alliance.Red);
+            CommunityEntranceRight.setRotation(SwerveRotation.FRONT_FACING_FORWARD.getRotation(), Alliance.Blue);
+            CommunityEntranceRight.setRotation(SwerveRotation.FRONT_FACING_FORWARD.getRotation(), Alliance.Red);
+
+            // Staging Locations
+            for(int i = 0; i < StagingLocations.blueStagingLocations.length; ++i)
+            {
+                Waypoint currentStagingWaypoint = new Waypoint();
+                currentStagingWaypoint.setPose(new Pose2d(
+                    StagingLocations.blueStagingLocations[i],
+                    new Rotation2d()
+                ), Alliance.Blue);
+                currentStagingWaypoint.setPose(new Pose2d(
+                    StagingLocations.redStagingLocations[i],
+                    new Rotation2d()
+                ), Alliance.Red);
+                StagingWaypoints[i] = currentStagingWaypoint;
+            }
 
         }
     };

@@ -185,15 +185,15 @@ public class RobotState {
     // Resets Odometry and Robot State
     public void resetPosition(Pose2d pose)
     {
-        // Move Odometry
-        mDrive.resetOdometry(pose);
-
         // Simulation 
         // Since the Robot will have been physically moved, need to update in sim
         if(!mRealRobot)
         {
             mPigeon.setSimYaw((pose.getRotation().getDegrees()));
         }
+
+        // Move Odometry
+        mDrive.resetOdometry(pose);
 
         // Reset Pose Estimators
         // Drive Pose Estimator with Vision
@@ -356,13 +356,32 @@ public class RobotState {
 
         }
 
-        // Charging Station Corners
-        for(int i = 0; i < FieldConstants.Community.chargingStationCorners.length; i++)
+        // Staging Locations
+        for(int i = 0; i < FieldConstants.StagingLocations.blueStagingLocations.length; ++i)
         {
-            Translation2d corner = FieldConstants.Community.chargingStationCorners[i];
-            Pose2d cornerPose = new Pose2d(corner, new Rotation2d());
-            FieldObject2d cornerPoseObj = mVisualField.getObject("CS Corner " + i);
+            Translation2d stageLocationBlue = FieldConstants.StagingLocations.blueStagingLocations[i];
+            Translation2d stageLocationRed = FieldConstants.StagingLocations.redStagingLocations[i];
+            Pose2d stagePoseBlue = new Pose2d(stageLocationBlue, new Rotation2d());
+            Pose2d stagePoseRed = new Pose2d(stageLocationRed, new Rotation2d());
+
+            FieldObject2d RedStagePoseObj = mVisualField.getObject("R Stage " + i);
+            FieldObject2d BlueStagePoseObj = mVisualField.getObject("B Stage " + i);
+            RedStagePoseObj.setPose(stagePoseRed);
+            BlueStagePoseObj.setPose(stagePoseBlue);
+        }
+
+        // Charging Station Corners
+        for(int i = 0; i < FieldConstants.Community.chargingStationCornersBlue.length; ++i)
+        {
+            Translation2d cornerB = FieldConstants.Community.chargingStationCornersBlue[i];
+            Pose2d cornerPose = new Pose2d(cornerB, new Rotation2d());
+            FieldObject2d cornerPoseObj = mVisualField.getObject("B CS Corner " + i);
             cornerPoseObj.setPose(cornerPose);
+
+            Translation2d cornerR = FieldConstants.Community.chargingStationCornersRed[i];
+            Pose2d cornerPoseRed = new Pose2d(cornerR, new Rotation2d());
+            FieldObject2d RedCornerPoseObj = mVisualField.getObject("R CS Corner " + i);
+            RedCornerPoseObj.setPose(cornerPoseRed);
         }
         
         // Vision Following Trajectory if applicable
@@ -375,7 +394,7 @@ public class RobotState {
         */
 
         // Vision Poses
-        for(int i = 0; i < mPhotonPoseEstimatorCount; ++i) 
+        for(int i = 0; false && i < mPhotonPoseEstimatorCount; ++i) 
         {
             PoseCameras currentCamera = PoseCameras.values()[i];
             final String cameraPoseKey = currentCamera.toString() + "_VisionPose";
@@ -393,9 +412,12 @@ public class RobotState {
     }
 
     // Set Current Alliance
-    public void setAlliance(Alliance allianceC)
+    public boolean setAlliance(Alliance allianceC)
     {
+        boolean different = false;
+        if(mAlliance != allianceC) different = true;
         mAlliance = allianceC;
+        return different;
     }
 
     // Get Current Alliance

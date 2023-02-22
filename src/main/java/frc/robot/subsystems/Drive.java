@@ -802,7 +802,7 @@ public class Drive extends Subsystem {
       break;
       case SWERVE_DRIVE:
         mSwerveOdometry.resetPosition(mPigeon.getYaw().getWPIRotation2d(), getModulePositions(), pose);
-        mSimSwerveOdometry.resetPosition(pose, mPigeon.getYaw().getWPIRotation2d());
+        mSimSwerveOdometry.resetPosition(pose, mPigeon.getSimYaw().getWPIRotation2d());
       break;
       default:
       break;

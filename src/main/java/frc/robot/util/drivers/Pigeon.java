@@ -2,8 +2,10 @@ package frc.robot.util.drivers;
 
 import com.ctre.phoenix.sensors.Pigeon2;
 
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import frc.robot.Constants;
 import frc.robot.util.geometry.Rotation2d;
+import edu.wpi.first.math.filter.LinearFilter;
 
 
 public class Pigeon {
@@ -20,6 +22,7 @@ public class Pigeon {
     // Actual pigeon object
     private final Pigeon2 mGyro;
 
+
     // Configs
     private boolean inverted = Constants.SwerveConstants.invertGyro;
     private Rotation2d yawAdjustmentAngle = Rotation2d.identity();
@@ -27,6 +30,10 @@ public class Pigeon {
 
     // Simulation 
     private Rotation2d mSimYawAngle = Rotation2d.identity();
+
+    // Pitch Rate at a period of 20 ms (derivative of 1, 2 samples)
+    private final LinearFilter mPitchRateFilter = 
+    LinearFilter.backwardFiniteDifference(1, 2, 0.02);
 
     private Pigeon(int port)
     {
@@ -76,6 +83,11 @@ public class Pigeon {
         return Rotation2d.fromDegrees(mGyro.getPitch());
     }
 
+    public Rotation2d getUnadjustedPitchRate() {
+        double update = mPitchRateFilter.calculate(mGyro.getPitch());
+        return Rotation2d.fromDegrees(update);
+    }
+
     public Rotation2d getUnadjustedRoll() {
         return Rotation2d.fromDegrees(mGyro.getRoll());
     }
@@ -96,6 +108,7 @@ public class Pigeon {
 
     // Get the Sim Yaw Degrees Value
     public Rotation2d getSimYaw() {
+        //mGyro.getAce
         return mSimYawAngle;
     }
 }

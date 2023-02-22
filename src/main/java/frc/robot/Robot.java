@@ -224,10 +224,17 @@ public class Robot extends TimedRobot {
     // Update Robot Field Position
     Pose2d robotPose = mDrive.getPose();
 
+    // Set Pose on Field
     mField.setRobotPose(robotPose);
 
     // Set Alliance Color
-    mRobotState.setAlliance(DriverStation.getAlliance());
+    if(mRobotState.setAlliance(DriverStation.getAlliance()))
+    {
+      // Robot Alliance Color has changed
+
+      // Regenerate Auto Modes
+      populateAutonomousModes();
+    }
 
     // Update Robotstate
     mRobotState.update();
@@ -283,6 +290,9 @@ public class Robot extends TimedRobot {
 
     // Auto Pilot Driver
     mAutoPilot.updateSmartDashBoard();
+
+    // Charging Station Auto Pilot
+    mChargingStationAutoPilot.updateSmartdashboard();
 
     // PhotonVision Smartdashboard
     mPhotonVision.updateSmartDashboard();
@@ -815,9 +825,9 @@ public class Robot extends TimedRobot {
       else if(mBalanceMode)
       {
         if(mOperatorInterface.getFastBalance())
-          mChargingStationAutoPilot.update(false, mOperatorInterface.getAutoPilotLeftStrafe(), mOperatorInterface.getAutoPilotRightStrafe());
+          mChargingStationAutoPilot.update(mOperatorInterface.getAutoPilotLeftStrafe(), mOperatorInterface.getAutoPilotRightStrafe());
         else if(mOperatorInterface.getSlowBalance()){
-          mChargingStationAutoPilot.update(true, mOperatorInterface.getAutoPilotLeftStrafe(), mOperatorInterface.getAutoPilotRightStrafe());
+          mChargingStationAutoPilot.update(mOperatorInterface.getAutoPilotLeftStrafe(), mOperatorInterface.getAutoPilotRightStrafe());
         }else{
           mDrive.setBrake(true);
         }
@@ -862,6 +872,9 @@ public class Robot extends TimedRobot {
 
         // Reset to current targeted position
         mAutoPilot.reset();
+
+        // Reset Charging Station DOne
+        mChargingStationAutoPilot.reset();
       }
     }
   }

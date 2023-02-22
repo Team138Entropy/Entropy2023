@@ -187,7 +187,6 @@ public class AutoPilot {
         // Tolerances
         mDriveController.setTolerance(0.05);
         mThetaController.setTolerance(Units.degreesToRadians(1.8));
-
     }
 
     // Set Target Pose to Drive To
@@ -332,7 +331,7 @@ public class AutoPilot {
 
         // If already at goal, zero
         if (mDriveController.atGoal()) driveVelocityScalar = 0.0;
-        if (mDriveController.atGoal()) thetaVelocity = 0.0;
+        if (mThetaController.atGoal()) thetaVelocity = 0.0;
 
         // Drive Velocity Vector (Translation2d)
         var driveVelocity =
@@ -466,6 +465,12 @@ public class AutoPilot {
         return mRobotPose;
     }
 
+    // Return if the two Controllers are at the goal
+    public boolean atGoal()
+    {
+        return mDriveController.atGoal() && mThetaController.atGoal();
+    }
+
     public void updateSmartDashBoard()
     {
         final String key = "AutoPilot/";
@@ -489,8 +494,6 @@ public class AutoPilot {
         SmartDashboard.putNumber(key + "CalculatedSpeeds/X", mCalculatedSpeeds.vxMetersPerSecond);
         SmartDashboard.putNumber(key + "CalculatedSpeeds/Y", mCalculatedSpeeds.vyMetersPerSecond);
         SmartDashboard.putNumber(key + "CalculatedSpeeds/Rotation", mCalculatedSpeeds.omegaRadiansPerSecond);
-
-
 
         // Debug Field Drawing
         if(true)

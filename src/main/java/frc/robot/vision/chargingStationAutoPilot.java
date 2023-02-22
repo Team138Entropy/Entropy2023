@@ -5,6 +5,7 @@ import frc.robot.subsystems.Drive;
 import frc.robot.util.drivers.Pigeon;
 import frc.robot.util.geometry.Rotation2d;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.TuneableNumber;
@@ -26,12 +27,14 @@ public class chargingStationAutoPilot {
     public double rollAngleDegrees = mPigeon.getRoll().getDegrees();
 
     public double pitchAngleDegrees = mPigeon.getUnadjustedPitch().getDegrees();
+    public double pitchAngleRate = mPigeon.getUnadjustedPitchRate().getDegrees();
 
     public boolean autoBalanceXMode = false;
 
     public double respondRate = 0.01;
 
-    
+    private boolean isDone = false;
+
 
     //placeholder PID values
     private final PIDController balanceController = new PIDController(
@@ -39,7 +42,7 @@ public class chargingStationAutoPilot {
         Constants.AutoPilot.CSAutoPilotKI.get(),
         Constants.AutoPilot.CSAutoPilotKD.get());
 
-    static final double chargingStationDegreeThreshold = 1;
+    static final double chargingStationDegreeThreshold = 5;
 
     double xAxisRate = 0;
 
@@ -49,35 +52,38 @@ public class chargingStationAutoPilot {
 
     }
 
-    private void start() {
-        
+
+    // Reset Done Status
+    public void reset() {
+        isDone = false;
+    } 
+    
+    // Is Balance COmplete
+    public boolean isDone() {
+        return isDone;
     }
 
-    boolean started = false;
-    boolean sign = false;
-    
-
-    public void update(Boolean slowDrive,boolean leftStrafe, boolean rightStrafe) {
+    public void update(boolean leftStrafe, boolean rightStrafe) {
         balanceController.setP(Constants.AutoPilot.CSAutoPilotKP.get());
         balanceController.setI(Constants.AutoPilot.CSAutoPilotKI.get());
         balanceController.setD(Constants.AutoPilot.CSAutoPilotKD.get());
+
+        // Get Pitch Angle and Pitch Rate
         pitchAngleDegrees = mPigeon.getUnadjustedPitch().getDegrees();
-        boolean currentSign = (pitchAngleDegrees >= 0);
-        if(!started)
-        {
-            started = true;
-            sign = currentSign;
-        }
+        pitchAngleRate = mPigeon.getUnadjustedPitchRate().getDegrees();
         
 
         if (
-            currentSign == sign && 
-        (Math.abs(pitchAngleDegrees) >= Math.abs(chargingStationDegreeThreshold))) {
+            !isDone && 
+        (Math.abs(pitchAngleDegrees) > Math.abs(chargingStationDegreeThreshold))) {
+            // Continue Balancing
             autoBalanceXMode = true;
         }
         else{
+            // Balancing is Complete
             autoBalanceXMode = false;
             xAxisRate = 0;
+            isDone = true;
     
         }
         SmartDashboard.putBoolean("autoBalanceX mode", autoBalanceXMode);
@@ -93,6 +99,8 @@ public class chargingStationAutoPilot {
             */
             //idk if this is how you use a pid controller
             xAxisRate = balanceController.calculate(pitchAngleDegrees);
+            xAxisRate = xAxisRate*respondRate;
+
         }
 
         if (leftStrafe) {
@@ -103,19 +111,25 @@ public class chargingStationAutoPilot {
             yAxisRate = 0;
         }
 
-        
-        if(true){
-            xAxisRate = xAxisRate*respondRate;
+        if(autoBalanceXMode){
+            mDrive.setBrake(false);
+
+            // Still balancing
+            // Set Speeds into Swerve System
+            ChassisSpeeds calculatedSpeeds = new ChassisSpeeds(xAxisRate, yAxisRate, 0);
+
+            // Call Autonomous Chasis Speed 
+            var targetSwerveModuleStates = mDrive.getSwerveKinematics().toSwerveModuleStates(calculatedSpeeds);
+
+            // Set Swerve to those Module States
+            mDrive.setModuleStates(targetSwerveModuleStates);
+        } else {
+            // Stop balancing
+            mDrive.setBrake(true);
+            mDrive.setSwerveDrive(new Translation2d(), 0, true, true, false);
+
         }
 
-        // Set Speeds into Swerve System
-        ChassisSpeeds calculatedSpeeds = new ChassisSpeeds(xAxisRate, yAxisRate, 0);
-
-        // Call Autonomous Chasis Speed 
-        var targetSwerveModuleStates = mDrive.getSwerveKinematics().toSwerveModuleStates(calculatedSpeeds);
-
-        // Set Swerve to those Module States
-        mDrive.setModuleStates(targetSwerveModuleStates);
 
         SmartDashboard.putNumber("xAxisRate", xAxisRate);
     }
@@ -130,6 +144,15 @@ public class chargingStationAutoPilot {
 
         // Set Swerve to those Module States
         mDrive.setModuleStates(targetSwerveModuleStates);
+    }
+
+
+    public void updateSmartdashboard()
+    {
+        String key = "ChargingStation/";
+        SmartDashboard.putNumber(key + "Pitch (Degrees)", pitchAngleDegrees);
+        SmartDashboard.putNumber(key + "Pitch Rate (Degrees/Period)", pitchAngleDegrees);
+
     }
 
 }

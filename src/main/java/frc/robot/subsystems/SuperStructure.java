@@ -8,8 +8,6 @@ import frc.robot.Enums.ArmRotationSpeed;
 import frc.robot.Enums.ArmTargets;
 import frc.robot.simulation.SimMechanism;
 
-
-
 public class Superstructure {
   private static Superstructure mInstance;  
   public static synchronized Superstructure getInstance() {
@@ -68,6 +66,24 @@ public class Superstructure {
     }else {
       // sim
       result = (mSim.getArmAngle() == mArmTargetPosition.armAngle);
+    }
+    return result;
+  }
+
+  private boolean evaluteExtension()
+  {
+    boolean result = false;
+    if(mRealRobot)
+    {
+      // real
+      result = mArm.isArmExtensionAtPosition(mArmTargetPosition.armExtend, mExtensionPositionDeadband);
+    } else {
+      if((mSim.getArmExtension() >= (mArmTargetPosition.armExtend - mExtensionPositionDeadband))
+        && (mSim.getArmExtension() <= (mArmTargetPosition.armExtend + mExtensionPositionDeadband))
+      )
+      {
+        result = true;
+      }
     }
     return result;
   }
@@ -148,6 +164,11 @@ public class Superstructure {
   public void setTargetArmPosition(ArmTargets targetPosition)
   {
     mArmTargetPosition = targetPosition;
+  }
+
+  // Return True if Both are staisifed
+  public boolean isAtTarget() {
+    return evaluateArmAngle() && evaluteExtension();
   }
 
   // Changes the Arm Rotation Speed Based on what is needed

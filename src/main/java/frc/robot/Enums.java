@@ -117,6 +117,8 @@ public class Enums {
     // Useful for getting rotations
     public enum SwerveRotation {
         FRONT_FACING_FORWARD(0),
+        FRONT_FACING_FORWARD_LEFT_ANGLE(45),
+        
         FRONT_FACING_GRID(180),
         BACK_FACING_GRID(0),
         FRONT_FACING_RIGHT(90),

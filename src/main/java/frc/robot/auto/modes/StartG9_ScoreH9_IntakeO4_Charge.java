@@ -24,7 +24,7 @@ public class StartG9_ScoreH9_IntakeO4_Charge extends AutoModeBase {
 
     public StartG9_ScoreH9_IntakeO4_Charge(){
 
-        setStartingPosition(TargetedPositions.GRID_9,SwerveRotation.FRONT_FACING_GRID);
+        setStartingPosition(TargetedPositions.GRID_9, SwerveRotation.FRONT_FACING_GRID);
 
         //addAction(new ScoreAction(TargetedObject.CONE ,ArmTargets.TOP_SCORING_HIGH));
 
