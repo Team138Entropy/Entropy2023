@@ -84,6 +84,9 @@ public class Pigeon {
     }
 
     public Rotation2d getUnadjustedPitchRate() {
+        double[] rawDegrees = new double[3];
+        mGyro.getRawGyro(rawDegrees);
+        
         double update = mPitchRateFilter.calculate(mGyro.getPitch());
         return Rotation2d.fromDegrees(update);
     }
