@@ -29,7 +29,7 @@ public class chargingStationAutoPilot {
 
     public boolean autoBalanceXMode = false;
 
-    public double respondRate = 0.1;
+    public double respondRate = 0.01;
 
     
 
@@ -39,7 +39,7 @@ public class chargingStationAutoPilot {
         Constants.AutoPilot.CSAutoPilotKI.get(),
         Constants.AutoPilot.CSAutoPilotKD.get());
 
-    static final double chargingStationDegreeThreshold = 5;
+    static final double chargingStationDegreeThreshold = 1;
 
     double xAxisRate = 0;
 
@@ -53,14 +53,26 @@ public class chargingStationAutoPilot {
         
     }
 
+    boolean started = false;
+    boolean sign = false;
+    
+
     public void update(Boolean slowDrive,boolean leftStrafe, boolean rightStrafe) {
         balanceController.setP(Constants.AutoPilot.CSAutoPilotKP.get());
         balanceController.setI(Constants.AutoPilot.CSAutoPilotKI.get());
         balanceController.setD(Constants.AutoPilot.CSAutoPilotKD.get());
         pitchAngleDegrees = mPigeon.getUnadjustedPitch().getDegrees();
+        boolean currentSign = (pitchAngleDegrees >= 0);
+        if(!started)
+        {
+            started = true;
+            sign = currentSign;
+        }
         
 
-        if ((Math.abs(pitchAngleDegrees) >= Math.abs(chargingStationDegreeThreshold))) {
+        if (
+            currentSign == sign && 
+        (Math.abs(pitchAngleDegrees) >= Math.abs(chargingStationDegreeThreshold))) {
             autoBalanceXMode = true;
         }
         else{

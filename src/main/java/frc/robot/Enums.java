@@ -192,7 +192,7 @@ public class Enums {
 
     public enum ArmRotationSpeed {
         DEFAULT(15, 20),
-        OVER_TOP_FORWARDS(10, 5),
+        OVER_TOP_FORWARDS(15, 15),
         OVER_TOP_BACKWARDS(15, 10);
 
         public final double velocity;

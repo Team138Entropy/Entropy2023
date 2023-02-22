@@ -185,8 +185,8 @@ public class AutoPilot {
 
         
         // Tolerances
-        mDriveController.setTolerance(0.08);
-        mThetaController.setTolerance(Units.degreesToRadians(2.0));
+        mDriveController.setTolerance(0.05);
+        mThetaController.setTolerance(Units.degreesToRadians(1.8));
 
     }
 
