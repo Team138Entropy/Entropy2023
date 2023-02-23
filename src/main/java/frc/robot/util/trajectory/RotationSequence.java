@@ -1,4 +1,4 @@
-package frc.robot.util.motion;
+package frc.robot.util.trajectory;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import java.util.Map.Entry;

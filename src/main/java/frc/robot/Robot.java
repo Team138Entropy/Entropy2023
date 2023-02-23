@@ -849,7 +849,7 @@ public class Robot extends TimedRobot {
         // Swerve Drive
         // Joystick based Translation
         Translation2d sTrans = mOperatorInterface.getSwerveTranslation();
-        if(true) sTrans = sTrans.times(.5); // slow down the speed by 50%!
+        if(true) sTrans = sTrans.times(.7); // slow down the speed by 30%!
         double sRotation = mOperatorInterface.getSwerveRotation();
         sRotation *= .25;
 

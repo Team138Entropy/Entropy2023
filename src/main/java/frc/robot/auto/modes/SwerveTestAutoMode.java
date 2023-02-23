@@ -33,6 +33,12 @@ public class SwerveTestAutoMode extends AutoModeBase {
         setStartingPosition(TargetedPositions.GRID_9, SwerveRotation.FRONT_FACING_GRID);
         addAction(new WaitAction(5));     
 
+        DriveTrajectoryAction trajAction = new DriveTrajectoryAction(SwerveRotation.FRONT_FACING_GRID.getRotation());
+        trajAction.addWaypoint(FieldConstants.Auto.Waypoints.CommunityExitRight, SwerveRotation.FRONT_FACING_GRID);
+        trajAction.addWaypoint(FieldConstants.Auto.Waypoints.CommunityEntranceRight, SwerveRotation.FRONT_FACING_GRID);
+        trajAction.generate();
+        addAction(trajAction);
+
 
 
         // Score High

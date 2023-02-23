@@ -536,6 +536,22 @@ public class Drive extends Subsystem {
     }
   }
 
+  public void setSwerveVelocity(ChassisSpeeds speed)
+  {
+    SwerveModuleState[] swerveModuleStates = Constants.SwerveConstants.swerveKinematics.toSwerveModuleStates(
+      speed
+    );
+        
+    // Desaturate wheel speeds - keeps speed below a maximum speed
+    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.SwerveConstants.maxSpeed);
+
+    // set the desired state into each swerve module
+    // This will command the drive motor and angle motors to needed angle and speed
+    for (SwerveModule mod : mSwerveModules) {
+      mod.setDesiredState(swerveModuleStates[mod.getModuleNumber()], true);
+    }
+  }
+
 
   /* Used by SwerveControllerCommand in Auto */
   // Directly Sets the Desired State into the Module

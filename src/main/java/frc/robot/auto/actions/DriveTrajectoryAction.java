@@ -10,6 +10,9 @@ import frc.robot.Enums.TargetedPositions;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.util.Waypoint;
+import frc.robot.util.trajectory.CustomHolonomicDriveController;
+import frc.robot.util.trajectory.CustomTrajectoryGenerator;
+import frc.robot.util.trajectory.RotationSequence;
 import frc.robot.vision.AutoPilot;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.HolonomicDriveController;
@@ -43,12 +46,15 @@ public class DriveTrajectoryAction implements Action {
 
     private final PIDController mXController = new PIDController(2.5, 0.0, 0.0);
     private final PIDController mYController = new PIDController(2.5, 0.0, 0.0);
-    private final ProfiledPIDController mThetaController =
-    new ProfiledPIDController(
-        7, 0.0, 0.0, new TrapezoidProfile.Constraints(8, 0.8));
+    private final PIDController mThetaController = new PIDController(
+        7, 0.0, 0.0);
 
-    private final HolonomicDriveController mHolonomicDriveController = new HolonomicDriveController(mXController, 
-        mYController, mThetaController);
+    // Trajectory Genrator, Drive Controller
+    private final CustomTrajectoryGenerator mCustomTrajectoryGenerator = new CustomTrajectoryGenerator();
+    private final CustomHolonomicDriveController mCustomHolonomicDriveController = new CustomHolonomicDriveController(
+        mXController, mYController, mThetaController
+    );
+
     private List<Pose2d> mPoses;
     private Trajectory mTrajectory = null;
     private Rotation2d mOrentation;
@@ -110,7 +116,11 @@ public class DriveTrajectoryAction implements Action {
                 new CentripetalAccelerationConstraint(mMaxCentripetalAccelerationMetersPerSec2)
         );
 
-        mTrajectory = TrajectoryGenerator.generateTrajectory(mPoses, config);
+        // Create Generator and Generate
+        mCustomTrajectoryGenerator.generateWithPoses(config, mPoses);
+
+        // Store Trajectory
+        mTrajectory = mCustomTrajectoryGenerator.getDriveTrajectory();
     }
 
     @Override
@@ -119,7 +129,7 @@ public class DriveTrajectoryAction implements Action {
         // Reset PID Controllers
         mXController.reset();
         mYController.reset();
-        mThetaController.reset(null);
+        mThetaController.reset();
 
         // Initialize the timer.
         mTimer = new Timer();
@@ -134,23 +144,22 @@ public class DriveTrajectoryAction implements Action {
         if(mTrajectory == null) return;
 
         // Sample the Trajectory through the total time
-        if(mTimer.get() < mTrajectory.getTotalTimeSeconds())
+        double currentTime = mTimer.get();
+        if(currentTime < mTrajectory.getTotalTimeSeconds())
         {
-            State currentTrajectoryState = mTrajectory.sample(mTimer.get());
+            // Get setpoint
+            Trajectory.State driveState = 
+                mCustomTrajectoryGenerator.getDriveTrajectory().sample(currentTime);
+            RotationSequence.State holonomicRotationState = 
+                mCustomTrajectoryGenerator.getHolonomicRotationSequence().sample(currentTime);
 
-            //mHolonomicDriveController.calculate(mEndPose, mEndPose, mMaxVelocityMS, null)
-            ChassisSpeeds calculatedSpeeds = mHolonomicDriveController.calculate(
-                mRobotState.getPose(), currentTrajectoryState, mOrentation
-            );
-
-            // Call Autonomous Chasis Speed 
-            var targetSwerveModuleStates = mDrive.getSwerveKinematics().toSwerveModuleStates(calculatedSpeeds);
-
-            // Desaturate wheel speeds - keeps speed below a maximum speed
-            SwerveDriveKinematics.desaturateWheelSpeeds(targetSwerveModuleStates, 2);
-                
-            // Set Swerve to those Module States
-            mDrive.setModuleStates(targetSwerveModuleStates);
+            // Calculate velocity
+            ChassisSpeeds nextDriveState =
+                mCustomHolonomicDriveController.calculate(
+                    mRobotState.getPose(), driveState, holonomicRotationState);
+            
+            // Tell the Drive to Drive
+            mDrive.setSwerveVelocity(nextDriveState);
 
         }
     }

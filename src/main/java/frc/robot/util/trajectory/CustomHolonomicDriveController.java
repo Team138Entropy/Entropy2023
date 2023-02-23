@@ -1,4 +1,4 @@
-package frc.robot.util.motion;
+package frc.robot.util.trajectory;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
