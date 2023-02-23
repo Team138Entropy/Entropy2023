@@ -35,6 +35,8 @@ public class Grasper extends Subsystem {
     private boolean mGrasperOpen = false;
     //Wheel Delay Timer
     private final Timer wheelDelayTimer;
+    //Double for the delay on the beam sensor triggering
+    public double mDelaySeconds;
 
     // Grasper State
     public enum GrasperState {
@@ -170,7 +172,7 @@ public class Grasper extends Subsystem {
   }
   // Codes a delay in the sensor when triggered
   public boolean sensorDelayOver(){
-    return sensorDelayTimer.hasElapsed(0.15);
+    return sensorDelayTimer.hasElapsed(mDelaySeconds);
   }
 
   public boolean getBeamSensorBroken(){

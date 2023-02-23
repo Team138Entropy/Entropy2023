@@ -684,6 +684,13 @@ public class Robot extends TimedRobot {
           }
         }
       }
+      //Sets up the delay on the grasper after beam sensor activation based on the targeted game piece
+      if (mCurrentTargetedObject == TargetedObject.CUBE){
+        mGrasper.mDelaySeconds = 0.3;
+      }
+      else {
+        mGrasper.mDelaySeconds = 0.15;
+      }
     }
 
     // Arm Up After Intake
@@ -716,7 +723,9 @@ public class Robot extends TimedRobot {
     //driver feedback - beam sensor creates vibration (if getSensorBroken == true then vibrate)
     if (mGrasper.getGrasperState() == Grasper.GrasperState.Closed) {
       mOperatorInterface.setDriverRumble(true, 0.2);
-  }
+    } else {
+      mOperatorInterface.setDriverRumble(false, 0);
+    }
   }
 
    /**
