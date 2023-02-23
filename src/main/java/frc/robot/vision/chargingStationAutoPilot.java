@@ -7,6 +7,7 @@ import frc.robot.util.geometry.Rotation2d;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.TuneableNumber;
 
@@ -35,6 +36,10 @@ public class chargingStationAutoPilot {
 
     private boolean isDone = false;
 
+    public int stage = 0;
+
+    public Timer mTimer = new Timer();
+
 
     //placeholder PID values
     private final PIDController balanceController = new PIDController(
@@ -55,6 +60,7 @@ public class chargingStationAutoPilot {
 
     // Reset Done Status
     public void reset() {
+        stage = 0;
         isDone = false;
     } 
     
@@ -74,13 +80,25 @@ public class chargingStationAutoPilot {
         xAxisRate = 0;
         autoBalanceXMode = false;
         if((Math.abs(pitchAngleDegrees) <= Math.abs(chargingStationDegreeThreshold))
-         || (Math.abs(pitchAngleRate) > 15)) 
+         || (Math.abs(pitchAngleRate) > 11)) 
         {
             // Pitch Angle Rate is Greater than 15 or Angle is less than 5 Degree THreashold
             // Stop! Were done!
-            isDone = true;
-        } else if(!isDone) {
+            stage = 1;
+            mTimer.reset();
+            mTimer.start();
+        } else if(stage == 0) {
             autoBalanceXMode = true;
+            xAxisRate = balanceController.calculate(pitchAngleDegrees);
+            xAxisRate = xAxisRate*respondRate;
+        }else if(stage == 1){
+            if(mTimer.hasElapsed(1.6)){
+                stage = 2;
+                autoBalanceXMode = false;
+            }else{
+                xAxisRate = .01;
+                autoBalanceXMode = true;
+            }
         }
 
 
@@ -149,7 +167,7 @@ public class chargingStationAutoPilot {
     {
         String key = "ChargingStation/";
         SmartDashboard.putNumber(key + "Pitch (Degrees)", pitchAngleDegrees);
-        SmartDashboard.putNumber(key + "Pitch Rate (Degrees/Period)", pitchAngleDegrees);
+        SmartDashboard.putNumber(key + "Pitch Rate (Degrees/Period)", pitchAngleRate);
 
     }
 

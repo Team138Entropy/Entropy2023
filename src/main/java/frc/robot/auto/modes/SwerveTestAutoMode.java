@@ -47,7 +47,7 @@ public class SwerveTestAutoMode extends AutoModeBase {
         // Wait for Object to fall
         addAction(new WaitAction(.2));
 
-
+        /* 
         // Drive to Community Entrance and Put Arm in Rear Pickup
         ArrayList<Action> ParallelActions1 = new ArrayList<>();
         ParallelActions1.add(
@@ -77,6 +77,8 @@ public class SwerveTestAutoMode extends AutoModeBase {
             SwerveRotation.FRONT_FACING_GRID
         ));
 
+        */
+        /* 
         DriveTrajectoryAction trajAction = new DriveTrajectoryAction(SwerveRotation.FRONT_FACING_GRID.getRotation());
         trajAction.addPose(getStartingPose());        
         trajAction.addWaypoint(FieldConstants.Auto.Waypoints.CommunityExitRight, SwerveRotation.FRONT_FACING_GRID);

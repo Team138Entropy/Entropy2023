@@ -106,7 +106,7 @@ public class Constants {
 
   public static class AutoPilot {
     //tunable PID values
-    public static TuneableNumber CSAutoPilotKP = new TuneableNumber("CSAutoPilotKP",2);
+    public static TuneableNumber CSAutoPilotKP = new TuneableNumber("CSAutoPilotKP",2.5);
     public static TuneableNumber CSAutoPilotKI = new TuneableNumber("CSAutoPilotKI",0);
     public static TuneableNumber CSAutoPilotKD = new TuneableNumber("CSAutoPilotKD",0);
     

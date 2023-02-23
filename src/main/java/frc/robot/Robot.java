@@ -351,7 +351,8 @@ public class Robot extends TimedRobot {
     }
 
     // Close Grasper
-    mGrasper.setGrasperClosed();
+    mGrasper.setGrasperFullyClosed();
+
   }
 
   /** This function is called periodically during autonomous. */
@@ -361,6 +362,7 @@ public class Robot extends TimedRobot {
     if(!mAutoModeBase.isDone()){
       mAutoModeBase.runner();
     }
+    mGrasper.update();
   }
 
   /** This function is called once when teleop is enabled. */
