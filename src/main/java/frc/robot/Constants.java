@@ -189,7 +189,7 @@ public class Constants {
       public static final double kI = 0;
       public static final double kD = 0.0;
       public static final double kTimeout = 0.25;
-      public static final double kEpsilon = 1.0;
+      public static final double kEpsilon = 4.0;
 
       // Constraints for the profiled angle controller
       public static final double kMaxAngularSpeedRadiansPerSecond = 1.4 * Math.PI;

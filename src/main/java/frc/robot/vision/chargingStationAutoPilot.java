@@ -84,7 +84,8 @@ public class chargingStationAutoPilot {
         {
             // Pitch Angle Rate is Greater than 15 or Angle is less than 5 Degree THreashold
             // Stop! Were done!
-            stage = 1;
+            stage = 2;
+            autoBalanceXMode = false;
             mTimer.reset();
             mTimer.start();
         } else if(stage == 0) {
@@ -160,6 +161,10 @@ public class chargingStationAutoPilot {
 
         // Set Swerve to those Module States
         mDrive.setModuleStates(targetSwerveModuleStates);
+    }
+
+    public boolean getDone(){
+        return stage == 2;
     }
 
 

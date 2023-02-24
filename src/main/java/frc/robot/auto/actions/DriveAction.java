@@ -5,6 +5,7 @@ import edu.wpi.first.math.trajectory.*;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import frc.robot.Robot;
 import frc.robot.Enums.SwerveCardinal;
@@ -18,41 +19,38 @@ import frc.robot.subsystems.Drive;
  * @see Action
  */
 // https://frc-pdr.readthedocs.io/en/latest/control/pid_control.html
-public class TurnInPlaceAction implements Action {
-    private boolean mComplete;
-    private double mDegrees;
-    private double mGyroStart;
-    private double mError;
+public class DriveAction implements Action {
     private Drive mDrive = Drive.getInstance();
-    private SwerveCardinal mSnap;
+    private Translation2d mTranslation;
+    private double mSeconds;
+    private Timer mTimer =new Timer();
 
-    public TurnInPlaceAction(SwerveCardinal snap) {
-        mComplete = false;
-        mSnap = snap;
+    public DriveAction(Translation2d translation, double seconds) {
+        mTranslation = translation;
+        mSeconds = seconds;
 
     }
 
     @Override
     public void start() {
-        mDrive.startSnap(mSnap.degrees);
+        mTimer.reset();
+        mTimer.start();
     }
 
     @Override
     public void update() {
-        mDrive.setSwerveDrive(new Translation2d(), 0, true, true, false);
-        System.out.println("Action: Turn in Place running");
+        mDrive.setSwerveDrive(mTranslation, 0, true, true, false);
     }
 
 
     // if trajectory is done
     @Override
     public boolean isFinished() {
-        return !mDrive.isSnapping();
+        return mTimer.hasElapsed(mSeconds);
     }
 
     @Override
     public void done() {
-        System.out.println("Action: Turn in Place Complete");
-        mDrive.setSwerveDrive(new Translation2d(), 0, true, true, false);
+        mDrive.setSwerveDrive(new Translation2d(0,0), 0, true, true, false);
     }
 }

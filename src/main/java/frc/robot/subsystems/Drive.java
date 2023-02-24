@@ -449,13 +449,17 @@ public class Drive extends Subsystem {
     }
   }
 
+  public boolean isSnapping(){
+    return mIsSnapping;
+  }
+
   /* Calculate the Snap Value needed for Rotation */
   public double calculateSnapValue() {
     return mSnapPidController.calculate(mPigeon.getYaw().getRadians());
   }
 
   /* Return if Snap is Complete */
-  private boolean isSnapComplete() {
+  public boolean isSnapComplete() {
     double error = mSnapPidController.getGoal().position - mPigeon.getYaw().getRadians();
     return mDelayedBoolean.update(Math.abs(error) < Math.toRadians(Constants.Drive.SnapConstants.kEpsilon), 
             Constants.Drive.SnapConstants.kTimeout);

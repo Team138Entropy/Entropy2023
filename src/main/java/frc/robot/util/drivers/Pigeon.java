@@ -1,6 +1,7 @@
 package frc.robot.util.drivers;
 
 import com.ctre.phoenix.sensors.Pigeon2;
+import com.ctre.phoenix.sensors.Pigeon2Configuration;
 
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import frc.robot.Constants;
@@ -42,7 +43,8 @@ public class Pigeon {
 
     private Pigeon(int port, String busId) {        
         mGyro = new Pigeon2(port, busId);
-        //mGyro.configFactoryDefault();
+        mGyro.configFactoryDefault();
+        mGyro.configMountPose(91.01397, 1.15112317, -178.535873);
     }
 
     public Rotation2d getYaw() {

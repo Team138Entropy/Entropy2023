@@ -39,8 +39,8 @@ import java.util.Vector;
 public class DriveTrajectoryAction implements Action {
     private final Drive mDrive = Drive.getInstance();
     private final RobotState mRobotState = RobotState.getInstance();
-    private double mMaxVelocityMS = 2;
-    private double mMaxVAccelerationMSS = 8;
+    private double mMaxVelocityMS = 1;
+    private double mMaxVAccelerationMSS = 4;
     private double mMaxCentripetalAccelerationMetersPerSec2 = Units.inchesToMeters(100.0);
     private Timer mTimer;
 
