@@ -214,7 +214,7 @@ public class Arm extends Subsystem {
 
     public boolean isArmRotationAtAngle(double position)
     {
-        return isArmRotationAtAngle(position, 6); //todo: make this a constant
+        return isArmRotationAtAngle(position, 20); //todo: make this a constant
     }
 
     // Returns true if the arm is at a position

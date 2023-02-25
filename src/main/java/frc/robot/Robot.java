@@ -322,7 +322,13 @@ public class Robot extends TimedRobot {
     mAutoModes = new SendableChooser<AutoModeBase>();
     //mAutoModes.setDefaultOption("Nothing", new DoNothingMode());
     mAutoModes.setDefaultOption("Test Swerve Mode", new SwerveTestAutoMode() );
+    mAutoModes.addOption("Taxi Mode", new taxiMode());
+    mAutoModes.addOption("Score Mid and taxi mode: CONE", new ScoreMidAndTaxiMode(TargetedObject.CONE));
+    mAutoModes.addOption("Score Mid and taxi mode: CUBE", new ScoreMidAndTaxiMode(TargetedObject.CUBE));
+    mAutoModes.addOption("Score High and taxi mode: CONE", new ScoreHighAndTaxi(TargetedObject.CONE));
+    mAutoModes.addOption("Score High and taxi mode: CUBE", new ScoreHighAndTaxi(TargetedObject.CUBE));
     SmartDashboard.putData("Auto Modes", mAutoModes);
+
   }
 
   /***
@@ -753,13 +759,18 @@ public class Robot extends TimedRobot {
    * allowAutoSteer - Enables/Disables AutoSteering
    */
   private void DriveLoop(boolean precisionSteer, boolean allowAutoSteer){
-    double driveThrottle = mOperatorInterface.getDriveThrottle()*-1;
-    double driveTurn = mOperatorInterface.getDriveTurn();
+    double driveThrottle = (mOperatorInterface.getDriveThrottle()*-1)*.25;
+    double driveTurn = (mOperatorInterface.getDriveTurn())*.25;
     SmartDashboard.putNumber("Driver Throttle", driveThrottle);
     SmartDashboard.putNumber("Driver Turn", driveTurn);
 
     // precision steer (slow down throttle if left trigger is held)
-   if(precisionSteer) driveThrottle *= .55;
+    /* 
+   if(precisionSteer){
+     driveThrottle = driveThrottle * .25;
+     driveTurn = driveTurn* .25;
+    } 
+    */
 
     boolean wantsAutoSteer = mOperatorInterface.getDriveAutoSteer();
     if(mOperatorInterface.getBalanceMode()){
@@ -826,9 +837,7 @@ public class Robot extends TimedRobot {
       }
       else if(mBalanceMode)
       {
-        if(mOperatorInterface.getFastBalance())
-          mChargingStationAutoPilot.update(mOperatorInterface.getAutoPilotLeftStrafe(), mOperatorInterface.getAutoPilotRightStrafe());
-        else if(mOperatorInterface.getSlowBalance()){
+        if(mOperatorInterface.getFastBalance()){
           mChargingStationAutoPilot.update(mOperatorInterface.getAutoPilotLeftStrafe(), mOperatorInterface.getAutoPilotRightStrafe());
         }else{
           mDrive.setBrake(true);
@@ -836,7 +845,13 @@ public class Robot extends TimedRobot {
       }
       else
       {
-        mDrive.setBrake(false);
+        //teleop brake
+        if(mOperatorInterface.getTeleopBrake()){
+          mDrive.setBrake(true);
+        }else{
+          mDrive.setBrake(false);
+        }
+        
         // Normal Swerve Operation
         
         // Swerve Snap to a Direction (Butttposeon Press Quickly Moves Robot)
@@ -852,7 +867,10 @@ public class Robot extends TimedRobot {
         if(true) sTrans = sTrans.times(.7); // slow down the speed by 30%!
         double sRotation = mOperatorInterface.getSwerveRotation();
         sRotation *= .25;
-
+        if(mOperatorInterface.getDrivePrecisionSteer()){
+          sTrans = sTrans.times(.3);
+        }
+      
         // Simple Translation (DPad ... Alternative Control)
         // This allows driver to use DPad to only use in one direction
         // If it is detected that driver is using this, control will defer to this instead

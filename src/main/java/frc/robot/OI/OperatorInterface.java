@@ -99,6 +99,7 @@ public class OperatorInterface {
         double forwardAxis = mDriverController.getJoystick(Side.LEFT, Axis.Y);
         double strafeAxis = mDriverController.getJoystick(Side.LEFT, Axis.X);
 
+
         SmartDashboard.putNumber("Swerve Forward Axis", forwardAxis);
         SmartDashboard.putNumber("Swerve Strafe Axis", strafeAxis);
 
@@ -126,6 +127,9 @@ public class OperatorInterface {
 
     public double getSwerveRotation() {
         double rotAxis = mDriverController.getJoystick(Side.RIGHT, Axis.X);
+        if(getDrivePrecisionSteer()){
+            rotAxis *= .5;
+        }
         rotAxis = Constants.SwerveConstants.invertRotateAxis ? rotAxis : -rotAxis;
 
         if (Math.abs(rotAxis) < Constants.Controllers.joystickDeadband) {
@@ -196,9 +200,6 @@ public class OperatorInterface {
         return mDriverController.getButton(Button.BACK);
     }
 
-    public boolean getSlowBalance(){
-        return mDriverController.getButton(Button.LB);
-    }
 
     public boolean getFastBalance(){
         return mDriverController.getButton(Button.RB);
@@ -210,6 +211,10 @@ public class OperatorInterface {
 
     public boolean getDriveAutoSteer(){
         return mDriverController.getTrigger(Side.RIGHT);
+    }
+
+    public boolean getTeleopBrake(){
+        return mDriverController.getButton(Button.LB);
     }
 
 
@@ -358,7 +363,8 @@ public class OperatorInterface {
         return mDriverController.getTrigger(Side.RIGHT);
     }
     public boolean getGrasperWheelIntake() {
-        return mDriverController.getTrigger(Side.LEFT);
+        //return mDriverController.getTrigger(Side.LEFT);
+        return false;
     }
 
     public boolean getWristUp() {

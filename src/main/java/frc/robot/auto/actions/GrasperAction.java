@@ -1,6 +1,7 @@
 package frc.robot.auto.actions;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Enums.ArmTargets;
 import frc.robot.Enums.TargetedPositions;
 import frc.robot.subsystems.Grasper;
@@ -12,6 +13,8 @@ import frc.robot.vision.AutoPilot;
 public class GrasperAction implements Action {
     private final Grasper mGrasper = Grasper.getInstance();
     private final boolean mOpen;
+    private Timer mTimer = new Timer();
+
 
     public GrasperAction(boolean value)
     {
@@ -21,11 +24,13 @@ public class GrasperAction implements Action {
     @Override
     public void start()
     {
-       if(mOpen)
-       { // Open the Grasper
-         mGrasper.setGrasperOpen();
-       } else 
-       { 
+      mTimer.reset();
+      mTimer.start();
+      
+       if(mOpen){ 
+        // Open the Grasper
+        mGrasper.setGrasperOpen();
+       }else{ 
         // Close the Grasper
         mGrasper.setGrasperClosed();
        }
@@ -33,14 +38,16 @@ public class GrasperAction implements Action {
 
     @Override 
     public void update() {
+      mGrasper.setGrasperWheelIntake();
     }
 
     @Override
     public void done() {
+      mGrasper.cancelGrasperWheelIntake();
     }
 
     @Override 
     public boolean isFinished() {
-        return true;
+      return mTimer.hasElapsed(.2);
     }
 }
