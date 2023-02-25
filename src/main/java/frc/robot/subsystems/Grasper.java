@@ -222,6 +222,7 @@ public class Grasper extends Subsystem {
     // General 
     SmartDashboard.putString(key + "GrasperState", mGrasperState.toString());
 
+    SmartDashboard.putBoolean(key + "Grasper open", mGrasperOpen);
     // Update Grasper Motor Smartdashboard
     GrasperWheelMotor.updateSmartdashboard();
   }
