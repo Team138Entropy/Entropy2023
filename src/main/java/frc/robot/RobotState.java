@@ -302,10 +302,14 @@ public class RobotState {
     }
 
     // Gets Overall Pose of the Robot
-    //  This Pose uses the Vision System
+    //  This Pose uses the Vision System for TranslationXY
+    //     and the pidgeon for rotation
     public Pose2d getPose()
     {
-        return mRobotPose;
+        return new Pose2d(
+           mRobotPose.getTranslation(),
+           mRealRobot ? mPigeon.getYaw().getWPIRotation2d() : mPigeon.getSimYaw().getWPIRotation2d()
+        );
     }
 
     // Gets Drive Only Robot Pose
