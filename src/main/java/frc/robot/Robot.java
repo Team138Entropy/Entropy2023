@@ -871,6 +871,8 @@ public class Robot extends TimedRobot {
           sTrans = sTrans.times(.3);
         }else if(mOperatorInterface.getDriveSportSteer()){
           sTrans = sTrans.times(.8);
+        }else{
+          sTrans = sTrans.times(.5);
         }
       
         // Simple Translation (DPad ... Alternative Control)

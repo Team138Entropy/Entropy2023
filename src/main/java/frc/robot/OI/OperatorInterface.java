@@ -131,6 +131,8 @@ public class OperatorInterface {
             rotAxis *= .4;
         }else if(getDriveSportSteer()){
             rotAxis *= .5;
+        }else{
+            rotAxis = mDriverController.getJoystick(Side.RIGHT, Axis.X);
         }
         rotAxis = Constants.SwerveConstants.invertRotateAxis ? rotAxis : -rotAxis;
 
@@ -233,7 +235,7 @@ public class OperatorInterface {
     }
 
     public boolean getDriveSportSteer(){
-        return mDriverController.getTrigger(Side.RIGHT);
+        return mDriverController.getButton(Button.RB);
     }
 
     public void setOperatorRumble(boolean a){ 
