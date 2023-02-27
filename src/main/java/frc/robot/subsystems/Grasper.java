@@ -25,6 +25,7 @@ public class Grasper extends Subsystem {
     private final EntropyCANSparkMax GrasperWheelMotor;
     //Beam Sensor
     private final BeamSensor mBeamSensor;
+    private boolean sensorDelayOn = false;
     //Beam Timer
     private final Timer beamActivationTimer;
     private final Timer sensorDelayTimer;
@@ -76,7 +77,9 @@ public class Grasper extends Subsystem {
     beamActivationTimer.start();
     wheelDelayTimer.reset();
     wheelDelayTimer.start();
+    sensorDelayOn = false;
     BeamSensorOn = false;
+    GrasperWheelMotor.set(-0.15);
    }
 
    // Close the Grasper
@@ -89,6 +92,7 @@ public class Grasper extends Subsystem {
     wheelCancellationTimer.reset();
     wheelCancellationTimer.start();
     }
+    
    }
 
    public void setGrasperFullyClosed(){
@@ -97,7 +101,7 @@ public class Grasper extends Subsystem {
 
   // Start the Intake Motor
   public void setGrasperWheelIntake(){
-    GrasperWheelMotor.set(0);
+    GrasperWheelMotor.set(0.6);
   }
 
   // Stop the Intake Motor
@@ -144,8 +148,11 @@ public class Grasper extends Subsystem {
         }
 
         if (getBeamSensorBroken() == true){
-          sensorDelayTimer.reset();
-          sensorDelayTimer.start();
+          if (sensorDelayOn == false){
+            sensorDelayTimer.reset();
+            sensorDelayTimer.start();
+            sensorDelayOn = true;
+          }
             if (sensorDelayOver() == true){
             sensorDelayTimer.stop();
             mGrasperState = GrasperState.Closed;
@@ -160,7 +167,7 @@ public class Grasper extends Subsystem {
 
   // Has the Grasper stay open long enough to use beam sensor
   public boolean getGrasperTimeElapsed3(){
-    return beamActivationTimer.hasElapsed(3);
+    return beamActivationTimer.hasElapsed(1.5);
   }
   // Timer for the wheels when closing the Grasper
   public boolean getGrasperTimeElapsed1(){
@@ -168,7 +175,7 @@ public class Grasper extends Subsystem {
   }
   // Delays the wheel intake when you open the grasper
   public boolean getGrasperWheelTimeElapsed(){
-    return wheelDelayTimer.hasElapsed(0.5);
+    return wheelDelayTimer.hasElapsed(0.75);
   }
   // Codes a delay in the sensor when triggered
   public boolean sensorDelayOver(){
@@ -217,6 +224,7 @@ public class Grasper extends Subsystem {
     // General 
     SmartDashboard.putString(key + "GrasperState", mGrasperState.toString());
 
+    SmartDashboard.putBoolean(key + "Grasper open", mGrasperOpen);
     // Update Grasper Motor Smartdashboard
     GrasperWheelMotor.updateSmartdashboard();
   }

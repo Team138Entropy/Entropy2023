@@ -1,7 +1,9 @@
 package frc.robot;
 
 import frc.robot.Enums;
+import frc.robot.Enums.SwerveRotation;
 import frc.robot.Enums.TargetedPositions;
+import frc.robot.util.Waypoint;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +15,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -193,14 +196,19 @@ public final class FieldConstants {
   // Locations of staged game pieces - for use in auto
   public static final class StagingLocations {
     public static final double centerOffsetX = Units.inchesToMeters(47.36);
-    public static final double positionX = fieldLength / 2.0 - Units.inchesToMeters(47.36);
+    public static final double positionXBlue = fieldLength / 2.0 - Units.inchesToMeters(47.36);
+    public static final double positionXRed = fieldLength / 2.0 + Units.inchesToMeters(47.36);
+
     public static final double firstY = Units.inchesToMeters(36.19);
     public static final double separationY = Units.inchesToMeters(48.0);
-    public static final Translation2d[] translations = new Translation2d[4];
+    public static final Translation2d[] blueStagingLocations = new Translation2d[4];
+    public static final Translation2d[] redStagingLocations = new Translation2d[4];
 
     static {
-      for (int i = 0; i < translations.length; i++) {
-        translations[i] = new Translation2d(positionX, firstY + (i * separationY));
+      for (int i = 0; i < blueStagingLocations.length; i++) {
+        blueStagingLocations[i] = new Translation2d(positionXBlue, firstY + (i * separationY));
+        redStagingLocations[i] = new Translation2d(positionXRed, firstY + (i * separationY));
+
       }
     }
   }
@@ -234,13 +242,25 @@ public final class FieldConstants {
             chargingStationOuterX - chargingStationLength;
         public static final double chargingStationLeftY = midY - tapeWidth;
         public static final double chargingStationRightY = chargingStationLeftY - chargingStationWidth;
-        public static final Translation2d[] chargingStationCorners =
+        public static final Translation2d[] chargingStationCornersBlue =
             new Translation2d[] {
               new Translation2d(chargingStationInnerX, chargingStationRightY),
               new Translation2d(chargingStationInnerX, chargingStationLeftY),
               new Translation2d(chargingStationOuterX, chargingStationRightY),
               new Translation2d(chargingStationOuterX, chargingStationLeftY)
-            };
+        };
+
+        public static final double redChargingStationOuterX = fieldLength - outerX;
+        public static final double redChargingStationInnerX =
+        redChargingStationOuterX + chargingStationLength;
+
+        public static final Translation2d[] chargingStationCornersRed =
+        new Translation2d[] {
+          new Translation2d(redChargingStationInnerX, chargingStationRightY),
+          new Translation2d(redChargingStationInnerX, chargingStationLeftY),
+          new Translation2d(redChargingStationOuterX, chargingStationRightY),
+          new Translation2d(redChargingStationOuterX, chargingStationLeftY)
+    };
     
   }
 
@@ -281,7 +301,7 @@ public final class FieldConstants {
     public static final Translation2d[] blueInitScorePosition = new Translation2d[nodeRowCount];
    
     // This is the offset from the grid positions
-    public static final double scorePosOffset = .2;
+    public static final double scorePosOffset = .4;
 
     // Final Scoring Positions
     public static final Translation2d[] redFinalScorePosition = new Translation2d[nodeRowCount];
@@ -344,6 +364,105 @@ public final class FieldConstants {
         };
   }
 
+  // Autonomous Points of interest
+  public static final class Auto {
+
+    // Waypoints - Points of Interest
+    //      These might be different based on what side the field is
+    public static final class Waypoints {
+
+        // Left Exit Point of the Community (left of Charging Station)
+        public static final Waypoint CommunityExitLeft;
+        //public static final Waypoint CommunityEntranceLeft;
+
+
+        // Entrance/Exit Points of the Community
+        // Exit is by the grid, Entrance is by the Middle of the Field
+        public static final Waypoint CommunityExitRight;
+        public static final Waypoint CommunityEntranceRight;
+
+        /*
+         * 
+         *   public static final class StagingLocations {
+    public static final double centerOffsetX = Units.inchesToMeters(47.36);
+    public static final double positionXBlue = fieldLength / 2.0 - Units.inchesToMeters(47.36);
+    public static final double positionXRed = fieldLength / 2.0 + Units.inchesToMeters(47.36);
+
+    public static final double firstY = Units.inchesToMeters(36.19);
+    public static final double separationY = Units.inchesToMeters(48.0);
+    public static final Translation2d[] blueStagingLocations = new Translation2d[4];
+    public static final Translation2d[] redStagingLocations = new Translation2d[4];
+         */
+        // Scoring Positions 
+        public static final Waypoint[] StagingWaypoints = new Waypoint[4];
+
+        static {
+            // Comunity Exit Left
+            CommunityExitLeft = new Waypoint();
+            CommunityExitLeft.setPose(new Pose2d(
+                new Translation2d(6,6),
+                new Rotation2d()
+            ), Alliance.Blue);
+            CommunityExitLeft.setPose(new Pose2d(
+                new Translation2d(6,6),
+                new Rotation2d()
+            ), Alliance.Red);
+
+
+            //  public static Translation2d getTargetPositionPose(TargetedPositions pos, Alliance allianceColor)
+
+            
+            Pose2d CommunityExitRightBluePose = new Pose2d(
+                getTargetPositionPose(TargetedPositions.GRID_9, Alliance.Blue),
+                new Rotation2d()
+            );
+
+            Pose2d CommunityEntranceRightBluePose = new Pose2d(
+                Community.chargingStationCornersBlue[2].plus(new Translation2d(0, -1)),
+                new Rotation2d()
+            );
+            
+            CommunityExitRight = new Waypoint();
+            CommunityExitRight.setPose(CommunityExitRightBluePose, Alliance.Blue);
+            CommunityExitRight.setPose(CommunityExitRightBluePose, Alliance.Red);
+            CommunityExitRight.setRotation(SwerveRotation.FRONT_FACING_FORWARD.getRotation(), Alliance.Blue);
+            CommunityExitRight.setRotation(SwerveRotation.FRONT_FACING_FORWARD.getRotation(), Alliance.Red);
+            CommunityEntranceRight = new Waypoint();
+            CommunityEntranceRight.setPose(CommunityEntranceRightBluePose, Alliance.Blue);
+            CommunityEntranceRight.setPose(CommunityEntranceRightBluePose, Alliance.Red);
+            CommunityEntranceRight.setRotation(SwerveRotation.FRONT_FACING_FORWARD.getRotation(), Alliance.Blue);
+            CommunityEntranceRight.setRotation(SwerveRotation.FRONT_FACING_FORWARD.getRotation(), Alliance.Red);
+
+            // Staging Locations
+            for(int i = 0; i < StagingLocations.blueStagingLocations.length; ++i)
+            {
+                Waypoint currentStagingWaypoint = new Waypoint();
+                currentStagingWaypoint.setPose(new Pose2d(
+                    StagingLocations.blueStagingLocations[i],
+                    new Rotation2d()
+                ), Alliance.Blue);
+                currentStagingWaypoint.setPose(new Pose2d(
+                    StagingLocations.redStagingLocations[i],
+                    new Rotation2d()
+                ), Alliance.Red);
+                StagingWaypoints[i] = currentStagingWaypoint;
+            }
+
+        }
+    };
+
+    // Helper Function to get a Starting Pose
+    public static Pose2d getStartingPose(TargetedPositions pos, SwerveRotation rotation, Alliance allianceColor)
+    {
+        Pose2d result = new Pose2d(
+            getTargetPositionPose(pos, allianceColor),
+            rotation.getRotation()
+        );
+        return result;
+    }
+
+  }
+
 
   // Scoring Positions via the Target Position
   //    TargetPosition [Red, Blue]
@@ -392,6 +511,26 @@ public final class FieldConstants {
         targetTrans = result[(Alliance.Red == allianceColor) ? 0 : 1];
     }
     return targetTrans;
+  }
+
+  // Get Target Position Final Translation
+  public static Translation2d getTargetPositionFinalTranslation(TargetedPositions pos, Alliance allianceColor)
+  {
+    Translation2d trans = null;
+
+    // Is this a targeted grid position
+    // Blue goes further up field so it will increase X Value, Red goes close to 0
+    if(pos.ordinal() >= TargetedPositions.GRID_1.ordinal() && 
+      pos.ordinal() <= TargetedPositions.GRID_9.ordinal()
+    ){
+        trans = new Translation2d(
+            (Alliance.Blue == allianceColor) ? .1 : .1,
+            0
+        );
+    }
+
+
+    return trans;
   }
 
 

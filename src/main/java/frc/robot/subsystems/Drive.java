@@ -449,13 +449,17 @@ public class Drive extends Subsystem {
     }
   }
 
+  public boolean isSnapping(){
+    return mIsSnapping;
+  }
+
   /* Calculate the Snap Value needed for Rotation */
   public double calculateSnapValue() {
     return mSnapPidController.calculate(mPigeon.getYaw().getRadians());
   }
 
   /* Return if Snap is Complete */
-  private boolean isSnapComplete() {
+  public boolean isSnapComplete() {
     double error = mSnapPidController.getGoal().position - mPigeon.getYaw().getRadians();
     return mDelayedBoolean.update(Math.abs(error) < Math.toRadians(Constants.Drive.SnapConstants.kEpsilon), 
             Constants.Drive.SnapConstants.kTimeout);
@@ -533,6 +537,22 @@ public class Drive extends Subsystem {
     // This will command the drive motor and angle motors to needed angle and speed
     for (SwerveModule mod : mSwerveModules) {
       mod.setDesiredState(swerveModuleStates[mod.getModuleNumber()], isOpenLoop);
+    }
+  }
+
+  public void setSwerveVelocity(ChassisSpeeds speed)
+  {
+    SwerveModuleState[] swerveModuleStates = Constants.SwerveConstants.swerveKinematics.toSwerveModuleStates(
+      speed
+    );
+        
+    // Desaturate wheel speeds - keeps speed below a maximum speed
+    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.SwerveConstants.maxSpeed);
+
+    // set the desired state into each swerve module
+    // This will command the drive motor and angle motors to needed angle and speed
+    for (SwerveModule mod : mSwerveModules) {
+      mod.setDesiredState(swerveModuleStates[mod.getModuleNumber()], true);
     }
   }
 
@@ -802,7 +822,7 @@ public class Drive extends Subsystem {
       break;
       case SWERVE_DRIVE:
         mSwerveOdometry.resetPosition(mPigeon.getYaw().getWPIRotation2d(), getModulePositions(), pose);
-        mSimSwerveOdometry.resetPosition(pose, mPigeon.getYaw().getWPIRotation2d());
+        mSimSwerveOdometry.resetPosition(pose, mPigeon.getSimYaw().getWPIRotation2d());
       break;
       default:
       break;

@@ -99,6 +99,7 @@ public class OperatorInterface {
         double forwardAxis = mDriverController.getJoystick(Side.LEFT, Axis.Y);
         double strafeAxis = mDriverController.getJoystick(Side.LEFT, Axis.X);
 
+
         SmartDashboard.putNumber("Swerve Forward Axis", forwardAxis);
         SmartDashboard.putNumber("Swerve Strafe Axis", strafeAxis);
 
@@ -126,6 +127,9 @@ public class OperatorInterface {
 
     public double getSwerveRotation() {
         double rotAxis = mDriverController.getJoystick(Side.RIGHT, Axis.X);
+        if(getDrivePrecisionSteer()){
+            rotAxis *= .4;
+        }
         rotAxis = Constants.SwerveConstants.invertRotateAxis ? rotAxis : -rotAxis;
 
         if (Math.abs(rotAxis) < Constants.Controllers.joystickDeadband) {
@@ -189,16 +193,13 @@ public class OperatorInterface {
     }
 
     public boolean getResetOdometry(){
-        return mDriverController.getButton(Button.START);
+        return mDriverController.getButton(Button.BACK);
     }
     
     public boolean getZeroGyro(){
-        return mDriverController.getButton(Button.START);
+        return mDriverController.getButton(Button.BACK);
     }
 
-    public boolean getSlowBalance(){
-        return mDriverController.getButton(Button.LB);
-    }
 
     public boolean getFastBalance(){
         return mDriverController.getButton(Button.RB);
@@ -212,6 +213,10 @@ public class OperatorInterface {
         return mDriverController.getTrigger(Side.RIGHT);
     }
 
+    public boolean getTeleopBrake(){
+        return mDriverController.getButton(Button.LB);
+    }
+
 
     public boolean getAutoPilotLeftStrafe(){
         return mDriverController.getDPad() == 270;
@@ -223,6 +228,10 @@ public class OperatorInterface {
 
     public boolean getDrivePrecisionSteer(){
         return mDriverController.getTrigger(Side.LEFT);
+    }
+
+    public boolean getDriveSportSteer(){
+        return mDriverController.getButton(Button.RB);
     }
 
     public void setOperatorRumble(boolean a){ 
@@ -347,18 +356,19 @@ public class OperatorInterface {
     }
 
     public boolean getArmRotateForward() {
-        return mOperatorController.getButton(Buttons.SW7);
+        return mOperatorController2.getButton(Buttons.SW1);
     }
 
     public boolean getArmRotateBackward() {
-        return mOperatorController.getButton(Buttons.SW6);
+        return mOperatorController2.getButton(Buttons.SW2);
     }
 
     public boolean getGrasperModeSwap() {
         return mDriverController.getTrigger(Side.RIGHT);
     }
     public boolean getGrasperWheelIntake() {
-        return mDriverController.getTrigger(Side.LEFT);
+        //return mDriverController.getTrigger(Side.LEFT);
+        return false;
     }
 
     public boolean getWristUp() {

@@ -1,9 +1,12 @@
 package frc.robot.util.drivers;
 
 import com.ctre.phoenix.sensors.Pigeon2;
+import com.ctre.phoenix.sensors.Pigeon2Configuration;
 
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import frc.robot.Constants;
 import frc.robot.util.geometry.Rotation2d;
+import edu.wpi.first.math.filter.LinearFilter;
 
 
 public class Pigeon {
@@ -20,6 +23,7 @@ public class Pigeon {
     // Actual pigeon object
     private final Pigeon2 mGyro;
 
+
     // Configs
     private boolean inverted = Constants.SwerveConstants.invertGyro;
     private Rotation2d yawAdjustmentAngle = Rotation2d.identity();
@@ -27,6 +31,10 @@ public class Pigeon {
 
     // Simulation 
     private Rotation2d mSimYawAngle = Rotation2d.identity();
+
+    // Pitch Rate at a period of 20 ms (derivative of 1, 2 samples)
+    private final LinearFilter mPitchRateFilter = 
+    LinearFilter.backwardFiniteDifference(1, 2, 0.02);
 
     private Pigeon(int port)
     {
@@ -36,6 +44,7 @@ public class Pigeon {
     private Pigeon(int port, String busId) {        
         mGyro = new Pigeon2(port, busId);
         mGyro.configFactoryDefault();
+        mGyro.configMountPose(91.01397, 1.15112317, -178.535873);
     }
 
     public Rotation2d getYaw() {
@@ -76,17 +85,35 @@ public class Pigeon {
         return Rotation2d.fromDegrees(mGyro.getPitch());
     }
 
+    public Rotation2d getUnadjustedPitchRate() {
+        double[] rawDegrees = new double[3];
+        mGyro.getRawGyro(rawDegrees);
+        
+        //double update = mPitchRateFilter.calculate(mGyro.getPitch());
+        return Rotation2d.fromDegrees(rawDegrees[1]);
+    }
+
     public Rotation2d getUnadjustedRoll() {
         return Rotation2d.fromDegrees(mGyro.getRoll());
     }
 
     // Simulation Only
+
+    // Rotate the Sim Yaw by Degrees
     public void rotateSimYaw(double degrees)
     {
         mSimYawAngle = mSimYawAngle.rotateBy(Rotation2d.fromDegrees(degrees).inverse());
     }
 
+    // Set the Sim Yaw to Degrees
+    public void setSimYaw(double degrees)
+    {
+        mSimYawAngle = Rotation2d.fromDegrees(degrees).inverse();
+    }
+
+    // Get the Sim Yaw Degrees Value
     public Rotation2d getSimYaw() {
+        //mGyro.getAce
         return mSimYawAngle;
     }
 }

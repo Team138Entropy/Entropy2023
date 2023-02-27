@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.Enums.ArmRotationSpeed;
 import frc.robot.Enums.ArmTargets;
 import frc.robot.util.drivers.EntropyTalonSRX;
 
@@ -55,7 +56,7 @@ public class Arm extends Subsystem {
         MasterShoulderMotor.setInverted(true);
         // Good Motion Magic Tuning Guide Here: https://v5.docs.ctr-electronics.com/en/stable/ch16_ClosedLoop.html#motion-magic-position-velocity-current-closed-loop-closed-loop
         MasterShoulderMotor.config_kF(0, Constants.Arm.tunableArmKF.get());
-        MasterShoulderMotor.config_kP(0, Constants.Arm.tunableArmKP.get()); //was 30
+        MasterShoulderMotor.config_kP(0, Constants.Arm.tunableArmKP.get()); 
         MasterShoulderMotor.config_kI(0, Constants.Arm.tunableArmKI.get());
         MasterShoulderMotor.config_kD(0, Constants.Arm.tunableArmKD.get());
         // kP: P-Gain so that the closed loop can react to error. Larger Kp would suggest responding harder to error
@@ -64,8 +65,7 @@ public class Arm extends Subsystem {
         //      Typicall starts at 10xPGain
         // kI: I-Gain Helps the sensor settle close to the target position
         MasterShoulderMotor.configSelectedFeedbackCoefficient(360.0/8192.0);
-        MasterShoulderMotor.configMotionAcceleration(20);
-        MasterShoulderMotor.configMotionCruiseVelocity(25, 10);
+        setArmSpeeds(ArmRotationSpeed.DEFAULT);
         SecondaryShoulderMotor.follow(MasterShoulderMotor); // Secondary Motor will follow Primary Motor
         SecondaryShoulderMotor.setInverted(true);
 
@@ -94,18 +94,37 @@ public class Arm extends Subsystem {
         mTargetedExtension = 0;
     }
 
+    // Sets Arm Speeds
+    public void setArmSpeeds(ArmRotationSpeed rotSpeed)
+    {
+        MasterShoulderMotor.configMotionCruiseVelocity(rotSpeed.velocity);
+        MasterShoulderMotor.configMotionAcceleration(rotSpeed.acceleration);
+    }
+
     // Gets the Feed Forward Value based on Gravity
     //      90 & 270 are straight up and straight down. No KF
     //      0 & 180 are completely horizontal. Maximum KF
     public double getGravity(){
-        double currentRadians = MasterShoulderMotor.getSelectedSensorPosition() * Constants.Misc.degreeToRadian;
+        double angle = MasterShoulderMotor.getSelectedSensorPosition();
+        double FF = .2;
+        if(angle <= 180 && angle >= 90)
+        {
+            FF = .35;
+        }
+        double currentRadians = angle * Constants.Misc.degreeToRadian;
         // todo - that KF value might have to change by length of the robot
-        double feedForward = 0.2 * Math.cos(currentRadians);
+        double feedForward = FF * Math.cos(currentRadians);
         return feedForward;
     }
 
     // Set the Arm Angle in Position Mode
     public void setArmAngle(double Degrees){
+        // Temp.. Update Pids
+        MasterShoulderMotor.config_kF(0, Constants.Arm.tunableArmKF.get());
+        MasterShoulderMotor.config_kP(0, Constants.Arm.tunableArmKP.get()); 
+        MasterShoulderMotor.config_kI(0, Constants.Arm.tunableArmKI.get());
+        MasterShoulderMotor.config_kD(0, Constants.Arm.tunableArmKD.get());
+
         if(mMaximumDegreesTarget >= Degrees && mMinimumDegreesTarget <= Degrees)
         {
             double feedForward = getGravity();
@@ -195,7 +214,7 @@ public class Arm extends Subsystem {
 
     public boolean isArmRotationAtAngle(double position)
     {
-        return isArmRotationAtAngle(position, 6); //todo: make this a constant
+        return isArmRotationAtAngle(position, 20); //todo: make this a constant
     }
 
     // Returns true if the arm is at a position
@@ -238,6 +257,9 @@ public class Arm extends Subsystem {
         SmartDashboard.putNumber(key + "Minimum Arm Extension", mMinimumExtensionTarget);
         SmartDashboard.putNumber(key + "Target Arm Extension", mTargetedExtension);
         SmartDashboard.putString(key + "extension control mode", ExtensionMotor.getControlMode().name());
+        SmartDashboard.putNumber(key + "extension current", ExtensionMotor.getSupplyCurrent());
+
+        SmartDashboard.putNumber(key + "Extension Velocity", ExtensionMotor.getSelectedSensorVelocity());
 
         MasterShoulderMotor.updateSmartdashboard();
         SecondaryShoulderMotor.updateSmartdashboard();

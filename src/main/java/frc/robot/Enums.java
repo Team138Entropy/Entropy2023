@@ -37,25 +37,26 @@ public class Enums {
     public enum ArmTargets {
         //NAME_OF_POSITION(armAngle, armExtension),
         //THESE ARE PLACEHOLDER VALUES
-        TOP_SCORING_FRONT(10, Constants.Arm.MaxExtensionPosition),
-        TOP_SCORING_FRONT_CUBE(-1, Constants.Arm.MaxExtensionPosition),
-        MID_SCORING_FRONT(-7,Constants.Arm.MinExtensionPosition),
+        TOP_SCORING_FRONT(15, Constants.Arm.MaxExtensionPosition),
+        TOP_SCORING_FRONT_CUBE(1, Constants.Arm.MaxExtensionPosition),
+        MID_SCORING_FRONT(-4,Constants.Arm.MinExtensionPosition),
         MID_SCORING_FRONT_CUBE(-15,Constants.Arm.MinExtensionPosition),
 
         LOW_SCORING_FRONT(-50,Constants.Arm.MinExtensionPosition),
-        INTAKE_FRONT(-4,Constants.Arm.MinExtensionPosition),
+        INTAKE_FRONT(-3,Constants.Arm.MinExtensionPosition),
         POST_INTAKE_FRONT(-1,Constants.Arm.MinExtensionPosition),
         TOP_SCORING_BACK(170,0),
         MID_SCORING_BACK(173,Constants.Arm.MaxExtensionPosition),
         LOW_SCORING_BACK(207,186000),
         INTAKE_BACK(170,0),
         POST_INTAKE_BACK(167,0),
-        INTAKE_GROUND_FRONT(-55,0),
-        INTAKE_GROUND_BACK(210,0),
+        INTAKE_GROUND_FRONT(-55,170000),
+        INTAKE_GROUND_BACK(217,208000),
         SAFE(90,0),
         START(233, 0),
         HOME_BACKSIDE(220, 0),
-        HOME_FRONTSIDE(-55, 0),
+        HOME_FRONTSIDE(-50, 0),
+
         NONE(90,0);
 
 
@@ -116,13 +117,18 @@ public class Enums {
     // Useful for getting rotations
     public enum SwerveRotation {
         FRONT_FACING_FORWARD(0),
+        FRONT_FACING_FORWARD_LEFT_ANGLE(45),
+        
         FRONT_FACING_GRID(180),
-        BACK_FACING_GRID(0)
+        BACK_FACING_GRID(0),
+        FRONT_FACING_RIGHT(90),
+        FRONT_FACING_LEFT(90)
         ;
 
         public final double degrees; 
 
-        Rotation2d getRotation()
+        // Get Degrees Value to Rotation
+        public Rotation2d getRotation()
         {
             return Rotation2d.fromDegrees(degrees);
         }
@@ -185,4 +191,19 @@ public class Enums {
         Simple, 
         Advanced
     };
+
+    public enum ArmRotationSpeed {
+        DEFAULT(15, 20),
+        OVER_TOP_FORWARDS(15, 15),
+        OVER_TOP_BACKWARDS(15, 10);
+
+        public final double velocity;
+        public final double acceleration;
+        
+        ArmRotationSpeed(double vel, double accel)
+        {
+            this.velocity = vel;
+            this.acceleration = accel;
+        }
+    }
 }

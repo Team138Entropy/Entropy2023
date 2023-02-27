@@ -30,6 +30,7 @@ import frc.robot.auto.modes.*;
 import frc.robot.simulation.SimMechanism;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.Drive.DriveStyle;
+import frc.robot.util.TuneableNumber;
 import frc.robot.util.drivers.Pigeon;
 import edu.wpi.first.wpilibj.Relay;
 import frc.robot.vision.AutoPilot;
@@ -128,6 +129,8 @@ public class Robot extends TimedRobot {
 
   public boolean mBalanceMode = false;
 
+  public static TuneableNumber mTestArmVoltage = new TuneableNumber("TestArmVoltage",0);
+
   // Position the Auto Pilot System Wants to Drive to
   public TargetedPositions mTargetedPosition = TargetedPositions.NONE;
   public TargetedObject mCurrentTargetedObject = TargetedObject.CONE;
@@ -182,6 +185,7 @@ public class Robot extends TimedRobot {
     // Real or Simulation Robot
     mRobotState.setRealRobot(mRealRobot);
     mDrive.setRealRobot(mRealRobot);
+    mAutoPilot.setRealRobot(mRealRobot);
     mSuperStructure.setRealRobot(mRealRobot);
 
     // populate autonomous list
@@ -220,20 +224,23 @@ public class Robot extends TimedRobot {
     // Update Robot Field Position
     Pose2d robotPose = mDrive.getPose();
 
+    // Set Pose on Field
     mField.setRobotPose(robotPose);
-    mRobotState.setRobotPose(robotPose);
+
+    // Set Alliance Color
+    if(mRobotState.setAlliance(DriverStation.getAlliance()))
+    {
+      // Robot Alliance Color has changed
+
+      // Regenerate Auto Modes
+      populateAutonomousModes();
+    }
 
     // Update Robotstate
     mRobotState.update();
 
-    // Use Pigeon in Robot Pose for Rotation
-    Pose2d newRobotPose = new Pose2d(mRobotState.getPose().getTranslation(),
-      mRealRobot ? mPigeon.getYaw().getWPIRotation2d() : 
-        mPigeon.getSimYaw().getWPIRotation2d()
-    );
-
     // Update Auto Pilot
-    mAutoPilot.setRobotPose(newRobotPose);
+    mAutoPilot.setRobotPose(mRobotState.getPose());
 
     // Update Smartdashboard Overall and Subsystems
     updateSmartdashboard();
@@ -265,10 +272,11 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("extend offset", mManualExtendOffset);
     SmartDashboard.putString("Targeted Object", mCurrentTargetedObject.toString());
     SmartDashboard.putBoolean("balance mode", mBalanceMode);
+    SmartDashboard.putNumber("pigeon pitch", mPigeon.getUnadjustedPitch().getDegrees());
     
     //formula to convert to PSI
     SmartDashboard.putNumber("pressure sensor", 250.0 * mPressureSensor.getVoltage() / 5.0 - 25.0);
-    //SmartDashboard.putData(mPowerPanel);
+    SmartDashboard.putData(mPowerPanel);
 
     // Controls
     final String controlsKey = "Controls/";
@@ -282,6 +290,9 @@ public class Robot extends TimedRobot {
 
     // Auto Pilot Driver
     mAutoPilot.updateSmartDashBoard();
+
+    // Charging Station Auto Pilot
+    mChargingStationAutoPilot.updateSmartdashboard();
 
     // PhotonVision Smartdashboard
     mPhotonVision.updateSmartDashboard();
@@ -305,13 +316,19 @@ public class Robot extends TimedRobot {
     }
   }
 
-  // Fill Autonomous Modes List
+  // Populate Sendable Chooser of Auto Modes
   private void populateAutonomousModes(){
     // Auto Mode
     mAutoModes = new SendableChooser<AutoModeBase>();
     //mAutoModes.setDefaultOption("Nothing", new DoNothingMode());
     mAutoModes.setDefaultOption("Test Swerve Mode", new SwerveTestAutoMode() );
+    mAutoModes.addOption("Taxi Mode", new taxiMode());
+    mAutoModes.addOption("Score Mid and taxi mode: CONE", new ScoreMidAndTaxiMode(TargetedObject.CONE));
+    mAutoModes.addOption("Score Mid and taxi mode: CUBE", new ScoreMidAndTaxiMode(TargetedObject.CUBE));
+    mAutoModes.addOption("Score High and taxi mode: CONE", new ScoreHighAndTaxi(TargetedObject.CONE));
+    mAutoModes.addOption("Score High and taxi mode: CUBE", new ScoreHighAndTaxi(TargetedObject.CUBE));
     SmartDashboard.putData("Auto Modes", mAutoModes);
+
   }
 
   /***
@@ -330,8 +347,18 @@ public class Robot extends TimedRobot {
     mAutoModeBase = mAutoModes.getSelected();
     mAutoModeBase.reset();
 
+    // Consider alliance Color
+    mAutoModeBase.setAllianceColor(mRobotState.getAlliance());
+
+    // Set Starting Pose if Specified
+    if(mAutoModeBase.hasStartingPose())
+    {
+      mRobotState.resetPosition(mAutoModeBase.getStartingPose());
+    }
+
     // Close Grasper
-    mGrasper.setGrasperClosed();
+    mGrasper.setGrasperFullyClosed();
+
   }
 
   /** This function is called periodically during autonomous. */
@@ -341,6 +368,7 @@ public class Robot extends TimedRobot {
     if(!mAutoModeBase.isDone()){
       mAutoModeBase.runner();
     }
+    mGrasper.update();
   }
 
   /** This function is called once when teleop is enabled. */
@@ -417,6 +445,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
+    
     DriveLoop(mOperatorInterface.getDrivePrecisionSteer(), true);
 
       //Allows the operator to swap freely between both test modes by pressing START
@@ -448,10 +477,10 @@ public class Robot extends TimedRobot {
 
       //Manual extension of the arm using RB/LB
       if (mOperatorInterface.getArmJogExtended()){
-        mArm.setExtensionJog(0.7);
+        mArm.setExtensionJog(1);
       } 
       else if (mOperatorInterface.getArmJogRetracted()){
-        mArm.setExtensionJog(-0.7);
+        mArm.setExtensionJog(-1);
       }      
       else {
         mArm.setExtensionJog(0);
@@ -460,10 +489,10 @@ public class Robot extends TimedRobot {
 
       //Manual rotation of the arm using Y/A
     if (mOperatorInterface.getArmRotateForward()){
-      mArm.setShoulderJog(0.95);  
+      mArm.setShoulderJog(mTestArmVoltage.get());  
     } 
     else if (mOperatorInterface.getArmRotateBackward()) {
-      mArm.setShoulderJog(-0.95);
+      mArm.setShoulderJog(-mTestArmVoltage.get());
     }
     else {
       mArm.setShoulderJog(0);
@@ -693,6 +722,9 @@ public class Robot extends TimedRobot {
       }
     }
 
+    if (mGrasper.getGrasperState() == Grasper.GrasperState.Closed){
+      mOperatorInterface.setDriverRumble(true, 0.2);
+    }
     // Arm Up After Intake
     if(mCurrentArmTarget == ArmTargets.INTAKE_FRONT && mGrasper.getGrasperState() == GrasperState.FullyClosed){
       mCurrentArmTarget = ArmTargets.POST_INTAKE_FRONT;
@@ -723,9 +755,7 @@ public class Robot extends TimedRobot {
     //driver feedback - beam sensor creates vibration (if getSensorBroken == true then vibrate)
     if (mGrasper.getGrasperState() == Grasper.GrasperState.Closed) {
       mOperatorInterface.setDriverRumble(true, 0.2);
-    } else {
-      mOperatorInterface.setDriverRumble(false, 0);
-    }
+  }
   }
 
    /**
@@ -734,13 +764,18 @@ public class Robot extends TimedRobot {
    * allowAutoSteer - Enables/Disables AutoSteering
    */
   private void DriveLoop(boolean precisionSteer, boolean allowAutoSteer){
-    double driveThrottle = mOperatorInterface.getDriveThrottle()*-1;
-    double driveTurn = mOperatorInterface.getDriveTurn();
+    double driveThrottle = (mOperatorInterface.getDriveThrottle()*-1)*.25;
+    double driveTurn = (mOperatorInterface.getDriveTurn())*.25;
     SmartDashboard.putNumber("Driver Throttle", driveThrottle);
     SmartDashboard.putNumber("Driver Turn", driveTurn);
 
     // precision steer (slow down throttle if left trigger is held)
-   if(precisionSteer) driveThrottle *= .55;
+    /* 
+   if(precisionSteer){
+     driveThrottle = driveThrottle * .25;
+     driveTurn = driveTurn* .25;
+    } 
+    */
 
     boolean wantsAutoSteer = mOperatorInterface.getDriveAutoSteer();
     if(mOperatorInterface.getBalanceMode()){
@@ -793,6 +828,9 @@ public class Robot extends TimedRobot {
       // Set into AutoPilot
       mAutoPilot.setTargetPose(calculatedPose);
 
+      // Set Final Translation (if applicable)
+      mAutoPilot.setFinalTranslation(getFinalTranslation(mTargetedPosition));
+
       // Update Auto Pilot
       mAutoPilot.update(false);
 
@@ -804,17 +842,21 @@ public class Robot extends TimedRobot {
       }
       else if(mBalanceMode)
       {
-        if(mOperatorInterface.getFastBalance())
-          mChargingStationAutoPilot.update(false, mOperatorInterface.getAutoPilotLeftStrafe(), mOperatorInterface.getAutoPilotRightStrafe());
-        else if(mOperatorInterface.getSlowBalance()){
-          mChargingStationAutoPilot.update(true, mOperatorInterface.getAutoPilotLeftStrafe(), mOperatorInterface.getAutoPilotRightStrafe());
+        if(mOperatorInterface.getFastBalance()){
+          mChargingStationAutoPilot.update(mOperatorInterface.getAutoPilotLeftStrafe(), mOperatorInterface.getAutoPilotRightStrafe());
         }else{
           mDrive.setBrake(true);
         }
       }
       else
       {
-        mDrive.setBrake(false);
+        //teleop brake
+        if(mOperatorInterface.getTeleopBrake()){
+          mDrive.setBrake(true);
+        }else{
+          mDrive.setBrake(false);
+        }
+        
         // Normal Swerve Operation
         
         // Swerve Snap to a Direction (Butttposeon Press Quickly Moves Robot)
@@ -827,10 +869,13 @@ public class Robot extends TimedRobot {
         // Swerve Drive
         // Joystick based Translation
         Translation2d sTrans = mOperatorInterface.getSwerveTranslation();
-        if(true) sTrans = sTrans.times(.5); // slow down the speed by 50%!
+        if(true) sTrans = sTrans.times(.65); // slow down the speed by 30%!
         double sRotation = mOperatorInterface.getSwerveRotation();
         sRotation *= .25;
-
+        if(mOperatorInterface.getDrivePrecisionSteer()){
+          sTrans = sTrans.times(.3);
+        }
+      
         // Simple Translation (DPad ... Alternative Control)
         // This allows driver to use DPad to only use in one direction
         // If it is detected that driver is using this, control will defer to this instead
@@ -849,6 +894,12 @@ public class Robot extends TimedRobot {
 
         // Clear Auto Pilot Sequence Info (since it isn't being used)
         mAutoPilot.clear(); 
+
+        // Reset to current targeted position
+        mAutoPilot.reset();
+
+        // Reset Charging Station DOne
+        mChargingStationAutoPilot.reset();
       }
     }
   }
@@ -864,11 +915,16 @@ public class Robot extends TimedRobot {
       Translation2d selectedXY = FieldConstants.getTargetPositionPose(pos, DriverStation.getAlliance());
       if(null != selectedXY)
       {
-        Rotation2d faceFront = new Rotation2d();
-        Rotation2d faceBack = faceFront.fromDegrees(180);
-        result = new Pose2d(selectedXY, faceFront);
+        result = new Pose2d(selectedXY, new Rotation2d());
       }
     }
+    return result;
+  }
+
+  // Get Final Translation for Position (if it exists)
+  public Translation2d getFinalTranslation(TargetedPositions pos)
+  {
+    Translation2d result = FieldConstants.getTargetPositionFinalTranslation(pos, DriverStation.getAlliance());
     return result;
   }
 

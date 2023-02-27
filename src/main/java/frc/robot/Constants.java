@@ -106,7 +106,7 @@ public class Constants {
 
   public static class AutoPilot {
     //tunable PID values
-    public static TuneableNumber CSAutoPilotKP = new TuneableNumber("CSAutoPilotKP",2);
+    public static TuneableNumber CSAutoPilotKP = new TuneableNumber("CSAutoPilotKP",2.5);
     public static TuneableNumber CSAutoPilotKI = new TuneableNumber("CSAutoPilotKI",0);
     public static TuneableNumber CSAutoPilotKD = new TuneableNumber("CSAutoPilotKD",0);
     
@@ -189,14 +189,19 @@ public class Constants {
       public static final double kI = 0;
       public static final double kD = 0.0;
       public static final double kTimeout = 0.25;
-      public static final double kEpsilon = 1.0;
+      public static final double kEpsilon = 4.0;
 
       // Constraints for the profiled angle controller
-      public static final double kMaxAngularSpeedRadiansPerSecond = 2.0 * Math.PI;
+      public static final double kMaxAngularSpeedRadiansPerSecond = 1.4 * Math.PI;
       public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.pow(kMaxAngularSpeedRadiansPerSecond, 2);
+
+      public static final double kAutoPilotMaxAngularSpeedRadiansPerSecond = 2 * Math.PI;
+      public static final double kAutoPilotMaxAngularSpeedRadiansPerSecondSquared = Math.pow(kMaxAngularSpeedRadiansPerSecond, 2);
 
       public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
               new TrapezoidProfile.Constraints(kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
+              public static final TrapezoidProfile.Constraints kAutoPilotThetaControllerConstraints =
+              new TrapezoidProfile.Constraints(kAutoPilotMaxAngularSpeedRadiansPerSecond, kAutoPilotMaxAngularSpeedRadiansPerSecondSquared);
   }
 
     /* Swerve Modules */
@@ -204,7 +209,7 @@ public class Constants {
     // More information detailed in the Swerve Module Class 
     public static class SwerveModules {
       public static class Module0 {
-        public static double AngleOffset = 205;
+        public static double AngleOffset = 205.4;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
@@ -219,7 +224,7 @@ public class Constants {
       }
 
       public static class Module1 {
-        public static double AngleOffset = 225;
+        public static double AngleOffset = 223.33;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
@@ -234,7 +239,7 @@ public class Constants {
       }
 
       public static class Module2 {
-        public static double AngleOffset = 158;
+        public static double AngleOffset = 156.5;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
@@ -249,7 +254,7 @@ public class Constants {
       }
 
       public static class Module3 {
-        public static double AngleOffset = 34;
+        public static double AngleOffset = 37.08;
 
         public static SwerveModuleConstants SwerveModuleConstants() {
           return new SwerveModuleConstants(
@@ -353,6 +358,11 @@ public class Constants {
     public static final double MaxExtensionPosition = 245000.0;
     public static final double MinExtensionPosition = 0;
 
+    // Arbitary Feedforwards
+    //  Values should be the same but a second value is available in case 1 side behaves differently
+    public static final double mArmRotationBacksideFF = 0; // This should be positive to get it to go up
+    public static final double mArmRotationFrontsideFF = 0; // This should be negative to get it to go up
+
     // Overrides of the Arm Targets if Targetting Cube
     public static final Map<ArmTargets,ArmTargets> CubeArmTargetOverrides = new HashMap<ArmTargets, ArmTargets>();
     static {
@@ -362,10 +372,11 @@ public class Constants {
     }
 
     //tunable PID values
-    public static TuneableNumber tunableArmKF = new TuneableNumber("tunableArmKF",1);
+    // Originally was 1 - 29 - .01 - 600
+    public static TuneableNumber tunableArmKF = new TuneableNumber("tunableArmKF",0);
     public static TuneableNumber tunableArmKP = new TuneableNumber("tunableArmKP",29);
     public static TuneableNumber tunableArmKI = new TuneableNumber("tunableArmKI",.01);
-    public static TuneableNumber tunableArmKD = new TuneableNumber("tunableArmKD",300);
+    public static TuneableNumber tunableArmKD = new TuneableNumber("tunableArmKD",4000);
   }
 
   public static class Grasper {
