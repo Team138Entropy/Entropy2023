@@ -106,7 +106,7 @@ public class Arm extends Subsystem {
     //      0 & 180 are completely horizontal. Maximum KF
     public double getGravity(){
         double angle = MasterShoulderMotor.getSelectedSensorPosition();
-        double FF = .4;
+        double FF = .2;
         if(angle <= 180 && angle >= 90)
         {
             FF = .35;
