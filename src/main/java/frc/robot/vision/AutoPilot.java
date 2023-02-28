@@ -186,7 +186,7 @@ public class AutoPilot {
         
         // Tolerances
         mDriveController.setTolerance(0.05);
-        mThetaController.setTolerance(Units.degreesToRadians(1.8));
+        mThetaController.setTolerance(Units.degreesToRadians(0.75));
     }
 
     // Set Target Pose to Drive To

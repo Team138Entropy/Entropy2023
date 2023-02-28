@@ -321,14 +321,11 @@ public class Robot extends TimedRobot {
     // Auto Mode
     mAutoModes = new SendableChooser<AutoModeBase>();
     //mAutoModes.setDefaultOption("Nothing", new DoNothingMode());
-    mAutoModes.setDefaultOption("Test Swerve Mode", new SwerveTestAutoMode() );
+    mAutoModes.setDefaultOption("Score High and charge mode", new SwerveTestAutoMode(mCurrentTargetedObject));
     mAutoModes.addOption("Taxi Mode", new taxiMode());
-    mAutoModes.addOption("Score Mid and taxi mode: CONE", new ScoreMidAndTaxiMode(TargetedObject.CONE));
-    mAutoModes.addOption("Score Mid and taxi mode: CUBE", new ScoreMidAndTaxiMode(TargetedObject.CUBE));
-    mAutoModes.addOption("Score High and taxi mode: CONE", new ScoreHighAndTaxi(TargetedObject.CONE));
-    mAutoModes.addOption("Score High and taxi mode: CUBE", new ScoreHighAndTaxi(TargetedObject.CUBE));
+    mAutoModes.addOption("Score Mid and taxi mode", new ScoreMidAndTaxiMode(mCurrentTargetedObject));
+    mAutoModes.addOption("Score High and taxi mode", new ScoreHighAndTaxi(mCurrentTargetedObject));
     SmartDashboard.putData("Auto Modes", mAutoModes);
-
   }
 
   /***
@@ -864,11 +861,15 @@ public class Robot extends TimedRobot {
         // Swerve Drive
         // Joystick based Translation
         Translation2d sTrans = mOperatorInterface.getSwerveTranslation();
-        if(true) sTrans = sTrans.times(.65); // slow down the speed by 30%!
+        if(true) sTrans = sTrans.times(.6); // slow down the speed by 40%!
         double sRotation = mOperatorInterface.getSwerveRotation();
         sRotation *= .25;
         if(mOperatorInterface.getDrivePrecisionSteer()){
           sTrans = sTrans.times(.3);
+        }else if(mOperatorInterface.getDriveSportSteer()){
+          sTrans = sTrans.times(.9);
+        }else{
+          sTrans = sTrans.times(.6);
         }
       
         // Simple Translation (DPad ... Alternative Control)

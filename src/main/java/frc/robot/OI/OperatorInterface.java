@@ -129,6 +129,8 @@ public class OperatorInterface {
         double rotAxis = mDriverController.getJoystick(Side.RIGHT, Axis.X);
         if(getDrivePrecisionSteer()){
             rotAxis *= .4;
+        }else{
+            rotAxis = mDriverController.getJoystick(Side.RIGHT, Axis.X);
         }
         rotAxis = Constants.SwerveConstants.invertRotateAxis ? rotAxis : -rotAxis;
 

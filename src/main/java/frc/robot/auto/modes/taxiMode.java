@@ -11,7 +11,7 @@ public class taxiMode extends AutoModeBase {
     RobotState mRobotState = RobotState.getInstance();
     
     public taxiMode(){
-        addAction(new DriveAction(new Translation2d(1,0),3.3));
+        addAction(new DriveAction(new Translation2d(-.75,0),3.3));
     }
 
 

@@ -14,6 +14,7 @@ import frc.robot.RobotState;
 import frc.robot.Enums.ArmTargets;
 import frc.robot.Enums.SwerveCardinal;
 import frc.robot.Enums.SwerveRotation;
+import frc.robot.Enums.TargetedObject;
 import frc.robot.Enums.TargetedPositions;
 import frc.robot.auto.AutoModeEndedException;
 import frc.robot.auto.actions.Action;
@@ -33,13 +34,17 @@ import frc.robot.auto.actions.WaitAction;
 public class SwerveTestAutoMode extends AutoModeBase {
     RobotState mRobotState = RobotState.getInstance();
     
-    public SwerveTestAutoMode()
+    public SwerveTestAutoMode(TargetedObject gameObject)
     {
         // this Auto Mode will Start in Front of Grid 5 with the front facing it
         setStartingPosition(TargetedPositions.GRID_5, SwerveRotation.FRONT_FACING_GRID);
-        /* 
-        addAction(new ArmAction(ArmTargets.MID_SCORING_FRONT));
-
+        addAction(new GrasperAction(false));
+        if(gameObject == TargetedObject.CONE){
+            addAction(new ArmAction(ArmTargets.TOP_SCORING_FRONT));
+        }else{
+            addAction(new ArmAction(ArmTargets.TOP_SCORING_FRONT_CUBE));
+        }
+        
         // Wait to make sure we are good!
         addAction(new WaitAction(.2));
 
@@ -50,7 +55,7 @@ public class SwerveTestAutoMode extends AutoModeBase {
         addAction(new WaitAction(.2));
 
         addAction(new ArmAction(ArmTargets.HOME_BACKSIDE));  
-        */
+        addAction(new GrasperAction(false));
 
         Translation2d scoreSpot = FieldConstants.getTargetPositionPose(TargetedPositions.GRID_5, mRobotState.getAlliance());
 

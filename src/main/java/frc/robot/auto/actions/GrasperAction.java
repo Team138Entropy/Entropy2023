@@ -16,9 +16,9 @@ public class GrasperAction implements Action {
     private Timer mTimer = new Timer();
 
 
-    public GrasperAction(boolean value)
+    public GrasperAction(boolean open)
     {
-       mOpen = value;
+       mOpen = open;
     }
     
     @Override
