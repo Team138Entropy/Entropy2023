@@ -101,6 +101,10 @@ public class AutoPilot {
     new ProfiledPIDController(
         7, 0.0, 0.0, new TrapezoidProfile.Constraints(8, 0.8), mLoopPeriodSecs);
 
+    // Scalars
+    private double mDriveVelocityScalar = 0;
+    private double mThetaVelocity = 0;
+
     // First approach was a profiled PID Controller indepdent on X, Y
     // But dosent work very well because axis tend to converge
     // New approach is to use a singled profile PID controller for the distance to target
@@ -320,31 +324,31 @@ public class AutoPilot {
         var currentPose = getCurrentPose();
 
         // Distance Scalar to the Goal
-        double driveVelocityScalar =
+        mDriveVelocityScalar =
         mDriveController.calculate(
             currentPose.getTranslation().getDistance(mTargetedPose.getTranslation()), 0.0);
 
         // Theta Velocity
-        double thetaVelocity =
+        mThetaVelocity =
             mThetaController.calculate(
                 currentPose.getRotation().getRadians(), mTargetedPose.getRotation().getRadians());
 
         // If already at goal, zero
-        if (mDriveController.atGoal()) driveVelocityScalar = 0.0;
-        if (mThetaController.atGoal()) thetaVelocity = 0.0;
+        if (mDriveController.atGoal()) mDriveVelocityScalar = 0.0;
+        if (mThetaController.atGoal()) mThetaVelocity = 0.0;
 
         // Drive Velocity Vector (Translation2d)
         var driveVelocity =
             new Pose2d(
                     new Translation2d(),
                     currentPose.getTranslation().minus(mTargetedPose.getTranslation()).getAngle())
-                .transformBy(GeoUtil.translationToTransform(driveVelocityScalar, 0.0))
+                .transformBy(GeoUtil.translationToTransform(mDriveVelocityScalar, 0.0))
                 .getTranslation();
 
         // Set in to Speed Variables
         mXSpeed = driveVelocity.getX(); 
         mYSpeed = driveVelocity.getY();
-        mRotationSpeed = thetaVelocity; 
+        mRotationSpeed = mThetaVelocity; 
 
         // === End New Concept
         
@@ -494,6 +498,16 @@ public class AutoPilot {
         SmartDashboard.putNumber(key + "CalculatedSpeeds/X", mCalculatedSpeeds.vxMetersPerSecond);
         SmartDashboard.putNumber(key + "CalculatedSpeeds/Y", mCalculatedSpeeds.vyMetersPerSecond);
         SmartDashboard.putNumber(key + "CalculatedSpeeds/Rotation", mCalculatedSpeeds.omegaRadiansPerSecond);
+        
+        // New Logging
+        SmartDashboard.putBoolean(key + "AtGoal/DriveController", mDriveController.atGoal());
+        SmartDashboard.putBoolean(key + "AtGoal/ThetaController", mThetaController.atGoal());
+        SmartDashboard.putNumber(key + "Scalars/Drive", mDriveVelocityScalar);
+        SmartDashboard.putNumber(key + "Scalars/Rotation", mThetaVelocity);
+
+
+        
+
 
         // Debug Field Drawing
         if(true)
