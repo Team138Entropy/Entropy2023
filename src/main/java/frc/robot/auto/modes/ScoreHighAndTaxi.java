@@ -58,7 +58,9 @@ public class ScoreHighAndTaxi extends AutoModeBase {
 
         //TODO: joe is this ok or is there a better way to do it?
 
-        addAction(new DriveAction(new Translation2d(-.75,0),3.3));
+        addAction(new DriveAction(new Translation2d(.75,0),3.3));
+
+
         
     }
 

@@ -3,6 +3,7 @@ package frc.robot;
 import org.photonvision.SimVisionTarget;
 
 import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -141,6 +142,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    // Start Rio Camera
+    CameraServer.startAutomaticCapture();
+
     // Target Position Chooser - Able to Override the Position
     mTargetedPositionChooser = new SendableChooser<TargetedPositions>();
     mTargetedPositionChooser.setDefaultOption("NONE", TargetedPositions.NONE);
@@ -321,7 +325,8 @@ public class Robot extends TimedRobot {
     // Auto Mode
     mAutoModes = new SendableChooser<AutoModeBase>();
     //mAutoModes.setDefaultOption("Nothing", new DoNothingMode());
-    mAutoModes.setDefaultOption("Score High and charge mode", new SwerveTestAutoMode(mCurrentTargetedObject));
+    mAutoModes.setDefaultOption("Score High and charge mode: greedy", new SwerveTestAutoMode(mCurrentTargetedObject));
+    mAutoModes.setDefaultOption("Score High and charge mode: not greedy", new SwerveTestAutoMode(mCurrentTargetedObject));
     mAutoModes.addOption("Taxi Mode", new taxiMode());
     mAutoModes.addOption("Score Mid and taxi mode", new ScoreMidAndTaxiMode(mCurrentTargetedObject));
     mAutoModes.addOption("Score High and taxi mode", new ScoreHighAndTaxi(mCurrentTargetedObject));
@@ -861,7 +866,6 @@ public class Robot extends TimedRobot {
         // Swerve Drive
         // Joystick based Translation
         Translation2d sTrans = mOperatorInterface.getSwerveTranslation();
-        if(true) sTrans = sTrans.times(.6); // slow down the speed by 40%!
         double sRotation = mOperatorInterface.getSwerveRotation();
         sRotation *= .25;
         if(mOperatorInterface.getDrivePrecisionSteer()){
@@ -944,7 +948,7 @@ public class Robot extends TimedRobot {
 }
 
 /*
-MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWNKOO0KXWWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWNX0kxdoodk0NWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNXOdc;;cdOXWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM

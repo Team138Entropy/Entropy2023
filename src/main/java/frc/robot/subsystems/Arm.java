@@ -76,12 +76,13 @@ public class Arm extends Subsystem {
         ExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
         ExtensionMotor.setInverted(false);
         ExtensionMotor.setSensorPhase(false);
-        ExtensionMotor.config_kF(0, 1);
-        ExtensionMotor.config_kP(0, 0.9);
+        ExtensionMotor.config_kF(0, 0);
+        ExtensionMotor.config_kP(0, 0.2);
+
         ExtensionMotor.config_kI(0, 0);
         ExtensionMotor.config_kD(0, 0);
-        ExtensionMotor.configMotionAcceleration(60000);
-        ExtensionMotor.configMotionCruiseVelocity(50000);
+        ExtensionMotor.configMotionAcceleration(16000*4);
+        ExtensionMotor.configMotionCruiseVelocity(16000);
 
         // Rotation Min, Max, Target
         mMaximumDegreesTarget = 0;
@@ -139,7 +140,7 @@ public class Arm extends Subsystem {
         {
             // TODO: Figure out Scaling Value
             // TODO: arm extension should factor angle?
-            ExtensionMotor.set(ControlMode.MotionMagic, Inches, DemandType.ArbitraryFeedForward, 0.2); 
+            ExtensionMotor.set(ControlMode.MotionMagic, Inches, DemandType.ArbitraryFeedForward, 0.1); 
             mTargetedExtension = Inches;
         }
     }
@@ -258,7 +259,6 @@ public class Arm extends Subsystem {
         SmartDashboard.putNumber(key + "Target Arm Extension", mTargetedExtension);
         SmartDashboard.putString(key + "extension control mode", ExtensionMotor.getControlMode().name());
         SmartDashboard.putNumber(key + "extension current", ExtensionMotor.getSupplyCurrent());
-
         SmartDashboard.putNumber(key + "Extension Velocity", ExtensionMotor.getSelectedSensorVelocity());
 
         MasterShoulderMotor.updateSmartdashboard();

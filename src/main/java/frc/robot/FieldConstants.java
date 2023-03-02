@@ -301,7 +301,7 @@ public final class FieldConstants {
     public static final Translation2d[] blueInitScorePosition = new Translation2d[nodeRowCount];
    
     // This is the offset from the grid positions
-    public static final double scorePosOffset = .4;
+    public static final double scorePosOffset = .28;
 
     // Final Scoring Positions
     public static final Translation2d[] redFinalScorePosition = new Translation2d[nodeRowCount];
