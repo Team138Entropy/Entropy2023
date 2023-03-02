@@ -10,6 +10,7 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -83,6 +84,9 @@ public class RobotState {
     // Pose that does not take Vision into account and only uses Odometry
     SwerveDrivePoseEstimator mSwerveDriveOnlyPoseEstimator;
 
+    // Threshold of Vision Targets that will recieve 
+    private final double mVisionDistanceThreshold = 12;
+
     // Pose Estimate Based Pose (Using Vision + Drive)
     Pose2d mRobotPose;
 
@@ -139,6 +143,7 @@ public class RobotState {
        }
 
         // Swerve Drive Pose Estimator
+        // Using Default Std Deviations (Drive .1, Vision .9)
         mSwerveDrivePoseEstimator = new SwerveDrivePoseEstimator(mDrive.getSwerveKinematics(), 
             mRealRobot ? mPigeon.getYaw().getWPIRotation2d() : mPigeon.getSimYaw().getWPIRotation2d(), 
             mRealRobot ? mDrive.getModulePositions() : mDrive.getSimSwerveModulePositions(),
@@ -247,6 +252,7 @@ public class RobotState {
         );
 
         // OVerall Swerve Drive Estimated Position
+        // This is the current estimate before vision updates
         Pose2d currentSwervePose = mSwerveDrivePoseEstimator.getEstimatedPosition();
 
         // Iterate each PhotonVisionPose Estimator and 
@@ -264,13 +270,28 @@ public class RobotState {
                 // for now just add it
                 boolean addPose = true;
 
+                // Lower the Standard Deviation the more the vision pose is trusted
+                // Distance To Target in Meters
+                double distanceToTarget = Math.abs(VisionBasedEstimate.getFirst().getTranslation().getDistance(
+                    currentSwervePose.getTranslation()
+                ));
+
+                // Vision Estimate Std Deviation
+                double stdDeviationCoefficient = .75;
+
+                // If within Threshold
+                if(distanceToTarget <= mVisionDistanceThreshold)
+                {
+                    stdDeviationCoefficient = .3;
+                }
 
                 // Add Vision Pose 
                 if(addPose)
                 {
                     mSwerveDrivePoseEstimator.addVisionMeasurement(
                         VisionBasedEstimate.getFirst(), // Pose2d
-                        VisionBasedEstimate.getSecond() // Timestamp Seconds
+                        VisionBasedEstimate.getSecond(), // Timestamp Seconds
+                        VecBuilder.fill(stdDeviationCoefficient, stdDeviationCoefficient, stdDeviationCoefficient)
                     );
 
                     // Set Valid and Store Pose
