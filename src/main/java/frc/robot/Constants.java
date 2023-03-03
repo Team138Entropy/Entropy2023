@@ -369,6 +369,8 @@ public class Constants {
       // Add Arm Overrides
       CubeArmTargetOverrides.put(Enums.ArmTargets.TOP_SCORING_FRONT, Enums.ArmTargets.TOP_SCORING_FRONT_CUBE);
       CubeArmTargetOverrides.put(Enums.ArmTargets.MID_SCORING_FRONT, Enums.ArmTargets.MID_SCORING_FRONT_CUBE);
+      CubeArmTargetOverrides.put(Enums.ArmTargets.INTAKE_FRONT, Enums.ArmTargets.INTAKE_FRONT_CUBE);
+      CubeArmTargetOverrides.put(Enums.ArmTargets.INTAKE_BACK, Enums.ArmTargets.INTAKE_BACK_CUBE);
     }
 
     //tunable PID values
