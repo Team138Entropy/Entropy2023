@@ -38,6 +38,9 @@ public class Superstructure {
   private double mExtensionOverride;
   private double mArmOverride;
 
+  // Option to Disable Arm Safety
+  private boolean mDisableArmSafety;
+
   private Superstructure() {
     mRealRobot = false;
 
@@ -47,6 +50,7 @@ public class Superstructure {
     mArmTargetPosition = null;
     mOverridingExtension = false;
     mOverridingAngle = false;
+    mDisableArmSafety = false;
 
   }
 
@@ -194,6 +198,18 @@ public class Superstructure {
     }
     return result;
   }  
+
+  // Disable Arm Safety
+  public void setDisableArmSafety(boolean value)
+  {
+    mDisableArmSafety = value;
+  }
+
+  // Get if Arm Safety is Disable 
+  public boolean getDisableArmSafety()
+  {
+    return mDisableArmSafety;
+  }
 
   public void updateSmartDashBoard()
   {

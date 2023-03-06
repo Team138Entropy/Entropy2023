@@ -554,6 +554,16 @@ public class Drive extends Subsystem {
     for (SwerveModule mod : mSwerveModules) {
       mod.setDesiredState(swerveModuleStates[mod.getModuleNumber()], true);
     }
+
+    // Sim Only
+    if(!mRealRobot){
+        if(Math.abs(speed.omegaRadiansPerSecond) > 0)
+        {
+            double sRotation = speed.omegaRadiansPerSecond;
+            sRotation *= -1;
+            Pigeon.getInstance().rotateSimYaw(sRotation);
+        }  
+    }
   }
 
 

@@ -28,6 +28,7 @@ public abstract class AutoModeBase {
     public List<Action> mAutoActions = new ArrayList<>();
     public int mCurrentAction = 0;
     public boolean mHasStartedAction = false;
+    private double mEstimatedDuration = 0;
 
     // Starting Pose 
     public Optional<Pose2d> mStartingPose = Optional.empty();   
@@ -261,11 +262,24 @@ public abstract class AutoModeBase {
         calculateStartingPosition(allianceColor);
     }
 
+    // Incriment Estimated Duration
+    public void incrimentDuration(double seconds)
+    {
+        mEstimatedDuration += seconds;
+    }
+
+    // Get Estimated Duration 
+    public double getEstimatedDuration()
+    {
+        return mEstimatedDuration;
+    }
+
     public void updateSmartDashboard(String key)
     {
         SmartDashboard.putBoolean(key + "Running", isActive());
         SmartDashboard.putNumber(key + "Current Action", getCurrentAction() + 1);
         SmartDashboard.putNumber(key + "Total Actions", getActionCount());
+        SmartDashboard.putNumber(key + "Estimated Duration", getEstimatedDuration());
 
     }
 }

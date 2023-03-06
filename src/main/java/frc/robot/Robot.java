@@ -361,6 +361,8 @@ public class Robot extends TimedRobot {
     // Close Grasper
     mGrasper.setGrasperFullyClosed();
 
+    // Make sure Arm Safety is enabled
+    mSuperStructure.setDisableArmSafety(false);
   }
 
   /** This function is called periodically during autonomous. */
@@ -393,6 +395,9 @@ public class Robot extends TimedRobot {
 
     // Close Grasper
     mGrasper.setGrasperFullyClosed();
+
+    // Make sure Arm Safety is enabled
+    mSuperStructure.setDisableArmSafety(false);
   }
 
   /** This function is called periodically during operator control. */
