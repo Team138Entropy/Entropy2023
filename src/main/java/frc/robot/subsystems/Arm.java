@@ -24,11 +24,13 @@ public class Arm extends Subsystem {
     private double mMaximumDegreesTarget;
     private double mMinimumDegreesTarget;
     private double mTargetedDegrees;
+    private final double mShoulderCoefficient = 360.0/8192.0;
 
     // Extension Information
     private double mMaximumExtensionTarget;
     private double mMinimumExtensionTarget;
     private double mTargetedExtension;
+
 
     public static synchronized Arm getInstance() {
         if (mInstance == null) {
@@ -64,8 +66,9 @@ public class Arm extends Subsystem {
         // kD: D-Gain. Helps with overshoot
         //      Typicall starts at 10xPGain
         // kI: I-Gain Helps the sensor settle close to the target position
-        MasterShoulderMotor.configSelectedFeedbackCoefficient(360.0/8192.0);
-        setArmSpeeds(ArmRotationSpeed.DEFAULT);
+        //MasterShoulderMotor.configSelectedFeedbackCoefficient(360.0/8192.0);
+        //setArmSpeeds(ArmRotationSpeed.DEFAULT);
+
         SecondaryShoulderMotor.follow(MasterShoulderMotor); // Secondary Motor will follow Primary Motor
         SecondaryShoulderMotor.setInverted(true);
 
@@ -98,20 +101,24 @@ public class Arm extends Subsystem {
     // Sets Arm Speeds
     public void setArmSpeeds(ArmRotationSpeed rotSpeed)
     {
+        /*
         MasterShoulderMotor.configMotionCruiseVelocity(rotSpeed.velocity);
         MasterShoulderMotor.configMotionAcceleration(rotSpeed.acceleration);
+        */
     }
 
     // Gets the Feed Forward Value based on Gravity
     //      90 & 270 are straight up and straight down. No KF
     //      0 & 180 are completely horizontal. Maximum KF
     public double getGravity(){
-        double angle = MasterShoulderMotor.getSelectedSensorPosition();
+        double angle = ticksToArmAngle(MasterShoulderMotor.getSelectedSensorPosition());
         double FF = .2;
+        /*/
         if(angle <= 180 && angle >= 90)
         {
             FF = .35;
         }
+        */
         double currentRadians = angle * Constants.Misc.degreeToRadian;
         // todo - that KF value might have to change by length of the robot
         double feedForward = FF * Math.cos(currentRadians);
@@ -125,11 +132,14 @@ public class Arm extends Subsystem {
         MasterShoulderMotor.config_kP(0, Constants.Arm.tunableArmKP.get()); 
         MasterShoulderMotor.config_kI(0, Constants.Arm.tunableArmKI.get());
         MasterShoulderMotor.config_kD(0, Constants.Arm.tunableArmKD.get());
+        MasterShoulderMotor.configMotionCruiseVelocity(Constants.Arm.tunableArmVel.get());
+        MasterShoulderMotor.configMotionAcceleration(Constants.Arm.tunableArmAccel.get());
 
         if(mMaximumDegreesTarget >= Degrees && mMinimumDegreesTarget <= Degrees)
         {
             double feedForward = getGravity();
-            MasterShoulderMotor.set(ControlMode.MotionMagic, Degrees, DemandType.ArbitraryFeedForward, feedForward);
+            double ticksTarget = armAngleToTicks(Degrees);
+            MasterShoulderMotor.set(ControlMode.MotionMagic, ticksTarget, DemandType.ArbitraryFeedForward, feedForward);
             mTargetedDegrees = Degrees;
         }
     }
@@ -145,10 +155,22 @@ public class Arm extends Subsystem {
         }
     }
 
+    // Converts Ticks to Arm Angle
+    public double ticksToArmAngle(double ticks)
+    {
+        return ticks * mShoulderCoefficient;
+    }
+
+    // Converts Arm Angle to Ticks
+    public double armAngleToTicks(double angle)
+    {
+        return angle/mShoulderCoefficient;
+    }
+
     // Get the current arm angle
     public double getArmAngle()
     {
-        return MasterShoulderMotor.getSelectedSensorPosition();
+        return ticksToArmAngle(MasterShoulderMotor.getSelectedSensorPosition());
     }
 
     // Get the current arm extension
@@ -246,7 +268,9 @@ public class Arm extends Subsystem {
 
         //Arm Positioning and Extension
         final String key = "Arm/";
-        SmartDashboard.putNumber(key + "Shoulder Position", getArmAngle());
+        SmartDashboard.putNumber(key + "Shoulder Position (Ticks)", MasterShoulderMotor.getSelectedSensorPosition());
+        SmartDashboard.putNumber(key + "Shoulder Position (Angle)", getArmAngle());
+        SmartDashboard.putNumber(key + "Shoulder Velocity (Ticks)", MasterShoulderMotor.getSelectedSensorVelocity());
         SmartDashboard.putNumber(key + "Shoulder Percent Output", MasterShoulderMotor.getMotorOutputPercent());
         SmartDashboard.putNumber(key + "Shoulder Secondary Percent Output", SecondaryShoulderMotor.getMotorOutputPercent());
         SmartDashboard.putNumber(key + "Extension Position", getArmExtensionPosition());

@@ -376,9 +376,12 @@ public class Constants {
     //tunable PID values
     // Originally was 1 - 29 - .01 - 600
     public static TuneableNumber tunableArmKF = new TuneableNumber("tunableArmKF",0);
-    public static TuneableNumber tunableArmKP = new TuneableNumber("tunableArmKP",29);
-    public static TuneableNumber tunableArmKI = new TuneableNumber("tunableArmKI",.01);
-    public static TuneableNumber tunableArmKD = new TuneableNumber("tunableArmKD",4000);
+    public static TuneableNumber tunableArmKP = new TuneableNumber("tunableArmKP",0.3);
+    public static TuneableNumber tunableArmKI = new TuneableNumber("tunableArmKI",0);
+    public static TuneableNumber tunableArmKD = new TuneableNumber("tunableArmKD",0);
+    public static TuneableNumber tunableArmVel = new TuneableNumber("tunableArmVel",0);
+    public static TuneableNumber tunableArmAccel = new TuneableNumber("tunableArmAccel",0);
+
   }
 
   public static class Grasper {

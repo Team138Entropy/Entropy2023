@@ -127,7 +127,7 @@ public class Superstructure {
     boolean isAtTargetOverallPosition = (mCurrentTargetPosition == mArmTargetPosition);
 
     // Set Arm Speed
-    mArm.setArmSpeeds(getRotationSpeed(mArmTargetPosition, mCurrentTargetPosition));
+    //mArm.setArmSpeeds(getRotationSpeed(mArmTargetPosition, mCurrentTargetPosition));
 
     // Arm Target does not match current position
     if(!isAtTargetOverallPosition)
