@@ -67,8 +67,9 @@ public class Arm extends Subsystem {
         // kD: D-Gain. Helps with overshoot
         //      Typicall starts at 10xPGain
         // kI: I-Gain Helps the sensor settle close to the target position
+        // No Longer Using Scaled Coefficient value!
         //MasterShoulderMotor.configSelectedFeedbackCoefficient(360.0/8192.0);
-        //setArmSpeeds(ArmRotationSpeed.DEFAULT);
+        setArmSpeeds(ArmRotationSpeed.DEFAULT);
 
         SecondaryShoulderMotor.follow(MasterShoulderMotor); // Secondary Motor will follow Primary Motor
         SecondaryShoulderMotor.setInverted(true);
@@ -102,10 +103,8 @@ public class Arm extends Subsystem {
     // Sets Arm Speeds
     public void setArmSpeeds(ArmRotationSpeed rotSpeed)
     {
-        /*
         MasterShoulderMotor.configMotionCruiseVelocity(rotSpeed.velocity);
         MasterShoulderMotor.configMotionAcceleration(rotSpeed.acceleration);
-        */
     }
 
     // Gets the Feed Forward Value based on Gravity
