@@ -24,6 +24,7 @@ public class Arm extends Subsystem {
     private double mMaximumDegreesTarget;
     private double mMinimumDegreesTarget;
     private double mTargetedDegrees;
+    private double mTargetTicks;
     private final double mShoulderCoefficient = 360.0/8192.0;
 
     // Extension Information
@@ -140,6 +141,7 @@ public class Arm extends Subsystem {
             double feedForward = getGravity();
             double ticksTarget = armAngleToTicks(Degrees);
             MasterShoulderMotor.set(ControlMode.MotionMagic, ticksTarget, DemandType.ArbitraryFeedForward, feedForward);
+            mTargetTicks = ticksTarget;
             mTargetedDegrees = Degrees;
         }
     }
@@ -271,7 +273,8 @@ public class Arm extends Subsystem {
         SmartDashboard.putNumber(key + "Shoulder Position (Ticks)", MasterShoulderMotor.getSelectedSensorPosition());
         SmartDashboard.putNumber(key + "Shoulder Position (Angle)", getArmAngle());
         SmartDashboard.putNumber(key + "Shoulder Velocity (Ticks)", MasterShoulderMotor.getSelectedSensorVelocity());
-        SmartDashboard.putNumber(key + "Shoulder Percent Output", MasterShoulderMotor.getMotorOutputPercent());
+        SmartDashboard.putNumber(key + "Master Shoulder Percent Output", MasterShoulderMotor.getMotorOutputPercent());
+        SmartDashboard.putNumber(key + "Secondary Shoulder Percent Output", SecondaryShoulderMotor.getMotorOutputPercent());
         SmartDashboard.putNumber(key + "Shoulder Secondary Percent Output", SecondaryShoulderMotor.getMotorOutputPercent());
         SmartDashboard.putNumber(key + "Extension Position", getArmExtensionPosition());
         SmartDashboard.putNumber(key + "Extension Percent Output", ExtensionMotor.getMotorOutputPercent());
@@ -284,6 +287,8 @@ public class Arm extends Subsystem {
         SmartDashboard.putString(key + "extension control mode", ExtensionMotor.getControlMode().name());
         SmartDashboard.putNumber(key + "extension current", ExtensionMotor.getSupplyCurrent());
         SmartDashboard.putNumber(key + "Extension Velocity", ExtensionMotor.getSelectedSensorVelocity());
+        SmartDashboard.putNumber(key + "shoulder (ticks)", mTargetTicks);
+        SmartDashboard.putNumber(key + "shoulder allowed error", MasterShoulderMotor.getClosedLoopError());
 
         MasterShoulderMotor.updateSmartdashboard();
         SecondaryShoulderMotor.updateSmartdashboard();
@@ -292,8 +297,9 @@ public class Arm extends Subsystem {
 
     @Override
     public void zeroSensors() {
+        mTargetTicks = armAngleToTicks(ArmTargets.START.armAngle);
         // TODO Auto-generated method stub
-        MasterShoulderMotor.setSelectedSensorPosition(ArmTargets.START.armAngle);
+        MasterShoulderMotor.setSelectedSensorPosition(mTargetTicks);
         mTargetedDegrees = ArmTargets.START.armAngle;
         ExtensionMotor.setSelectedSensorPosition(ArmTargets.START.armExtend);
         mTargetedExtension = ArmTargets.START.armExtend;

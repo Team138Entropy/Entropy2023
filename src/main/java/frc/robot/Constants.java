@@ -376,11 +376,11 @@ public class Constants {
     //tunable PID values
     // Originally was 1 - 29 - .01 - 600
     public static TuneableNumber tunableArmKF = new TuneableNumber("tunableArmKF",0);
-    public static TuneableNumber tunableArmKP = new TuneableNumber("tunableArmKP",0.3);
+    public static TuneableNumber tunableArmKP = new TuneableNumber("tunableArmKP",1);
     public static TuneableNumber tunableArmKI = new TuneableNumber("tunableArmKI",0);
-    public static TuneableNumber tunableArmKD = new TuneableNumber("tunableArmKD",0);
-    public static TuneableNumber tunableArmVel = new TuneableNumber("tunableArmVel",0);
-    public static TuneableNumber tunableArmAccel = new TuneableNumber("tunableArmAccel",0);
+    public static TuneableNumber tunableArmKD = new TuneableNumber("tunableArmKD",80);
+    public static TuneableNumber tunableArmVel = new TuneableNumber("tunableArmVel",1400);
+    public static TuneableNumber tunableArmAccel = new TuneableNumber("tunableArmAccel",1400);
 
   }
 

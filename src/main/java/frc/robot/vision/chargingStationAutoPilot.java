@@ -84,7 +84,7 @@ public class chargingStationAutoPilot {
         {
             // Pitch Angle Rate is Greater than 15 or Angle is less than 5 Degree THreashold
             // Stop! Were done!
-            stage = 2;
+            stage = 1;
             autoBalanceXMode = false;
             mTimer.reset();
             mTimer.start();
@@ -133,7 +133,7 @@ public class chargingStationAutoPilot {
 
             // Still balancing
             // Set Speeds into Swerve System
-            ChassisSpeeds calculatedSpeeds = new ChassisSpeeds(xAxisRate, yAxisRate, 0);
+            ChassisSpeeds calculatedSpeeds = new ChassisSpeeds(.4, yAxisRate, 0);
 
             // Call Autonomous Chasis Speed 
             var targetSwerveModuleStates = mDrive.getSwerveKinematics().toSwerveModuleStates(calculatedSpeeds);
@@ -171,8 +171,8 @@ public class chargingStationAutoPilot {
     public void updateSmartdashboard()
     {
         String key = "ChargingStation/";
-        SmartDashboard.putNumber(key + "Pitch (Degrees)", pitchAngleDegrees);
-        SmartDashboard.putNumber(key + "Pitch Rate (Degrees/Period)", pitchAngleRate);
+        SmartDashboard.putNumber(key + "Pitch (Degrees)", mPigeon.getUnadjustedPitch().getDegrees());
+        SmartDashboard.putNumber(key + "Pitch Rate (Degrees/Period)", mPigeon.getUnadjustedPitchRate().getDegrees());
 
     }
 
