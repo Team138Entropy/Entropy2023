@@ -185,6 +185,7 @@ public class Superstructure {
       targetPosition != currentPosition
     )
     {
+      /*
       // Greater than 90 is towards the backside, less than 90 is toward the front
       if(targetPosition.armAngle > 90 && currentPosition.armAngle < 90)
       {
@@ -195,6 +196,7 @@ public class Superstructure {
         // Target Position is less than 90, heading to frontside
         result = ArmRotationSpeed.OVER_TOP_FORWARDS;
       }
+      */
     }
     return result;
   }  

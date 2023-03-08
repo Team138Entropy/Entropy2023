@@ -396,11 +396,11 @@ public class OperatorInterface {
             target = ArmTargets.TOP_SCORING_FRONT;
         }else if(mOperatorController.getAxis(Axises.X) == 1){
             target = ArmTargets.MID_SCORING_FRONT;
-        }else if(mOperatorController.getAxis(Axises.Y) == 1){
+        }else if(mOperatorController.getAxis(Axises.Y) == -1){
             target = ArmTargets.LOW_SCORING_FRONT;
         }else if(mOperatorController.getAxis(Axises.X) == -1){
             target = ArmTargets.MID_SCORING_BACK;
-        }else if(mOperatorController.getAxis(Axises.Y) == -1){
+        }else if(mOperatorController.getAxis(Axises.Y) == 1){
             target = ArmTargets.LOW_SCORING_BACK;
         }else if(mOperatorController2.getButton(Buttons.A)){
             target = ArmTargets.INTAKE_GROUND_FRONT;
