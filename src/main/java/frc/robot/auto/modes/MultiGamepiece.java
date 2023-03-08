@@ -1,0 +1,127 @@
+package frc.robot.auto.modes;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.FieldConstants;
+import frc.robot.RobotState;
+import frc.robot.Enums.SwerveRotation;
+import frc.robot.Enums.TargetedPositions;
+import frc.robot.auto.AutoModeEndedException;
+import frc.robot.auto.actions.Action;
+import frc.robot.auto.actions.DriveTrajectoryAction;
+
+public class MultiGamepiece extends AutoModeBase {
+    RobotState mRobotState = RobotState.getInstance();
+
+    public MultiGamepiece()
+    {
+        // Set Odometry Starting Location
+        setStartingPosition(
+            (mRobotState.getAlliance() == Alliance.Blue) ? TargetedPositions.GRID_1 : TargetedPositions.GRID_9, 
+            SwerveRotation.FRONT_FACING_GRID
+        );
+
+        // Scoring Positions
+        Translation2d ScoreSpot1 = FieldConstants.getTargetPositionPose(TargetedPositions.GRID_1,
+             mRobotState.getAlliance());
+        Translation2d ScoreSpot2 = FieldConstants.getTargetPositionPose(TargetedPositions.GRID_2,
+             mRobotState.getAlliance());
+        Translation2d ScoreSpot3 = FieldConstants.getTargetPositionPose(TargetedPositions.GRID_2,
+             mRobotState.getAlliance());
+
+        // Game Object Staging Positions (Left to Right just like the Grid)
+        Translation2d Stage1 = FieldConstants.Auto.Waypoints.StagingWaypoints[3]
+            .getPose(mRobotState.getAlliance()).getTranslation();
+        Translation2d Stage2 = FieldConstants.Auto.Waypoints.StagingWaypoints[2]
+            .getPose(mRobotState.getAlliance()).getTranslation(); 
+        Translation2d Stage3 = FieldConstants.Auto.Waypoints.StagingWaypoints[1]
+            .getPose(mRobotState.getAlliance()).getTranslation(); 
+        // 1. Score First Object (Starts with Robot)
+
+        // 2. Drive to Game Piece 2 (keep arm on)
+        DriveTrajectoryAction scoreToGp1TrajectoryAction = new DriveTrajectoryAction(
+                SwerveRotation.FRONT_FACING_GRID.getRotation(),.8,2);
+        scoreToGp1TrajectoryAction.addPose(
+            new Pose2d(
+                ScoreSpot1,
+                SwerveRotation.FRONT_FACING_GRID.getRotation()
+            )
+        );
+        scoreToGp1TrajectoryAction.addPose(
+            new Pose2d(
+                Stage1,
+                SwerveRotation.FRONT_FACING_GRID.getRotation()
+            )
+        );
+        scoreToGp1TrajectoryAction.generate();
+        addAction(scoreToGp1TrajectoryAction);
+
+        // 3. Drive to Score 2 (keep arm on)
+        DriveTrajectoryAction gp1ToScore2TrajectoryAction = new DriveTrajectoryAction(
+                SwerveRotation.FRONT_FACING_GRID.getRotation(),.8,2);
+        gp1ToScore2TrajectoryAction.addPose(
+            new Pose2d(
+                Stage1,
+                SwerveRotation.FRONT_FACING_GRID.getRotation()
+            )
+        );
+        gp1ToScore2TrajectoryAction.addPose(
+            new Pose2d(
+                ScoreSpot2,
+                SwerveRotation.FRONT_FACING_GRID.getRotation()
+            )
+        );
+        gp1ToScore2TrajectoryAction.generate();
+        addAction(gp1ToScore2TrajectoryAction);
+
+        // 4. Drive to GP 2
+        DriveTrajectoryAction Score2ToGp2TrajectoryAction = new DriveTrajectoryAction(
+            SwerveRotation.FRONT_FACING_GRID.getRotation(),.8,2);
+            Score2ToGp2TrajectoryAction.addPose(
+            new Pose2d(
+                ScoreSpot2,
+                SwerveRotation.FRONT_FACING_GRID.getRotation()
+            )
+        );
+        Score2ToGp2TrajectoryAction.addPose(
+            new Pose2d(
+                Stage2,
+                SwerveRotation.FRONT_FACING_GRID.getRotation()
+            )
+        );
+        Score2ToGp2TrajectoryAction.generate();
+        addAction(Score2ToGp2TrajectoryAction);
+
+        // Drive to Score 3
+        DriveTrajectoryAction Gp2ToScore3TrajectoryAction = new DriveTrajectoryAction(
+            SwerveRotation.FRONT_FACING_GRID.getRotation(),.8,2);
+            Gp2ToScore3TrajectoryAction.addPose(
+            new Pose2d(
+                Stage2,
+                SwerveRotation.FRONT_FACING_GRID.getRotation()
+            )
+        );
+        Gp2ToScore3TrajectoryAction.addPose(
+            new Pose2d(
+                ScoreSpot3,
+                SwerveRotation.FRONT_FACING_GRID.getRotation()
+            )
+        );
+        Gp2ToScore3TrajectoryAction.generate();
+        addAction(Gp2ToScore3TrajectoryAction);
+
+
+
+    }
+
+    @Override
+    protected void routine() throws AutoModeEndedException {
+         // Traverse list and run each action
+      for(Action currentAction:  mAutoActions )  {
+        runAction(currentAction);
+     }
+    }
+    
+}

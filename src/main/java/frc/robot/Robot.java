@@ -325,8 +325,9 @@ public class Robot extends TimedRobot {
     // Auto Mode
     mAutoModes = new SendableChooser<AutoModeBase>();
     //mAutoModes.setDefaultOption("Nothing", new DoNothingMode());
-    mAutoModes.setDefaultOption("Score High and charge mode: greedy", new SwerveTestAutoMode(mCurrentTargetedObject));
-    mAutoModes.setDefaultOption("Score High and charge mode: not greedy", new SwerveTestAutoMode(mCurrentTargetedObject));
+   // mAutoModes.setDefaultOption("Score High and charge mode: greedy", new SwerveTestAutoMode(mCurrentTargetedObject));
+    //mAutoModes.setDefaultOption("Score High and charge mode: not greedy", new SwerveTestAutoMode(mCurrentTargetedObject));
+    mAutoModes.setDefaultOption("Multi", new MultiGamepiece());
     mAutoModes.addOption("Taxi Mode", new taxiMode());
     mAutoModes.addOption("Score Mid and taxi mode", new ScoreMidAndTaxiMode(mCurrentTargetedObject));
     mAutoModes.addOption("Score High and taxi mode", new ScoreHighAndTaxi(mCurrentTargetedObject));
