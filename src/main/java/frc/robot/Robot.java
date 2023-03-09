@@ -329,8 +329,10 @@ public class Robot extends TimedRobot {
     //mAutoModes.setDefaultOption("Score High and charge mode: not greedy", new SwerveTestAutoMode(mCurrentTargetedObject));
     mAutoModes.setDefaultOption("Multi", new MultiGamepiece());
     mAutoModes.addOption("Taxi Mode", new taxiMode());
-    mAutoModes.addOption("Score Mid and taxi mode", new ScoreMidAndTaxiMode(mCurrentTargetedObject));
-    mAutoModes.addOption("Score High and taxi mode", new ScoreHighAndTaxi(mCurrentTargetedObject));
+    mAutoModes.addOption("Score Mid and taxi CUBE", new ScoreMidAndTaxiMode(TargetedObject.CUBE));
+    mAutoModes.addOption("Score High and taxi  CONE", new ScoreHighAndTaxi(TargetedObject.CONE));
+    mAutoModes.addOption("Score Mid and taxi CONE", new ScoreMidAndTaxiMode(TargetedObject.CONE));
+    mAutoModes.addOption("Score High and taxi CUBE", new ScoreHighAndTaxi(TargetedObject.CUBE));
     SmartDashboard.putData("Auto Modes", mAutoModes);
   }
 
@@ -362,6 +364,8 @@ public class Robot extends TimedRobot {
     // Close Grasper
     mGrasper.setGrasperFullyClosed();
 
+    mSuperStructure.setTargetArmPosition(mCurrentArmTarget);
+
     // Make sure Arm Safety is enabled
     mSuperStructure.setDisableArmSafety(false);
   }
@@ -374,6 +378,7 @@ public class Robot extends TimedRobot {
       mAutoModeBase.runner();
     }
     mGrasper.update();
+    mSuperStructure.update();
   }
 
   /** This function is called once when teleop is enabled. */
@@ -846,7 +851,7 @@ public class Robot extends TimedRobot {
       else if(mBalanceMode)
       {
         if(mOperatorInterface.getFastBalance()){
-          mChargingStationAutoPilot.update(mOperatorInterface.getAutoPilotLeftStrafe(), mOperatorInterface.getAutoPilotRightStrafe());
+          mChargingStationAutoPilot.update();
         }else{
           mDrive.setBrake(true);
         }
@@ -905,7 +910,7 @@ public class Robot extends TimedRobot {
         mAutoPilot.reset();
 
         // Reset Charging Station DOne
-        mChargingStationAutoPilot.reset();
+        mChargingStationAutoPilot.startBalance();
       }
     }
   }

@@ -30,12 +30,12 @@ public class ChargingStationAction implements Action {
 
     @Override
     public void start() {
-    
+     mChargingStationAutoPilot.startBalance();
     }
 
     @Override
     public void update() {
-        mChargingStationAutoPilot.update(false, false);
+        mChargingStationAutoPilot.update();
     }
 
 

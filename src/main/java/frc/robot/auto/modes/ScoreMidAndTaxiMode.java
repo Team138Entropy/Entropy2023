@@ -45,7 +45,7 @@ public class ScoreMidAndTaxiMode extends AutoModeBase {
         }
         
         // Wait to make sure we are good!
-        addAction(new WaitAction(.2));
+        addAction(new WaitAction(1));
 
         // Open the Grasper
         addAction(new GrasperAction(true));
@@ -58,7 +58,7 @@ public class ScoreMidAndTaxiMode extends AutoModeBase {
 
         //TODO: joe is this ok or is there a better way to do it?
 
-        addAction(new DriveAction(new Translation2d(-.75,0),3.3));
+        addAction(new DriveAction(new Translation2d(.75,0),3.3));
         
     }
 
