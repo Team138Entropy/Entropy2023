@@ -116,7 +116,7 @@ public class chargingStationAutoPilot {
         String key = "ChargingStation/";
         SmartDashboard.putNumber(key + "Pitch (Degrees)", mPigeon.getUnadjustedPitch().getDegrees());
         SmartDashboard.putNumber(key + "Pitch Rate (Degrees/Period)", mPigeon.getUnadjustedPitchRate().getDegrees());
-        SmartDashboard.putString(key + "current state", mState.toString());
+        //SmartDashboard.putString(key + "current state", mState.toString());
         SmartDashboard.putNumber(key + "PID error", error);
 
     }

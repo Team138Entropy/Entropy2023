@@ -86,8 +86,8 @@ public class Arm extends Subsystem {
 
         ExtensionMotor.config_kI(0, 0);
         ExtensionMotor.config_kD(0, 0);
-        ExtensionMotor.configMotionAcceleration(16000*4);
-        ExtensionMotor.configMotionCruiseVelocity(16000);
+        ExtensionMotor.configMotionAcceleration(20000*4);
+        ExtensionMotor.configMotionCruiseVelocity(20000);
 
         // Rotation Min, Max, Target
         mMaximumDegreesTarget = 0;
