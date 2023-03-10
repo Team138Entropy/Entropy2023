@@ -30,7 +30,7 @@ public class SequentialAction implements Action {
 
     @Override
     public void update() {
-        if(!mActions.get(mIndex).isFinished())
+        if(mIndex < mActionCount && !mActions.get(mIndex).isFinished())
         {
             // Action not finished, update
             mActions.get(mIndex).update();
@@ -39,6 +39,9 @@ public class SequentialAction implements Action {
         {
             // Action finished, incriment
             ++mIndex;
+
+            // Start Next Action if applicable
+            if(mIndex < mActionCount) mActions.get(mIndex).start();
         }
     }
 

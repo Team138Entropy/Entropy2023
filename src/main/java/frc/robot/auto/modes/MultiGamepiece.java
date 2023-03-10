@@ -6,12 +6,17 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.FieldConstants;
 import frc.robot.RobotState;
+import frc.robot.Enums.ArmTargets;
 import frc.robot.Enums.GamePiece;
 import frc.robot.Enums.SwerveRotation;
 import frc.robot.Enums.TargetedPositions;
 import frc.robot.auto.AutoModeEndedException;
 import frc.robot.auto.actions.Action;
+import frc.robot.auto.actions.ArmAction;
 import frc.robot.auto.actions.DriveTrajectoryAction;
+import frc.robot.auto.actions.GrasperAction;
+import frc.robot.auto.actions.ParallelAction;
+import frc.robot.auto.actions.SequentialAction;
 import frc.robot.auto.actions.WaitAction;
 
 public class MultiGamepiece extends AutoModeBase {
@@ -28,8 +33,9 @@ public class MultiGamepiece extends AutoModeBase {
         // How Many Stages to do?
         //int StageCount = targetGamepieces.length;
         int CurrentStage = 0;
-
-    
+        GamePiece Gamepiece1 = GamePiece.Cone;
+        GamePiece Gamepiece2 = GamePiece.Cube;
+        GamePiece Gamepiece3 = GamePiece.Cube;    
 
         // Set Odometry Starting Location
         setStartingPosition(
@@ -65,11 +71,15 @@ public class MultiGamepiece extends AutoModeBase {
 
 
         // 1. Score First Object (Starts with Robot)
-        /*
-        addAction(new ArmAction(ArmTargets.TOP_SCORING_FRONT));
-        addAction(new WaitAction(1));
-        */
-        addAction(new WaitAction(.1));
+        if(GamePiece.Cone == Gamepiece1)
+        {
+            addAction(new ArmAction(ArmTargets.TOP_SCORING_FRONT));
+        }else
+        {
+            addAction(new ArmAction(ArmTargets.TOP_SCORING_FRONT_CUBE));
+        }
+        addAction(new WaitAction(.2));
+        addAction(new GrasperAction(true));
 
 
         // 2. Drive to Game Piece 2 (keep arm on)
@@ -100,7 +110,18 @@ public class MultiGamepiece extends AutoModeBase {
             )
         );
         scoreToGp1TrajectoryAction.generate();
-        addAction(scoreToGp1TrajectoryAction);
+
+        // Drive Trajectory and Get Arm to Intake Position (and Open)
+        addAction(
+            new ParallelAction(
+                scoreToGp1TrajectoryAction,
+                new SequentialAction(
+                    new WaitAction(.25),
+                    new ArmAction(ArmTargets.INTAKE_GROUND_FRONT),
+                    new GrasperAction(true)
+                )
+            )
+        );
 
         // 3. Drive to Score 2 (keep arm on)
         DriveTrajectoryAction gp1ToScore2TrajectoryAction = new DriveTrajectoryAction(
@@ -130,9 +151,21 @@ public class MultiGamepiece extends AutoModeBase {
             )
         );
         gp1ToScore2TrajectoryAction.generate();
-        addAction(gp1ToScore2TrajectoryAction);
+        addAction(
+            new ParallelAction(
+                gp1ToScore2TrajectoryAction,
+                new SequentialAction(
+                    new WaitAction(.2),
+                    new ArmAction(ArmTargets.LOW_SCORING_FRONT)
+                )
+            )
+        );
 
-        // 4. Drive to GP 2
+        // Score Game GP 2
+        addAction(new WaitAction(.1));
+        addAction(new GrasperAction(true));
+
+        // 4. Drive to GP 3
         DriveTrajectoryAction Score2ToGp2TrajectoryAction = new DriveTrajectoryAction(
             SwerveRotation.FRONT_FACING_GRID.getRotation(),.8,2);
         Score2ToGp2TrajectoryAction.addPose(
@@ -167,7 +200,16 @@ public class MultiGamepiece extends AutoModeBase {
             )
         );
         Score2ToGp2TrajectoryAction.generate();
-        addAction(Score2ToGp2TrajectoryAction);
+        addAction(
+            new ParallelAction(
+                Score2ToGp2TrajectoryAction,
+                new SequentialAction(
+                    new WaitAction(.25),
+                    new ArmAction(ArmTargets.INTAKE_GROUND_FRONT),
+                    new GrasperAction(true)
+                )
+            )
+        );
 
         // Drive to Score 3
         DriveTrajectoryAction Gp2ToScore3TrajectoryAction = new DriveTrajectoryAction(
@@ -197,7 +239,19 @@ public class MultiGamepiece extends AutoModeBase {
             )
         );
         Gp2ToScore3TrajectoryAction.generate();
-        addAction(Gp2ToScore3TrajectoryAction);
+        addAction(
+            new ParallelAction(
+                Gp2ToScore3TrajectoryAction,
+                new SequentialAction(
+                    new WaitAction(.2),
+                    new ArmAction(ArmTargets.LOW_SCORING_FRONT)
+                )
+            )
+        );
+
+        // Score Game GP 3
+        addAction(new WaitAction(.1));
+        addAction(new GrasperAction(true));
 
 
 

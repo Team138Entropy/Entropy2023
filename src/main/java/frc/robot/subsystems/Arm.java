@@ -119,7 +119,10 @@ public class Arm extends Subsystem {
             FF = .35;
         }
         */
-        double currentRadians = angle * Constants.Misc.degreeToRadian;
+        // This is hacky but if we measure our true offset from 90
+        // in a perfect world we'd adjust for all this but I don't want to mess with angle offsets
+        double offsetDegrees = 0; 
+        double currentRadians = (angle - offsetDegrees) * Constants.Misc.degreeToRadian;
         // todo - that KF value might have to change by length of the robot
         double feedForward = FF * Math.cos(currentRadians);
         return feedForward;
