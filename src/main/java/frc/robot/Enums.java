@@ -123,7 +123,7 @@ public class Enums {
         
         FRONT_FACING_GRID(180),
         BACK_FACING_GRID(0),
-        FRONT_FACING_RIGHT(90),
+        FRONT_FACING_RIGHT(270),
         FRONT_FACING_LEFT(90)
         ;
 

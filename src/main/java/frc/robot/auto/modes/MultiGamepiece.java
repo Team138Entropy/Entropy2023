@@ -6,20 +6,34 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.FieldConstants;
 import frc.robot.RobotState;
+import frc.robot.Enums.GamePiece;
 import frc.robot.Enums.SwerveRotation;
 import frc.robot.Enums.TargetedPositions;
 import frc.robot.auto.AutoModeEndedException;
 import frc.robot.auto.actions.Action;
 import frc.robot.auto.actions.DriveTrajectoryAction;
+import frc.robot.auto.actions.WaitAction;
 
 public class MultiGamepiece extends AutoModeBase {
     RobotState mRobotState = RobotState.getInstance();
 
     public MultiGamepiece()
     {
+        /*
+         * 
+         */
+        // Is Blue or Red Alliance
+        boolean isBlueAlliance = (mRobotState.getAlliance() == Alliance.Blue);
+
+        // How Many Stages to do?
+        //int StageCount = targetGamepieces.length;
+        int CurrentStage = 0;
+
+    
+
         // Set Odometry Starting Location
         setStartingPosition(
-            (mRobotState.getAlliance() == Alliance.Blue) ? TargetedPositions.GRID_1 : TargetedPositions.GRID_9, 
+            (isBlueAlliance) ? TargetedPositions.GRID_1 : TargetedPositions.GRID_9, 
             SwerveRotation.FRONT_FACING_GRID
         );
 
@@ -28,17 +42,35 @@ public class MultiGamepiece extends AutoModeBase {
              mRobotState.getAlliance());
         Translation2d ScoreSpot2 = FieldConstants.getTargetPositionPose(TargetedPositions.GRID_2,
              mRobotState.getAlliance());
-        Translation2d ScoreSpot3 = FieldConstants.getTargetPositionPose(TargetedPositions.GRID_2,
+        Translation2d ScoreSpot3 = FieldConstants.getTargetPositionPose(TargetedPositions.GRID_3,
              mRobotState.getAlliance());
 
         // Game Object Staging Positions (Left to Right just like the Grid)
         Translation2d Stage1 = FieldConstants.Auto.Waypoints.StagingWaypoints[3]
             .getPose(mRobotState.getAlliance()).getTranslation();
         Translation2d Stage2 = FieldConstants.Auto.Waypoints.StagingWaypoints[2]
-            .getPose(mRobotState.getAlliance()).getTranslation(); 
-        Translation2d Stage3 = FieldConstants.Auto.Waypoints.StagingWaypoints[1]
-            .getPose(mRobotState.getAlliance()).getTranslation(); 
+            .getPose(mRobotState.getAlliance()).getTranslation();  
+
+        // Staging Entrance Points
+        Translation2d Stage1Entrance = Stage1.plus(new Translation2d(0, .5));
+        Translation2d Stage2Entrance = Stage2.plus(new Translation2d(0, .5));
+
+        // Charging Station Exit and Entrance Points
+        Translation2d CS_LowerEntrance = ScoreSpot1.plus(new Translation2d(1, 0));
+        Translation2d CS_UpperEntrance = FieldConstants.Community.chargingStationCornersBlue[3];
+
+        // Slightly Translate Points
+        //      Blue should have slightly greater Y
+        CS_UpperEntrance = CS_UpperEntrance.plus(new Translation2d(1, isBlueAlliance ? 1 : -1.5));
+
+
         // 1. Score First Object (Starts with Robot)
+        /*
+        addAction(new ArmAction(ArmTargets.TOP_SCORING_FRONT));
+        addAction(new WaitAction(1));
+        */
+        addAction(new WaitAction(.1));
+
 
         // 2. Drive to Game Piece 2 (keep arm on)
         DriveTrajectoryAction scoreToGp1TrajectoryAction = new DriveTrajectoryAction(
@@ -51,8 +83,20 @@ public class MultiGamepiece extends AutoModeBase {
         );
         scoreToGp1TrajectoryAction.addPose(
             new Pose2d(
+                CS_UpperEntrance,
+                SwerveRotation.FRONT_FACING_RIGHT.getRotation()
+            )
+        );
+        scoreToGp1TrajectoryAction.addPose(
+            new Pose2d(
+                Stage1Entrance,
+                SwerveRotation.FRONT_FACING_RIGHT.getRotation()
+            )
+        );
+        scoreToGp1TrajectoryAction.addPose(
+            new Pose2d(
                 Stage1,
-                SwerveRotation.FRONT_FACING_GRID.getRotation()
+                SwerveRotation.FRONT_FACING_RIGHT.getRotation()
             )
         );
         scoreToGp1TrajectoryAction.generate();
@@ -60,10 +104,22 @@ public class MultiGamepiece extends AutoModeBase {
 
         // 3. Drive to Score 2 (keep arm on)
         DriveTrajectoryAction gp1ToScore2TrajectoryAction = new DriveTrajectoryAction(
-                SwerveRotation.FRONT_FACING_GRID.getRotation(),.8,2);
+                SwerveRotation.FRONT_FACING_RIGHT.getRotation(),.8,2);
         gp1ToScore2TrajectoryAction.addPose(
             new Pose2d(
                 Stage1,
+                SwerveRotation.FRONT_FACING_RIGHT.getRotation()
+            )
+        );
+        gp1ToScore2TrajectoryAction.addPose(
+            new Pose2d(
+                CS_UpperEntrance,
+                SwerveRotation.FRONT_FACING_GRID.getRotation()
+            )
+        );
+        gp1ToScore2TrajectoryAction.addPose(
+            new Pose2d(
+                CS_LowerEntrance,
                 SwerveRotation.FRONT_FACING_GRID.getRotation()
             )
         );
@@ -79,7 +135,7 @@ public class MultiGamepiece extends AutoModeBase {
         // 4. Drive to GP 2
         DriveTrajectoryAction Score2ToGp2TrajectoryAction = new DriveTrajectoryAction(
             SwerveRotation.FRONT_FACING_GRID.getRotation(),.8,2);
-            Score2ToGp2TrajectoryAction.addPose(
+        Score2ToGp2TrajectoryAction.addPose(
             new Pose2d(
                 ScoreSpot2,
                 SwerveRotation.FRONT_FACING_GRID.getRotation()
@@ -87,8 +143,27 @@ public class MultiGamepiece extends AutoModeBase {
         );
         Score2ToGp2TrajectoryAction.addPose(
             new Pose2d(
-                Stage2,
+                CS_LowerEntrance,
                 SwerveRotation.FRONT_FACING_GRID.getRotation()
+            )
+        );
+        Score2ToGp2TrajectoryAction.addPose(
+            new Pose2d(
+                CS_UpperEntrance,
+                SwerveRotation.FRONT_FACING_RIGHT.getRotation()
+            )
+        );        
+        Score2ToGp2TrajectoryAction.addPose(
+            new Pose2d(
+                Stage2Entrance,
+                SwerveRotation.FRONT_FACING_RIGHT.getRotation()
+            )
+        );
+
+        Score2ToGp2TrajectoryAction.addPose(
+            new Pose2d(
+                Stage2,
+                SwerveRotation.FRONT_FACING_RIGHT.getRotation()
             )
         );
         Score2ToGp2TrajectoryAction.generate();
@@ -96,13 +171,25 @@ public class MultiGamepiece extends AutoModeBase {
 
         // Drive to Score 3
         DriveTrajectoryAction Gp2ToScore3TrajectoryAction = new DriveTrajectoryAction(
-            SwerveRotation.FRONT_FACING_GRID.getRotation(),.8,2);
-            Gp2ToScore3TrajectoryAction.addPose(
+            SwerveRotation.FRONT_FACING_RIGHT.getRotation(),.8,2);
+        Gp2ToScore3TrajectoryAction.addPose(
             new Pose2d(
                 Stage2,
-                SwerveRotation.FRONT_FACING_GRID.getRotation()
+                SwerveRotation.FRONT_FACING_RIGHT.getRotation()
             )
         );
+        Gp2ToScore3TrajectoryAction.addPose(
+            new Pose2d(
+                CS_UpperEntrance,
+                SwerveRotation.FRONT_FACING_GRID.getRotation()
+            )
+        ); 
+        Gp2ToScore3TrajectoryAction.addPose(
+            new Pose2d(
+                CS_LowerEntrance,
+                SwerveRotation.FRONT_FACING_GRID.getRotation()
+            )
+        ); 
         Gp2ToScore3TrajectoryAction.addPose(
             new Pose2d(
                 ScoreSpot3,
