@@ -110,6 +110,7 @@ public class MultiGamepiece extends AutoModeBase {
             )
         );
         scoreToGp1TrajectoryAction.generate();
+        incrimentDuration(scoreToGp1TrajectoryAction.getEstimatedDuration());
 
         // Drive Trajectory and Get Arm to Intake Position (and Open)
         addAction(
@@ -151,6 +152,7 @@ public class MultiGamepiece extends AutoModeBase {
             )
         );
         gp1ToScore2TrajectoryAction.generate();
+        incrimentDuration(gp1ToScore2TrajectoryAction.getEstimatedDuration());
         addAction(
             new ParallelAction(
                 gp1ToScore2TrajectoryAction,
@@ -200,6 +202,7 @@ public class MultiGamepiece extends AutoModeBase {
             )
         );
         Score2ToGp2TrajectoryAction.generate();
+        incrimentDuration(Score2ToGp2TrajectoryAction.getEstimatedDuration());
         addAction(
             new ParallelAction(
                 Score2ToGp2TrajectoryAction,
@@ -239,6 +242,7 @@ public class MultiGamepiece extends AutoModeBase {
             )
         );
         Gp2ToScore3TrajectoryAction.generate();
+        incrimentDuration(Gp2ToScore3TrajectoryAction.getEstimatedDuration());
         addAction(
             new ParallelAction(
                 Gp2ToScore3TrajectoryAction,

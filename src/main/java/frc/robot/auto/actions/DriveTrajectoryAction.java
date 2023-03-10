@@ -68,6 +68,15 @@ public class DriveTrajectoryAction implements Action {
         init();
     }
 
+    public DriveTrajectoryAction(Rotation2d orentation, double velocity, double acceleration, double centripAccel)
+    {
+        mOrentation = orentation;
+        mMaxVelocityMS = velocity;
+        mMaxVAccelerationMSS = acceleration;
+        mMaxCentripetalAccelerationMetersPerSec2 = Units.inchesToMeters(centripAccel);
+        init();
+    }
+
     public DriveTrajectoryAction(Rotation2d orentation)
     {
         mOrentation = orentation;
@@ -174,5 +183,10 @@ public class DriveTrajectoryAction implements Action {
     @Override 
     public boolean isFinished() {
         return mTimer.get() >= mTrajectory.getTotalTimeSeconds();
+    }
+
+    public double getEstimatedDuration()
+    {
+        return (null == mTrajectory) ? 0 : mTrajectory.getTotalTimeSeconds();
     }
 }
