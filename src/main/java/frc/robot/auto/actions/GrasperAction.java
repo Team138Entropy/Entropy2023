@@ -38,16 +38,17 @@ public class GrasperAction implements Action {
 
     @Override 
     public void update() {
-      mGrasper.setGrasperWheelIntake();
+      //mGrasper.setGrasperWheelIntake();
     }
 
     @Override
     public void done() {
-      mGrasper.cancelGrasperWheelIntake();
+      //mGrasper.cancelGrasperWheelIntake();
+      
     }
 
     @Override 
     public boolean isFinished() {
-      return mTimer.hasElapsed(.2);
+      return mTimer.hasElapsed(.1);
     }
 }

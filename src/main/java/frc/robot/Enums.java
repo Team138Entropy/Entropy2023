@@ -48,7 +48,8 @@ public class Enums {
         POST_INTAKE_FRONT(-1,Constants.Arm.MinExtensionPosition),
         TOP_SCORING_BACK(170,0),
         MID_SCORING_BACK(173,Constants.Arm.MaxExtensionPosition),
-        LOW_SCORING_BACK(207,140000),
+        //low score back extend: 120000
+        LOW_SCORING_BACK(210,5000),
         INTAKE_BACK(169,0),
         INTAKE_BACK_CUBE(168,0),
         POST_INTAKE_BACK(167,0),

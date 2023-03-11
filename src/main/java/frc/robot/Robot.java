@@ -377,7 +377,11 @@ public class Robot extends TimedRobot {
     if(!mAutoModeBase.isDone()){
       mAutoModeBase.runner();
     }
+    if(mGrasper.getBeamSensorBroken()){
+      mGrasper.setGrasperClosed();
+    }
     mGrasper.update();
+
     mSuperStructure.update();
   }
 
