@@ -244,8 +244,13 @@ public class Robot extends TimedRobot {
     mRobotState.update();
 
     // Update Auto Pilot
+
+    // Robot Pose with Vision Odometrey Only 
     mAutoPilot.setRobotPose(mRobotState.getPose());
 
+    // Robot Pose with Drive Odometry Only
+    mAutoPilot.setRobotPoseDriveOnly(mRobotState.getDriveOnlyPose());
+  
     // Update Smartdashboard Overall and Subsystems
     updateSmartdashboard();
 
@@ -324,10 +329,20 @@ public class Robot extends TimedRobot {
   private void populateAutonomousModes(){
     // Auto Mode
     mAutoModes = new SendableChooser<AutoModeBase>();
-    //mAutoModes.setDefaultOption("Nothing", new DoNothingMode());
-   // mAutoModes.setDefaultOption("Score High and charge mode: greedy", new SwerveTestAutoMode(mCurrentTargetedObject));
-    //mAutoModes.setDefaultOption("Score High and charge mode: not greedy", new SwerveTestAutoMode(mCurrentTargetedObject));
-    mAutoModes.setDefaultOption("Multi", new MultiGamepiece());
+
+    mAutoModes.setDefaultOption("Cone - Charging Station (Aquire Object)", new ChargingStationMode(TargetedObject.CONE, true));
+    mAutoModes.addOption("Cube - Charging Station (Aquire Object)", new ChargingStationMode(TargetedObject.CUBE, true));
+    mAutoModes.addOption("Cone - Charging Station", new ChargingStationMode(TargetedObject.CONE, false));
+    mAutoModes.addOption("Cube - Charging Station", new ChargingStationMode(TargetedObject.CUBE, false));
+       mAutoModes.addOption("3 Cube Low", new MultiGamepiece(
+      new Enums.ScorePositions[] {Enums.ScorePositions.Low, Enums.ScorePositions.Low, Enums.ScorePositions.Low},
+      new Enums.GamePiece[] {Enums.GamePiece.Cube, Enums.GamePiece.Cube, Enums.GamePiece.Cube}
+    ));
+    mAutoModes.addOption("2 Cube Low", new MultiGamepiece(
+      new Enums.ScorePositions[] {Enums.ScorePositions.Low, Enums.ScorePositions.Low},
+      new Enums.GamePiece[] {Enums.GamePiece.Cube, Enums.GamePiece.Cube}
+    ));
+
     mAutoModes.addOption("Taxi Mode", new taxiMode());
     mAutoModes.addOption("Score Mid and taxi CUBE", new ScoreMidAndTaxiMode(TargetedObject.CUBE));
     mAutoModes.addOption("Score High and taxi  CONE", new ScoreHighAndTaxi(TargetedObject.CONE));
@@ -368,6 +383,17 @@ public class Robot extends TimedRobot {
 
     // Make sure Arm Safety is enabled
     mSuperStructure.setDisableArmSafety(false);
+
+    // Configure AutoPilot for Auto Use
+    mAutoPilot.setDriveControllerConstraints(
+      Constants.SwerveConstants.AutoConstants.AutoPilot.CSDriveVelocity,
+      Constants.SwerveConstants.AutoConstants.AutoPilot.CSDriveAcceleration
+    );
+    mAutoPilot.setRotationControllerConstraints(
+      Constants.SwerveConstants.AutoConstants.AutoPilot.CSThetaVelocity,
+      Constants.SwerveConstants.AutoConstants.AutoPilot.CSThetaAcceleration
+    );
+    mAutoPilot.setMaxSpeed(Constants.SwerveConstants.AutoConstants.AutoPilot.CSMaxSpeed);
   }
 
   /** This function is called periodically during autonomous. */
@@ -408,6 +434,18 @@ public class Robot extends TimedRobot {
 
     // Make sure Arm Safety is enabled
     mSuperStructure.setDisableArmSafety(false);
+
+    // Configure AutoPilot for Teleop Use
+    mAutoPilot.setDriveControllerConstraints(
+      Constants.SwerveConstants.AutoConstants.AutoPilot.TeleopDriveVelocity,
+      Constants.SwerveConstants.AutoConstants.AutoPilot.TeleopDriveAcceleration
+    );
+    mAutoPilot.setRotationControllerConstraints(
+      Constants.SwerveConstants.AutoConstants.AutoPilot.TeleopThetaVelocity,
+      Constants.SwerveConstants.AutoConstants.AutoPilot.TeleopThetaAcceleration
+    );
+    mAutoPilot.setMaxSpeed(Constants.SwerveConstants.AutoConstants.AutoPilot.TeleopMaxSpeed);
+    mAutoPilot.setUseDriveOnlyPose(false);
   }
 
   /** This function is called periodically during operator control. */

@@ -548,6 +548,21 @@ public class Constants {
         TuneableNumber mYTolerance = new TuneableNumber("YTolerance", .2);
         TuneableNumber mOmegaTolerance = new TuneableNumber("OmegaTolerance", .2);
 
+
+        /* Teleop  */
+        public static final double TeleopDriveVelocity = 2.5;
+        public static final double TeleopDriveAcceleration = 8;
+        public static final double TeleopThetaVelocity = 8;
+        public static final double TeleopThetaAcceleration = .8;
+        public static final double TeleopMaxSpeed = 2;
+
+
+        /* Charging Station */
+        public static final double CSDriveVelocity = .8;
+        public static final double CSDriveAcceleration = 3;
+        public static final double CSThetaVelocity = 2;
+        public static final double CSThetaAcceleration = .5;
+        public static final double CSMaxSpeed = .5;      
       }
 
 

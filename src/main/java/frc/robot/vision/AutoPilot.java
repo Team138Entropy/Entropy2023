@@ -59,6 +59,9 @@ public class AutoPilot {
 
     // Current Robot Pose
     private Pose2d mRobotPose = new Pose2d();
+    private Pose2d mRobotPoseDriveOnly = new Pose2d();
+    private boolean mUseDriveOnlyPose = false;
+
 
     // Motion Control
     private static final TrapezoidProfile.Constraints mX_CONSTRAINTS = 
@@ -214,6 +217,17 @@ public class AutoPilot {
     public void setRobotPose(Pose2d currentRobotPose)
     {
         mRobotPose = currentRobotPose;
+    }
+
+    // Set Robot Pose Drive Only
+    public void setRobotPoseDriveOnly(Pose2d currentRobotPose)
+    {
+        mRobotPoseDriveOnly = currentRobotPose;
+    }
+
+    public void setUseDriveOnlyPose(boolean value)
+    {
+        mUseDriveOnlyPose = value;
     }
 
     public void resetTolerances()
@@ -464,15 +478,32 @@ public class AutoPilot {
 
     // Get Current Pose (Robot Pose)
     // This is for future expension to use different poses (maybe a non vision influence pose)
-    private Pose2d getCurrentPose()
+    public Pose2d getCurrentPose()
     {
-        return mRobotPose;
+        return mUseDriveOnlyPose ? mRobotPoseDriveOnly : mRobotPose;
     }
 
     // Return if the two Controllers are at the goal
     public boolean atGoal()
     {
         return mDriveController.atGoal() && mThetaController.atGoal();
+    }
+
+    // Sets the Drive Controller Constraints
+    public void setDriveControllerConstraints(double velocity, double acceleration)
+    {
+        mDriveController.setConstraints(new Constraints(velocity, acceleration));
+    }
+
+    // Sets the Rotation Controller Constraints
+    public void setRotationControllerConstraints(double velocity, double acceleration)
+    {
+        mThetaController.setConstraints(new Constraints(velocity, acceleration));
+    }
+
+    public void setMaxSpeed(double maxSpeed)
+    {
+        mMaxSpeed = maxSpeed;
     }
 
     public void updateSmartDashBoard()

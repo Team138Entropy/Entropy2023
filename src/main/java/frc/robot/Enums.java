@@ -183,6 +183,13 @@ public class Enums {
         Cube
     };
 
+    // Score Positions
+    public enum ScorePositions {
+        Top, 
+        Mid, 
+        Low
+    };
+
     // Game Walls
     public enum GameWalls {
         AllianceWall,

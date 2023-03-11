@@ -6,6 +6,7 @@ import frc.robot.util.drivers.Pigeon;
 import frc.robot.util.geometry.Rotation2d;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
@@ -22,6 +23,7 @@ public class chargingStationAutoPilot {
         return mInstance;
     }
     private final Drive mDrive = Drive.getInstance();
+    private final AutoPilot mAutoPilot = AutoPilot.getInstance();
 
     // pigeon sensor reference
     public Pigeon mPigeon = Pigeon.getInstance();
@@ -29,6 +31,7 @@ public class chargingStationAutoPilot {
     public double pitchAngleRate = mPigeon.getUnadjustedPitchRate().getDegrees();
 
     public double error;
+    private Pose2d mFinalRobotPose = new Pose2d();
 
     private boolean isDone = false;
 
@@ -69,42 +72,69 @@ public class chargingStationAutoPilot {
     }
     
 
-    public void update() {
-        
+    public void update() {    
+        // Calcuate Pitch Rate and Degrees 
+        pitchAngleDegrees = mPigeon.getUnadjustedPitch().getDegrees();
+        pitchAngleRate = mPigeon.getUnadjustedPitchRate().getDegrees();
 
+        // Update State
         switch(mState){
             case LOOKING_FOR_PITCH:
+            // Drive Backward Very Slowly Looking for Pitch
+            // This will slowly bring the robot onto the charging station
+            mDrive.setSwerveDrive(new Translation2d(-.25,0), 0, true, true, false);
+
              isDone = false;
              if((Math.abs(pitchAngleDegrees) <= Math.abs(Constants.AutoPilot.ChargeStationDegreeThreshold.get())) || (Math.abs(pitchAngleRate) > Constants.AutoPilot.PitchAngleRateThreshold.get())){
+                // Charing Station has been Reached
                 mState = balanceState.LEVELING;
-             }else{
-                mState = balanceState.LEVELED;
              }
                 break;
             case LEVELING:
                 error = balanceController.calculate(pitchAngleDegrees);
+                // If this drives the wrong way, multiple by -1 
                 error = MathUtil.clamp(error, Constants.AutoPilot.maxLevelSpeedLow.get(), Constants.AutoPilot.maxLevelSpeedHigh.get());
                 // Set Swerve to those Module States
                 mDrive.setSwerveDrive(new Translation2d(error,0), 0, true, true, false);
                 if(Math.abs(pitchAngleRate) > Constants.AutoPilot.PitchAngleRateThreshold.get()){
                     mState = balanceState.DRIVE_BACK;
+
+                    // Setup AutoPilot 
+                    mAutoPilot.setUseDriveOnlyPose(true);
+
+                    // Calculate the current robot pose, and create a slight translation
+                    // This last little movement will return tuning
+                    Pose2d currRobotPose = mAutoPilot.getCurrentPose();
+                    double offset = .2;
+                    mFinalRobotPose = new Pose2d(
+                        currRobotPose.getTranslation().plus(new Translation2d(offset, 0)),
+                        currRobotPose.getRotation()
+                    );
+
+                    // Tell Auto Pilot and Reset
+                    mAutoPilot.setTargetPose(mFinalRobotPose);
+                    mAutoPilot.reset();
                 }
                 break;
             case DRIVE_BACK:
-                //TODO: add drive back code!
-                if((Math.abs(pitchAngleDegrees) <= Math.abs(Constants.AutoPilot.ChargeStationDegreeThreshold.get())) || (Math.abs(pitchAngleRate) > Constants.AutoPilot.PitchAngleRateThreshold.get())){
-                    mState = balanceState.LEVELING;
-                }else{
+                // Drive until AutoPilot is complete
+                mAutoPilot.update();
+                if(mAutoPilot.atGoal())
+                {
                     mState = balanceState.LEVELED;
                 }
                 break;
             case LEVELED:
+                // Level is Complete
+                mDrive.setSwerveDrive(new Translation2d(0,0), 0, true, true, false);
                 mDrive.setBrake(true);
                 isDone = true;
                 break;
         }
 
     }
+
+
 
 
     public boolean getDone() {
@@ -116,8 +146,9 @@ public class chargingStationAutoPilot {
         String key = "ChargingStation/";
         SmartDashboard.putNumber(key + "Pitch (Degrees)", mPigeon.getUnadjustedPitch().getDegrees());
         SmartDashboard.putNumber(key + "Pitch Rate (Degrees/Period)", mPigeon.getUnadjustedPitchRate().getDegrees());
-        //SmartDashboard.putString(key + "current state", mState.toString());
+        SmartDashboard.putString(key + "State", mState.toString());
         SmartDashboard.putNumber(key + "PID error", error);
+        SmartDashboard.putString(key + "Final Robot Pose", mFinalRobotPose.toString());
 
     }
 
