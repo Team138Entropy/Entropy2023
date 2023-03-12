@@ -109,10 +109,10 @@ public class Constants {
     public static TuneableNumber CSAutoPilotKP = new TuneableNumber("CSAutoPilotKP",2.5);
     public static TuneableNumber CSAutoPilotKI = new TuneableNumber("CSAutoPilotKI",0);
     public static TuneableNumber CSAutoPilotKD = new TuneableNumber("CSAutoPilotKD",0);
-    public static TuneableNumber PitchAngleRateThreshold = new TuneableNumber("PitchAngleRateThreshold",11);
-    public static TuneableNumber maxLevelSpeedLow = new TuneableNumber("maxLevelSpeedLow",-.3);
-    public static TuneableNumber maxLevelSpeedHigh = new TuneableNumber("maxLevelSpeedHigh",.3);
-    public static TuneableNumber ChargeStationDegreeThreshold = new TuneableNumber("ChargeStationDegreeThreshold",4);
+    public static TuneableNumber PitchAngleRateThreshold = new TuneableNumber("PitchAngleRateThreshold",5);
+    public static TuneableNumber maxLevelSpeedLow = new TuneableNumber("maxLevelSpeedLow",-.4);
+    public static TuneableNumber maxLevelSpeedHigh = new TuneableNumber("maxLevelSpeedHigh",.4);
+    public static TuneableNumber ChargeStationDegreeThreshold = new TuneableNumber("ChargeStationDegreeThreshold",9);
 
   }
 

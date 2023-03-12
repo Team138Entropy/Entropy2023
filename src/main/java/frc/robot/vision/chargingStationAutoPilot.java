@@ -52,7 +52,7 @@ public class chargingStationAutoPilot {
         }
     }
 
-    public balanceState mState;
+    public balanceState mState = balanceState.LOOKING_FOR_PITCH;
 
     //placeholder PID values
     private final PIDController balanceController = new PIDController(
@@ -67,7 +67,7 @@ public class chargingStationAutoPilot {
     }
 
     public void startBalance() {
-        mState = balanceState.LOOKING_FOR_PITCH;
+        mState = balanceState.LEVELING;
         isDone = false;
     }
     
@@ -82,10 +82,10 @@ public class chargingStationAutoPilot {
             case LOOKING_FOR_PITCH:
             // Drive Backward Very Slowly Looking for Pitch
             // This will slowly bring the robot onto the charging station
-            mDrive.setSwerveDrive(new Translation2d(-.25,0), 0, true, true, false);
+            mDrive.setSwerveDrive(new Translation2d(-.45,0), 0, true, true, false);
 
              isDone = false;
-             if((Math.abs(pitchAngleDegrees) <= Math.abs(Constants.AutoPilot.ChargeStationDegreeThreshold.get())) || (Math.abs(pitchAngleRate) > Constants.AutoPilot.PitchAngleRateThreshold.get())){
+             if((Math.abs(pitchAngleDegrees) >= Math.abs(Constants.AutoPilot.ChargeStationDegreeThreshold.get()))){
                 // Charing Station has been Reached
                 mState = balanceState.LEVELING;
              }
@@ -93,6 +93,7 @@ public class chargingStationAutoPilot {
             case LEVELING:
                 error = balanceController.calculate(pitchAngleDegrees);
                 // If this drives the wrong way, multiple by -1 
+                error *= -1;
                 error = MathUtil.clamp(error, Constants.AutoPilot.maxLevelSpeedLow.get(), Constants.AutoPilot.maxLevelSpeedHigh.get());
                 // Set Swerve to those Module States
                 mDrive.setSwerveDrive(new Translation2d(error,0), 0, true, true, false);
@@ -105,7 +106,7 @@ public class chargingStationAutoPilot {
                     // Calculate the current robot pose, and create a slight translation
                     // This last little movement will return tuning
                     Pose2d currRobotPose = mAutoPilot.getCurrentPose();
-                    double offset = .2;
+                    double offset = -.55;
                     mFinalRobotPose = new Pose2d(
                         currRobotPose.getTranslation().plus(new Translation2d(offset, 0)),
                         currRobotPose.getRotation()

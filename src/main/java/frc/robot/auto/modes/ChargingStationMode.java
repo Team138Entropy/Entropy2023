@@ -26,6 +26,7 @@ import frc.robot.auto.actions.DriveTrajectoryAction;
 import frc.robot.auto.actions.GrasperAction;
 import frc.robot.auto.actions.ParallelAction;
 import frc.robot.auto.actions.PickupAction;
+import frc.robot.auto.actions.SequentialAction;
 import frc.robot.auto.actions.SetPose;
 import frc.robot.auto.actions.TargetWaypoint;
 import frc.robot.auto.actions.TurnInPlaceAction;
@@ -37,31 +38,46 @@ public class ChargingStationMode extends AutoModeBase {
     public ChargingStationMode(TargetedObject gameObject, boolean aquireObject)
     {
         setStartingPosition(TargetedPositions.GRID_5, SwerveRotation.FRONT_FACING_GRID);
-
+        
         // Score Gamepiece
         if(gameObject == TargetedObject.CONE){
             addAction(new ArmAction(ArmTargets.TOP_SCORING_FRONT));
         }else{
             addAction(new ArmAction(ArmTargets.TOP_SCORING_FRONT_CUBE));
         }
-        addAction(new WaitAction(.15));
+        addAction(new WaitAction(.05));
 
         // Open the Grasper
         addAction(new GrasperAction(true));
 
         // Wait for Object to fall
-        addAction(new WaitAction(.1));
+        addAction(new WaitAction(.05));
+
+
+        addAction(
+            new ParallelAction(
+                new ArmAction(ArmTargets.HOME_BACKSIDE),
+                new SequentialAction(
+                    new WaitAction(1.1),
+                    new DriveAction(new Translation2d(.5,0),3)
+                )
+            )
+        );
 
         // Move Arm to Safety
-        addAction(new ArmAction(ArmTargets.HOME_BACKSIDE)); 
+        
 
         // Drive Over the Ramp (Only Move in the +X)
-        addAction(new DriveAction(new Translation2d(.75,0),5));
 
         // Now would be the Time to attempt an aquire
+        addAction(new WaitAction(.05));
+
+       // addAction(new DriveAction(new Translation2d(-.5,0),3));
 
         // Charging Station Action
         addAction(new ChargingStationAction());
+
+
 
 
         

@@ -61,9 +61,9 @@ public class MultiGamepiece extends AutoModeBase {
         TrajSpeedConfig[0][3][1] = 0;   // Traj 4 Accel
 
         // 2 Object Mode Speeds (Drives 3 Trajectories)
-        TrajSpeedConfig[1][0][0] = 1.9; // Traj 1 Vel
+        TrajSpeedConfig[1][0][0] = 1; // Traj 1 Vel
         TrajSpeedConfig[1][0][1] = 2;   // Traj 1 Accel
-        TrajSpeedConfig[1][1][0] = 2.15; // Traj 2 Vel
+        TrajSpeedConfig[1][1][0] = 1; // Traj 2 Vel
         TrajSpeedConfig[1][1][1] = 2;   // Traj 2 Accel
         TrajSpeedConfig[1][2][0] = 2.4; // Traj 3 Vel
         TrajSpeedConfig[1][2][1] = 2.4;   // Traj 3 Accel

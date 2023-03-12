@@ -82,7 +82,7 @@ public class Arm extends Subsystem {
         ExtensionMotor.setInverted(false);
         ExtensionMotor.setSensorPhase(false);
         ExtensionMotor.config_kF(0, 0);
-        ExtensionMotor.config_kP(0, 0.2);
+        ExtensionMotor.config_kP(0, 0.25);
 
         ExtensionMotor.config_kI(0, 0);
         ExtensionMotor.config_kD(0, 0);
