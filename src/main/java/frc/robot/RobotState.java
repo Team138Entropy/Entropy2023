@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.Vision;
+import frc.robot.Enums.CurrentMode;
 import frc.robot.subsystems.Drive;
 import frc.robot.util.drivers.Pigeon;
 import frc.robot.vision.AutoPilot;
@@ -101,6 +102,9 @@ public class RobotState {
 
     // Alliance Color
     private Alliance mAlliance;
+
+    // Current Robot Mode
+    private CurrentMode mCurrentMode;
 
     // Visulation Field
     private Field2d mVisualField;

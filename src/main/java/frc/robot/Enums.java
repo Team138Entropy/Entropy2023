@@ -215,4 +215,12 @@ public class Enums {
             this.acceleration = accel;
         }
     }
+
+    // Current State
+    public enum CurrentMode {
+        None, 
+        Auto,
+        Teleop,
+        Test
+    }
 }

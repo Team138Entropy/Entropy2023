@@ -61,12 +61,13 @@ public class MultiGamepiece extends AutoModeBase {
         TrajSpeedConfig[0][3][1] = 0;   // Traj 4 Accel
 
         // 2 Object Mode Speeds (Drives 3 Trajectories)
-        TrajSpeedConfig[1][0][0] = 1; // Traj 1 Vel
-        TrajSpeedConfig[1][0][1] = 2;   // Traj 1 Accel
-        TrajSpeedConfig[1][1][0] = 1; // Traj 2 Vel
-        TrajSpeedConfig[1][1][1] = 2;   // Traj 2 Accel
-        TrajSpeedConfig[1][2][0] = 2.4; // Traj 3 Vel
-        TrajSpeedConfig[1][2][1] = 2.4;   // Traj 3 Accel
+        // TODO (these are purposefully slow for now)
+        TrajSpeedConfig[1][0][0] = .45; // Traj 1 Vel
+        TrajSpeedConfig[1][0][1] = 1.0;   // Traj 1 Accel
+        TrajSpeedConfig[1][1][0] = .45; // Traj 2 Vel
+        TrajSpeedConfig[1][1][1] = 1.0;   // Traj 2 Accel
+        TrajSpeedConfig[1][2][0] = .45; // Traj 3 Vel
+        TrajSpeedConfig[1][2][1] = 1.0;   // Traj 3 Accel
         TrajSpeedConfig[1][3][0] = 0; // Traj 4 Vel
         TrajSpeedConfig[1][3][1] = 0;   // Traj 4 Accel
 
@@ -83,10 +84,22 @@ public class MultiGamepiece extends AutoModeBase {
         // Selected Speed Profile (However Many Score Positions are specififed)
         var CurSpeedConfig = TrajSpeedConfig[ScoreCount - 1];
 
+        // Starting Position
+        SwerveRotation startingRotation = SwerveRotation.BACK_FACING_GRID;
+        if(GamePiece.Cone == Gamepiece1)
+        {
+            startingRotation = SwerveRotation.FRONT_FACING_GRID;
+        }
+
+        // Second Scoring Rotation will probably be the same as first
+        // leave it like this for now
+        SwerveRotation secondRotation = startingRotation;
+        SwerveRotation thirdRotation = startingRotation;
+
         // Set Odometry Starting Location
         setStartingPosition(
             (isBlueAlliance) ? TargetedPositions.GRID_1 : TargetedPositions.GRID_9, 
-            SwerveRotation.BACK_FACING_GRID
+            startingRotation
         );
 
         // Scoring Positions
@@ -140,7 +153,7 @@ public class MultiGamepiece extends AutoModeBase {
             // 1. Score First Object (Starts with Robot)
             if(GamePiece.Cone == Gamepiece1)
             {
-                addAction(new ArmAction(ArmTargets.LOW_SCORING_BACK));
+                addAction(new ArmAction(ArmTargets.TOP_SCORING_FRONT));
             }else
             {
                 addAction(new ArmAction(ArmTargets.LOW_SCORING_BACK));
@@ -151,11 +164,11 @@ public class MultiGamepiece extends AutoModeBase {
 
             // 2. Drive to Game Piece 2 (keep arm on)
             DriveTrajectoryAction scoreToGp1TrajectoryAction = new DriveTrajectoryAction(
-                    SwerveRotation.BACK_FACING_GRID.getRotation(),CurSpeedConfig[0][0],CurSpeedConfig[0][1]);
+                    startingRotation.getRotation(),CurSpeedConfig[0][0],CurSpeedConfig[0][1]);
             scoreToGp1TrajectoryAction.addPose(
                 new Pose2d(
                     ScoreSpot1,
-                    SwerveRotation.BACK_FACING_GRID.getRotation()
+                    startingRotation.getRotation()
                 )
             );
             scoreToGp1TrajectoryAction.addPose(
@@ -207,13 +220,13 @@ public class MultiGamepiece extends AutoModeBase {
             gp1ToScore2TrajectoryAction.addPose(
                 new Pose2d(
                     CS_LowerEntrance,
-                    SwerveRotation.FRONT_FACING_GRID.getRotation()
+                    startingRotation.getRotation()
                 )
             );
             gp1ToScore2TrajectoryAction.addPose(
                 new Pose2d(
                     ScoreSpot2,
-                    SwerveRotation.FRONT_FACING_GRID.getRotation()
+                    startingRotation.getRotation()
                 )
             );
             gp1ToScore2TrajectoryAction.generate();
@@ -227,6 +240,10 @@ public class MultiGamepiece extends AutoModeBase {
                     )
                 )
             );
+
+            // Score Top
+            // TODO - this should be more dynamic
+            addAction(new ArmAction(ArmTargets.TOP_SCORING_FRONT_CUBE));
 
             // Score Game GP 2
             addAction(new WaitAction(.05));
