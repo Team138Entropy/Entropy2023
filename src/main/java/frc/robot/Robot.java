@@ -398,6 +398,8 @@ public class Robot extends TimedRobot {
       Constants.SwerveConstants.AutoConstants.AutoPilot.CSThetaAcceleration
     );
     mAutoPilot.setMaxSpeed(Constants.SwerveConstants.AutoConstants.AutoPilot.CSMaxSpeed);
+
+    mGrasper.mDelaySeconds = 0;
   }
 
   /** This function is called periodically during autonomous. */
@@ -450,6 +452,8 @@ public class Robot extends TimedRobot {
     );
     mAutoPilot.setMaxSpeed(Constants.SwerveConstants.AutoConstants.AutoPilot.TeleopMaxSpeed);
     mAutoPilot.setUseDriveOnlyPose(false);
+
+    mGrasper.mDelaySeconds = 0.15;
   }
 
   /** This function is called periodically during operator control. */

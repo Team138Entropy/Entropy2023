@@ -49,6 +49,6 @@ public class GrasperAction implements Action {
 
     @Override 
     public boolean isFinished() {
-      return mTimer.hasElapsed(.1);
+      return true;
     }
 }

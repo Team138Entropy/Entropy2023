@@ -62,12 +62,12 @@ public class MultiGamepiece extends AutoModeBase {
 
         // 2 Object Mode Speeds (Drives 3 Trajectories)
         // TODO (these are purposefully slow for now)
-        TrajSpeedConfig[1][0][0] = .45; // Traj 1 Vel
-        TrajSpeedConfig[1][0][1] = 1.0;   // Traj 1 Accel
-        TrajSpeedConfig[1][1][0] = .45; // Traj 2 Vel
-        TrajSpeedConfig[1][1][1] = 1.0;   // Traj 2 Accel
-        TrajSpeedConfig[1][2][0] = .45; // Traj 3 Vel
-        TrajSpeedConfig[1][2][1] = 1.0;   // Traj 3 Accel
+        TrajSpeedConfig[1][0][0] = 1.2; // Traj 1 Vel
+        TrajSpeedConfig[1][0][1] = 1.2;   // Traj 1 Accel
+        TrajSpeedConfig[1][1][0] = 1.75; // Traj 2 Vel
+        TrajSpeedConfig[1][1][1] = 1.9;   // Traj 2 Accel
+        TrajSpeedConfig[1][2][0] = 1.3; // Traj 3 Vel
+        TrajSpeedConfig[1][2][1] = 1.7;   // Traj 3 Accel
         TrajSpeedConfig[1][3][0] = 0; // Traj 4 Vel
         TrajSpeedConfig[1][3][1] = 0;   // Traj 4 Accel
 
@@ -110,7 +110,7 @@ public class MultiGamepiece extends AutoModeBase {
         Translation2d ScoreSpot2 = FieldConstants.getTargetPositionPose(
              isBlueAlliance ? TargetedPositions.GRID_2 : TargetedPositions.GRID_8,
              mRobotState.getAlliance());
-             ScoreSpot2 = ScoreSpot2.plus(new Translation2d(isBlueAlliance ? .2 : -.2,0));
+             ScoreSpot2 = ScoreSpot2.plus(new Translation2d(isBlueAlliance ? .0 : -.0,0));
         Translation2d ScoreSpot3 = FieldConstants.getTargetPositionPose(
             isBlueAlliance ? TargetedPositions.GRID_3 : TargetedPositions.GRID_7,
              mRobotState.getAlliance());
@@ -124,7 +124,7 @@ public class MultiGamepiece extends AutoModeBase {
 
         // Offset First Staging Point to support Straight on Approach
         //      Otherwise it is trying to line up center of robot
-        Stage1 = Stage1.plus(new Translation2d(isBlueAlliance ? -.5 : .5,0));
+        Stage1 = Stage1.plus(new Translation2d(isBlueAlliance ? -.7 : .7,0));
 
         // Staging Entrance Points
         Translation2d Stage2Entrance = Stage2.plus(new Translation2d(0, isBlueAlliance ? .5 : -.5));
@@ -158,7 +158,7 @@ public class MultiGamepiece extends AutoModeBase {
             {
                 addAction(new ArmAction(ArmTargets.LOW_SCORING_BACK));
             }
-            addAction(new WaitAction(.15));
+            addAction(new WaitAction(.1));
             addAction(new GrasperAction(true));
 
 
@@ -191,9 +191,9 @@ public class MultiGamepiece extends AutoModeBase {
                 new ParallelAction(
                     scoreToGp1TrajectoryAction,
                     new SequentialAction(
-                        new WaitAction(.10),
-                        new ArmAction(ArmTargets.INTAKE_GROUND_FRONT),
-                        new GrasperAction(true)
+                        new WaitAction(.0),
+                        new GrasperAction(true),
+                        new ArmAction(ArmTargets.INTAKE_GROUND_FRONT)
                     )
                 )
             );
@@ -214,7 +214,7 @@ public class MultiGamepiece extends AutoModeBase {
             gp1ToScore2TrajectoryAction.addPose(
                 new Pose2d(
                     CS_UpperEntrance,
-                    SwerveRotation.FRONT_FACING_RIGHT.getRotation()
+                    SwerveRotation.BACK_FACING_GRID.getRotation()
                 )
             );
             gp1ToScore2TrajectoryAction.addPose(
@@ -225,7 +225,7 @@ public class MultiGamepiece extends AutoModeBase {
             );
             gp1ToScore2TrajectoryAction.addPose(
                 new Pose2d(
-                    ScoreSpot2,
+                    ScoreSpot2.plus(new Translation2d(0,.1)),
                     startingRotation.getRotation()
                 )
             );
@@ -235,8 +235,8 @@ public class MultiGamepiece extends AutoModeBase {
                 new ParallelAction(
                     gp1ToScore2TrajectoryAction,
                     new SequentialAction(
-                        new WaitAction(.2),
-                        new ArmAction(ArmTargets.LOW_SCORING_FRONT)
+                        new WaitAction(.0),
+                        new ArmAction(ArmTargets.MID_SCORING_FRONT)
                     )
                 )
             );
@@ -246,7 +246,7 @@ public class MultiGamepiece extends AutoModeBase {
             addAction(new ArmAction(ArmTargets.TOP_SCORING_FRONT_CUBE));
 
             // Score Game GP 2
-            addAction(new WaitAction(.05));
+            addAction(new WaitAction(.0));
             addAction(new GrasperAction(true));
 
             // 4. Drive to GP 3
@@ -285,6 +285,7 @@ public class MultiGamepiece extends AutoModeBase {
             );
             Score2ToGp2TrajectoryAction.generate();
             incrimentDuration(Score2ToGp2TrajectoryAction.getEstimatedDuration());
+            /* 
             addAction(
                 new ParallelAction(
                     Score2ToGp2TrajectoryAction,
@@ -295,10 +296,12 @@ public class MultiGamepiece extends AutoModeBase {
                     )
                 )
             );
+            */
+            addAction(new ArmAction(ArmTargets.HOME_BACKSIDE));
         }
 
         // Score Gamepiece 3
-        if(doStage3)
+        if(doStage3 && false)
         {
             // Drive to Score 3
             DriveTrajectoryAction Gp2ToScore3TrajectoryAction = new DriveTrajectoryAction(
