@@ -441,6 +441,11 @@ public class Robot extends TimedRobot {
     // Make sure Arm Safety is enabled
     mSuperStructure.setDisableArmSafety(false);
 
+    if(mSuperStructure.getTargetArmPosition() != mCurrentArmTarget && mSuperStructure.getTargetArmPosition() != null){
+      mCurrentArmTarget = mSuperStructure.getTargetArmPosition();
+    }
+    
+
     // Configure AutoPilot for Teleop Use
     mAutoPilot.setDriveControllerConstraints(
       Constants.SwerveConstants.AutoConstants.AutoPilot.TeleopDriveVelocity,

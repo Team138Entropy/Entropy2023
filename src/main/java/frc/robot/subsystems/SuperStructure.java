@@ -170,6 +170,11 @@ public class Superstructure {
     mArmTargetPosition = targetPosition;
   }
 
+  public ArmTargets getTargetArmPosition()
+  {
+    return mArmTargetPosition;
+  }
+
   // Return True if Both are staisifed
   public boolean isAtTarget() {
     return evaluateArmAngle() && evaluteExtension();
