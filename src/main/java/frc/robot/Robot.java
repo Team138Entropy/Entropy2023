@@ -91,6 +91,10 @@ public class Robot extends TimedRobot {
   // Arm Target Chooser 
   private SendableChooser<ArmTargets> mArmTargetOverrideChooser;
 
+  // Targeted Object Chooser
+
+  private SendableChooser<TargetedObject> mTargetedObjectChooser;
+
   // Field Object
   private final Field2d mField = new Field2d();
 
@@ -135,6 +139,7 @@ public class Robot extends TimedRobot {
   // Position the Auto Pilot System Wants to Drive to
   public TargetedPositions mTargetedPosition = TargetedPositions.NONE;
   public TargetedObject mCurrentTargetedObject = TargetedObject.CONE;
+  public TargetedObject mOverrideTargetedObject = TargetedObject.NONE;
   public Pose2d mTargetPose = new Pose2d();
 
   /**
@@ -179,6 +184,14 @@ public class Robot extends TimedRobot {
     mArmTargetOverrideChooser.addOption("INTAKE_GROUND_FRONT", ArmTargets.INTAKE_GROUND_FRONT);
     mArmTargetOverrideChooser.addOption("INTAKE_GROUND_BACK", ArmTargets.INTAKE_GROUND_BACK);
     SmartDashboard.putData("Arm Target Override", mArmTargetOverrideChooser);
+
+    // Arm Target Position Chooser - Able to Override the Button
+    mTargetedObjectChooser = new SendableChooser<TargetedObject>();
+    mTargetedObjectChooser.setDefaultOption("NONE", TargetedObject.NONE);
+    mTargetedObjectChooser.addOption("CONE", TargetedObject.CONE);
+    mTargetedObjectChooser.addOption("CUBE", TargetedObject.CUBE);
+    SmartDashboard.putData("Object chooser", mTargetedObjectChooser);
+
 
     // Start Datalog Manager - removed until wpilib issue is resolved
     //DataLogManager.start();
@@ -256,6 +269,8 @@ public class Robot extends TimedRobot {
 
     // Get Arm Override (if set)
     mArmTargetOverride = mArmTargetOverrideChooser.getSelected();
+
+    mOverrideTargetedObject = mTargetedObjectChooser.getSelected();
 
     // Currently Targeted Object
     mCurrentTargetedObject = mOperatorInterface.setTargetedObject();
@@ -758,6 +773,8 @@ public class Robot extends TimedRobot {
 
     // Arm Override by Shuffleboard (if set)
     if(ArmTargets.NONE != mArmTargetOverride) mCurrentArmTarget = mArmTargetOverride;
+
+    if(TargetedObject.NONE != mOverrideTargetedObject) mCurrentTargetedObject = mOverrideTargetedObject;
 
     // Override for Cube Objects (if exists)
     // Allow Cube Positions to be different

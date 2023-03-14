@@ -53,7 +53,8 @@ public class Enums {
         INTAKE_BACK(169,0),
         INTAKE_BACK_CUBE(168,0),
         POST_INTAKE_BACK(167,0),
-        INTAKE_GROUND_FRONT(-57,162000),
+        INTAKE_GROUND_FRONT(-57,164000),
+        INTAKE_GROUND_FRONT_CUBE(-57,162000),
         INTAKE_GROUND_BACK(223,208000),
         SAFE(90,0),
         START(233, 0),
@@ -82,6 +83,7 @@ public class Enums {
     }
 
     public enum TargetedObject {
+        NONE,
         CONE,
         CUBE;
     }

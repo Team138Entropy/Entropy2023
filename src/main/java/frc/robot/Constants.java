@@ -375,6 +375,7 @@ public class Constants {
       CubeArmTargetOverrides.put(Enums.ArmTargets.MID_SCORING_FRONT, Enums.ArmTargets.MID_SCORING_FRONT_CUBE);
       CubeArmTargetOverrides.put(Enums.ArmTargets.INTAKE_FRONT, Enums.ArmTargets.INTAKE_FRONT_CUBE);
       CubeArmTargetOverrides.put(Enums.ArmTargets.INTAKE_BACK, Enums.ArmTargets.INTAKE_BACK_CUBE);
+      CubeArmTargetOverrides.put(Enums.ArmTargets.INTAKE_GROUND_FRONT, Enums.ArmTargets.INTAKE_GROUND_FRONT_CUBE);
     }
 
     //tunable PID values
@@ -385,7 +386,6 @@ public class Constants {
     public static TuneableNumber tunableArmKD = new TuneableNumber("tunableArmKD",80);
     public static TuneableNumber tunableArmVel = new TuneableNumber("tunableArmVel",1400);
     public static TuneableNumber tunableArmAccel = new TuneableNumber("tunableArmAccel",1400);
-
   }
 
   public static class Grasper {
