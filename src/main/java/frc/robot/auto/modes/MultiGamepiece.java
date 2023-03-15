@@ -236,15 +236,13 @@ public class MultiGamepiece extends AutoModeBase {
                     gp1ToScore2TrajectoryAction,
                     new SequentialAction(
                         new WaitAction(.0),
-                        new ArmAction(ArmTargets.MID_SCORING_FRONT)
+                        // Score Top
+                        new ArmAction(ArmTargets.TOP_SCORING_FRONT_CUBE)
                     )
                 )
-            );
+            );            
 
-            // Score Top
-            // TODO - this should be more dynamic
-            addAction(new ArmAction(ArmTargets.TOP_SCORING_FRONT_CUBE));
-
+            
             // Score Game GP 2
             addAction(new WaitAction(.0));
             addAction(new GrasperAction(true));
