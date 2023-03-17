@@ -249,6 +249,18 @@ public class Robot extends TimedRobot {
     {
       // Robot Alliance Color has changed
 
+      // Simulation only, correct zero point
+      //    Blue should be set to 0, Red to 180
+      if(!mRealRobot)
+      {
+        double simAngle = 0;
+        if(DriverStation.getAlliance() == Alliance.Red)
+        {
+          simAngle = 180;
+        }
+        mPigeon.setSimYaw(simAngle);
+      }
+
       // Regenerate Auto Modes
       populateAutonomousModes();
     }

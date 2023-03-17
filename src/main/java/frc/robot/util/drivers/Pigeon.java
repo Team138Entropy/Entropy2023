@@ -44,6 +44,8 @@ public class Pigeon {
     private Pigeon(int port, String busId) {        
         mGyro = new Pigeon2(port, busId);
         mGyro.configFactoryDefault();
+
+        // These calibration values were found in the phoenix tuner 
         mGyro.configMountPose(91.01397, 1.15112317, -178.535873);
     }
 

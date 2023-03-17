@@ -198,6 +198,7 @@ public class RobotState {
         // Since the Robot will have been physically moved, need to update in sim
         if(!mRealRobot)
         {
+            // this is no good because it affects the adjust angle
             mPigeon.setSimYaw((pose.getRotation().getDegrees()));
         }
 
@@ -444,7 +445,9 @@ public class RobotState {
     public boolean setAlliance(Alliance allianceC)
     {
         boolean different = false;
-        if(mAlliance != allianceC) different = true;
+        if(mAlliance != allianceC) {
+            different = true;
+        }
         mAlliance = allianceC;
         return different;
     }
