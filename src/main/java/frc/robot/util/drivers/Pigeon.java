@@ -51,6 +51,8 @@ public class Pigeon {
     }
 
     public Rotation2d getYaw() {
+        // get raw, adjust by offset to 0
+        // this creates a 0 when robot is facing forward
         Rotation2d angle = getUnadjustedYaw().rotateBy(yawAdjustmentAngle.inverse());
         if (inverted) {
             return angle.inverse();
@@ -104,6 +106,7 @@ public class Pigeon {
     public void setSimAdjustmentAngle(double degrees)
     {
         mSimYawAdjustmentAngle = Rotation2d.fromDegrees(degrees);
+        setSimYaw(0);
     }
 
     // Rotate the Sim Yaw by Degrees
@@ -116,13 +119,13 @@ public class Pigeon {
     public void setSimYaw(double degrees)
     {
         //mSimYawAngle = Rotation2d.fromDegrees(degrees).rotateBy(mSimYawAdjustmentAngle.inverse());
-        mSimYawAngle = mSimYawAdjustmentAngle.rotateBy( Rotation2d.fromDegrees(degrees));
+        mSimYawAngle = Rotation2d.fromDegrees(degrees);
         //mSimYawAngle = Rotation2d.fromDegrees(degrees).inverse();
     }
 
     // Get the Sim Yaw Degrees Value
     public Rotation2d getSimYaw() {
         //mGyro.getAce
-        return mSimYawAngle;
+        return mSimYawAngle.rotateBy(mSimYawAdjustmentAngle);
     }
 }

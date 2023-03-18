@@ -102,7 +102,7 @@ public class MultiGamepiece extends AutoModeBase {
             startingRotation
         );
 
-        // Force Blue Alliance now
+        // Force Blue Alliance now - update maybe no longer do this?
         // the Red alliance post flipper handles the rest
         isBlueAlliance = true;
         Alliance currentAlliance = mRobotState.getAlliance();
@@ -231,7 +231,7 @@ public class MultiGamepiece extends AutoModeBase {
             );
             gp1ToScore2TrajectoryAction.addPose(
                 new Pose2d(
-                    ScoreSpot2.plus(new Translation2d(0,.1)),
+                    ScoreSpot2.plus(new Translation2d(0,isBlueAlliance ? .1 : -.1)),
                     startingRotation.getRotation()
                 )
             );

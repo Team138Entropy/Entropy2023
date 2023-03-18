@@ -21,12 +21,10 @@ public class ArmAction implements Action {
     public void start()
     {
         mSuperstructure.setTargetArmPosition(mTargetArmPosition);
-        mSuperstructure.update();
     }
 
     @Override 
     public void update() {
-        mSuperstructure.update();
     }
 
     @Override

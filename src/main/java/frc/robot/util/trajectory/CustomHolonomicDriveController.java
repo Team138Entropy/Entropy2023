@@ -5,6 +5,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.DriverStation;
 
 /**
  * This holonomic drive controller can be used to follow trajectories using a holonomic drivetrain
@@ -104,11 +106,18 @@ public class CustomHolonomicDriveController {
     double thetaFeedback =
         m_thetaController.calculate(currentPose.getRotation().getRadians(), angleRef.getRadians());
 
+    if(DriverStation.getAlliance() == Alliance.Red)
+    {
+      //xFeedback *= -1;
+      //yFeedback *= -1;
+      //thetaFeedback *= -1;
+
+    }
+
     // Return next output.
     return ChassisSpeeds.fromFieldRelativeSpeeds(
         xFF + xFeedback, yFF + yFeedback, thetaFF + thetaFeedback, currentPose.getRotation());
   }
-
   /**
    * Returns the next output of the holonomic drive controller.
    *

@@ -226,7 +226,7 @@ public class Robot extends TimedRobot {
     // Zero Simulation Yaw
     if(!mRealRobot)
     {
-      mPigeon.setSimAdjustmentAngle(DriverStation.getAlliance() == Alliance.Red ? 0 : 0);
+      mPigeon.setSimAdjustmentAngle(DriverStation.getAlliance() == Alliance.Red ? 180 : 0);
     }
 
     
@@ -262,7 +262,7 @@ public class Robot extends TimedRobot {
         double simAngle = 0;
         if(DriverStation.getAlliance() == Alliance.Red)
         {
-          simAngle = 0;
+          simAngle = 180;
         }
 
         // set the Sim Based Angle
@@ -418,7 +418,10 @@ public class Robot extends TimedRobot {
     // Close Grasper
     mGrasper.setGrasperFullyClosed();
 
+    // Tell Arm to go to target position
+    mCurrentArmTarget = ArmTargets.HOME_BACKSIDE;
     mSuperStructure.setTargetArmPosition(mCurrentArmTarget);
+    mSuperStructure.update();
 
     // Make sure Arm Safety is enabled
     mSuperStructure.setDisableArmSafety(false);
@@ -448,7 +451,6 @@ public class Robot extends TimedRobot {
       mGrasper.setGrasperClosed();
     }
     mGrasper.update();
-
     mSuperStructure.update();
   }
 
@@ -476,6 +478,7 @@ public class Robot extends TimedRobot {
     // Make sure Arm Safety is enabled
     mSuperStructure.setDisableArmSafety(false);
 
+    
     if(mSuperStructure.getTargetArmPosition() != mCurrentArmTarget && mSuperStructure.getTargetArmPosition() != null){
       mCurrentArmTarget = mSuperStructure.getTargetArmPosition();
     }

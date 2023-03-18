@@ -160,6 +160,9 @@ public class DriveTrajectoryAction implements Action {
             // Get setpoint
             // Flip the trajectory if red
             // trajectory system does not account for setup from the other side
+
+            // todo - maybe no longer flip?
+            
             Trajectory.State driveState = 
                 RedAllianceFlipUtility.apply(
                     mCustomTrajectoryGenerator.getDriveTrajectory().sample(currentTime)
@@ -168,11 +171,24 @@ public class DriveTrajectoryAction implements Action {
                 RedAllianceFlipUtility.apply(
                     mCustomTrajectoryGenerator.getHolonomicRotationSequence().sample(currentTime)
                 );
+            
+
+            /* 
+            Trajectory.State driveState = 
+       
+                mCustomTrajectoryGenerator.getDriveTrajectory().sample(currentTime)
+            ;
+        RotationSequence.State holonomicRotationState = 
+                mCustomTrajectoryGenerator.getHolonomicRotationSequence().sample(currentTime)
+            ;
+            */
+                //Get Pose with vision: mRObotState.getPose()
+
 
             // Calculate velocity
             ChassisSpeeds nextDriveState =
                 mCustomHolonomicDriveController.calculate(
-                    mRobotState.getPose(), driveState, holonomicRotationState);
+                    mRobotState.getDriveOnlyPose(), driveState, holonomicRotationState);
             
             // Tell the Drive to Drive
             mDrive.setSwerveVelocity(nextDriveState);
