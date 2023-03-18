@@ -12,6 +12,7 @@ import frc.robot.subsystems.Superstructure;
 import frc.robot.util.Waypoint;
 import frc.robot.util.trajectory.CustomHolonomicDriveController;
 import frc.robot.util.trajectory.CustomTrajectoryGenerator;
+import frc.robot.util.trajectory.RedAllianceFlipUtility;
 import frc.robot.util.trajectory.RotationSequence;
 import frc.robot.vision.AutoPilot;
 import edu.wpi.first.math.Pair;
@@ -157,10 +158,16 @@ public class DriveTrajectoryAction implements Action {
         if(currentTime < mTrajectory.getTotalTimeSeconds())
         {
             // Get setpoint
+            // Flip the trajectory if red
+            // trajectory system does not account for setup from the other side
             Trajectory.State driveState = 
-                mCustomTrajectoryGenerator.getDriveTrajectory().sample(currentTime);
+                RedAllianceFlipUtility.apply(
+                    mCustomTrajectoryGenerator.getDriveTrajectory().sample(currentTime)
+                );
             RotationSequence.State holonomicRotationState = 
-                mCustomTrajectoryGenerator.getHolonomicRotationSequence().sample(currentTime);
+                RedAllianceFlipUtility.apply(
+                    mCustomTrajectoryGenerator.getHolonomicRotationSequence().sample(currentTime)
+                );
 
             // Calculate velocity
             ChassisSpeeds nextDriveState =

@@ -30,6 +30,7 @@ public class Pigeon {
     private Rotation2d rollAdjustmentAngle = Rotation2d.identity();
 
     // Simulation 
+    private Rotation2d mSimYawAdjustmentAngle = Rotation2d.identity();
     private Rotation2d mSimYawAngle = Rotation2d.identity();
 
     // Pitch Rate at a period of 20 ms (derivative of 1, 2 samples)
@@ -100,6 +101,10 @@ public class Pigeon {
     }
 
     // Simulation Only
+    public void setSimAdjustmentAngle(double degrees)
+    {
+        mSimYawAdjustmentAngle = Rotation2d.fromDegrees(degrees);
+    }
 
     // Rotate the Sim Yaw by Degrees
     public void rotateSimYaw(double degrees)
@@ -110,7 +115,9 @@ public class Pigeon {
     // Set the Sim Yaw to Degrees
     public void setSimYaw(double degrees)
     {
-        mSimYawAngle = Rotation2d.fromDegrees(degrees).inverse();
+        //mSimYawAngle = Rotation2d.fromDegrees(degrees).rotateBy(mSimYawAdjustmentAngle.inverse());
+        mSimYawAngle = mSimYawAdjustmentAngle.rotateBy( Rotation2d.fromDegrees(degrees));
+        //mSimYawAngle = Rotation2d.fromDegrees(degrees).inverse();
     }
 
     // Get the Sim Yaw Degrees Value

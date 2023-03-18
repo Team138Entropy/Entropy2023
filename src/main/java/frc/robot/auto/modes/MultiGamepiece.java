@@ -102,25 +102,31 @@ public class MultiGamepiece extends AutoModeBase {
             startingRotation
         );
 
+        // Force Blue Alliance now
+        // the Red alliance post flipper handles the rest
+        isBlueAlliance = true;
+        Alliance currentAlliance = mRobotState.getAlliance();
+        currentAlliance = Alliance.Blue; // everything should be set
+
         // Scoring Positions
         Translation2d ScoreSpot1 = FieldConstants.getTargetPositionPose(
             isBlueAlliance ? TargetedPositions.GRID_1 : TargetedPositions.GRID_9,
-             mRobotState.getAlliance());
+            currentAlliance);
              
         Translation2d ScoreSpot2 = FieldConstants.getTargetPositionPose(
              isBlueAlliance ? TargetedPositions.GRID_2 : TargetedPositions.GRID_8,
-             mRobotState.getAlliance());
+             currentAlliance);
              ScoreSpot2 = ScoreSpot2.plus(new Translation2d(isBlueAlliance ? .0 : -.0,0));
         Translation2d ScoreSpot3 = FieldConstants.getTargetPositionPose(
             isBlueAlliance ? TargetedPositions.GRID_3 : TargetedPositions.GRID_7,
-             mRobotState.getAlliance());
+            currentAlliance);
              ScoreSpot3 = ScoreSpot3.plus(new Translation2d(isBlueAlliance ? .2 : -.2,0));
 
         // Game Object Staging Positions (Left to Right just like the Grid)
         Translation2d Stage1 = FieldConstants.Auto.Waypoints.StagingWaypoints[3]
-            .getPose(mRobotState.getAlliance()).getTranslation();
+            .getPose(currentAlliance).getTranslation();
         Translation2d Stage2 = FieldConstants.Auto.Waypoints.StagingWaypoints[2]
-            .getPose(mRobotState.getAlliance()).getTranslation();  
+            .getPose(currentAlliance).getTranslation();  
 
         // Offset First Staging Point to support Straight on Approach
         //      Otherwise it is trying to line up center of robot
@@ -193,7 +199,7 @@ public class MultiGamepiece extends AutoModeBase {
                     new SequentialAction(
                         new WaitAction(.0),
                         new GrasperAction(true),
-                        new ArmAction(ArmTargets.INTAKE_GROUND_FRONT)
+                        new ArmAction(ArmTargets.INTAKE_GROUND_FRONT_CUBE)
                     )
                 )
             );

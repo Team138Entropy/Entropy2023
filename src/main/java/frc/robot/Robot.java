@@ -223,10 +223,16 @@ public class Robot extends TimedRobot {
 
     // Reset Drive Sensors
 
+    // Zero Simulation Yaw
+    if(!mRealRobot)
+    {
+      mPigeon.setSimAdjustmentAngle(DriverStation.getAlliance() == Alliance.Red ? 0 : 0);
+    }
+
     
     mArm.zeroSensors();
     mDrive.zeroHeading();
-    mDrive.zeroEncoders();
+    mDrive.zeroEncoders();    
   }
 
   /**
@@ -256,9 +262,11 @@ public class Robot extends TimedRobot {
         double simAngle = 0;
         if(DriverStation.getAlliance() == Alliance.Red)
         {
-          simAngle = 180;
+          simAngle = 0;
         }
-        mPigeon.setSimYaw(simAngle);
+
+        // set the Sim Based Angle
+        mPigeon.setSimAdjustmentAngle(simAngle);
       }
 
       // Regenerate Auto Modes
