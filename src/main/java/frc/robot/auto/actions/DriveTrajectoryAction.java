@@ -177,7 +177,7 @@ public class DriveTrajectoryAction implements Action {
                 RedAllianceFlipUtility.apply(
                     mCustomTrajectoryGenerator.getHolonomicRotationSequence().sample(currentTime)
                 );
-            
+            */
 
             // Get Robot Pose to Calculate Error
             Pose2d currentRobotPose = mRobotState.isRealRobot() ? 

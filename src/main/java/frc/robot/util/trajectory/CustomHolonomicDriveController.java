@@ -102,6 +102,8 @@ public class CustomHolonomicDriveController {
     if(isRedAlliance)
     {
       xFF *= -1;
+
+      // TODO: Might need to flip yFF as well.. probably have to
     }
 
     m_poseError = poseRef.relativeTo(currentPose);
@@ -121,11 +123,14 @@ public class CustomHolonomicDriveController {
     if(isRedAlliance)
     {
       xFeedback *= -1;
+
+      // TODO: IT is possible this needs to be flipped dog
       //yFeedback *= -1;
    }
 
-    System.out.println("xFF: " + xFF + "  yFF: " + yFF + " thetaFF: " + thetaFF);
-    System.out.println("xFeedback: " + xFeedback + "  yFeedbac: " + yFeedback + " thetaFeedback: " + thetaFeedback);
+    // Debug Prints
+    //System.out.println("xFF: " + xFF + "  yFF: " + yFF + " thetaFF: " + thetaFF);
+    //System.out.println("xFeedback: " + xFeedback + "  yFeedbac: " + yFeedback + " thetaFeedback: " + thetaFeedback);
 
     // Return next output.
     return ChassisSpeeds.fromFieldRelativeSpeeds(
