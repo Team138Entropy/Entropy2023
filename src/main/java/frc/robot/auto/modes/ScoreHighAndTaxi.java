@@ -53,13 +53,18 @@ public class ScoreHighAndTaxi extends AutoModeBase {
         // Wait for Object to fall
         addAction(new WaitAction(.2));
 
-        addAction(new ArmAction(ArmTargets.HOME_BACKSIDE));  
+        // Close Grasper
         addAction(new GrasperAction(false));
+
+        // Move Arm to backside
+        addAction(new ArmAction(ArmTargets.HOME_BACKSIDE));  
 
         //TODO: joe is this ok or is there a better way to do it?
 
         addAction(new DriveAction(new Translation2d(.75,0),3.3));
 
+        addAction(new TurnInPlaceAction(SwerveCardinal.RIGHT));
+        addAction(new ArmAction(ArmTargets.INTAKE_GROUND_FRONT_CUBE));
 
         
     }

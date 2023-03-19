@@ -303,6 +303,8 @@ public class MultiGamepiece extends AutoModeBase {
                 )
             );
             */
+            addAction(new WaitAction(.2));
+            addAction(new GrasperAction(false));
             addAction(new ArmAction(ArmTargets.HOME_BACKSIDE));
         }
 

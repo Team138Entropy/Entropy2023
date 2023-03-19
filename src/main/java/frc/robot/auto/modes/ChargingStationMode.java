@@ -51,7 +51,11 @@ public class ChargingStationMode extends AutoModeBase {
         addAction(new GrasperAction(true));
 
         // Wait for Object to fall
-        addAction(new WaitAction(.05));
+        addAction(new WaitAction(.1));
+
+        //make sure its closed
+        addAction(new GrasperAction(false));
+
 
 
         addAction(
