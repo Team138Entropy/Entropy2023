@@ -220,7 +220,12 @@ public class SwerveModule  {
 
     public void updateSimPosition(double dt)
     {
-        mSimPosition.distanceMeters += (mDesiredState.speedMetersPerSecond * dt);
+        updateSimPosition(dt);
+    }
+
+    public void updateSimPosition(double dt, boolean invert)
+    {
+        mSimPosition.distanceMeters += ((mDesiredState.speedMetersPerSecond * (invert ? -1 : 1)) * dt);
         mSimPosition.angle = mDesiredState.angle;
     }
 

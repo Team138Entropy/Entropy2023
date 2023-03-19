@@ -104,9 +104,9 @@ public class MultiGamepiece extends AutoModeBase {
 
         // Force Blue Alliance now - update maybe no longer do this?
         // the Red alliance post flipper handles the rest
-        isBlueAlliance = true;
+        //isBlueAlliance = true;
         Alliance currentAlliance = mRobotState.getAlliance();
-        currentAlliance = Alliance.Blue; // everything should be set
+        //currentAlliance = Alliance.Blue; // everything should be set
 
         // Scoring Positions
         Translation2d ScoreSpot1 = FieldConstants.getTargetPositionPose(

@@ -115,6 +115,11 @@ public class Pigeon {
         mSimYawAngle = mSimYawAngle.rotateBy(Rotation2d.fromDegrees(degrees).inverse());
     }
 
+    public void setSimYawDegrees(double degrees)
+    {
+        mSimYawAngle = Rotation2d.fromDegrees(degrees).inverse();
+    }
+
     // Set the Sim Yaw to Degrees
     public void setSimYaw(double degrees)
     {

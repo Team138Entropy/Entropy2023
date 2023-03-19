@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -189,7 +190,10 @@ public class RobotState {
         }
     }
 
-
+    // Returns if simulation or Real Robot!
+    public boolean isRealRobot() {
+        return mRealRobot;
+    }
 
     // Resets Odometry and Robot State
     public void resetPosition(Pose2d pose)
@@ -198,8 +202,20 @@ public class RobotState {
         // Since the Robot will have been physically moved, need to update in sim
         if(!mRealRobot)
         {
+            if(DriverStation.getAlliance() == Alliance.Red)
+            {
+                var tempRot = pose.getRotation().rotateBy(Rotation2d.fromDegrees(180));
+                pose = new Pose2d(
+                    pose.getTranslation(),
+                    tempRot
+                );
+            }
+
+            double deg = Rotation2d.fromDegrees(180).rotateBy(pose.getRotation()).getDegrees();
             // this is no good because it affects the adjust angle
-            mPigeon.setSimYaw((pose.getRotation().getDegrees()));
+            mPigeon.setSimYawDegrees((
+                pose.getRotation().getDegrees() 
+            ));
         }
 
         // Move Odometry
@@ -344,6 +360,19 @@ public class RobotState {
         return mRobotPoseDriveOnly;
     }
 
+    public Pose2d getDriveOnlySimPose() {
+        Pose2d result = mRobotPoseDriveOnly;
+        if(DriverStation.getAlliance() == Alliance.Red)
+        {
+            var rotation = result.getRotation().rotateBy(Rotation2d.fromDegrees(180));
+            result = new Pose2d(
+                result.getTranslation(),
+                rotation
+            );
+        }
+        return result;
+    }
+
     // Visual Plotting Field for Debug Perposes
     private void updateSimVisualField()
     {
@@ -353,7 +382,9 @@ public class RobotState {
         mVisualField.setRobotPose(new Pose2d(FieldConstants.fieldLength/2, 
                                 FieldConstants.fieldWidth/2, new Rotation2d()));
         */
-        mVisualField.setRobotPose(getPose());
+
+        //mVisualField.setRobotPose(getPose());
+        mVisualField.setRobotPose(mRobotPoseDriveOnly);
 
         // Iterate April Tags and Plot
         for(int i = 0; i < FieldConstants.aprilTags.size(); i++)

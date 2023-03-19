@@ -5,8 +5,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
  * This holonomic drive controller can be used to follow trajectories using a holonomic drivetrain
@@ -87,11 +87,22 @@ public class CustomHolonomicDriveController {
       double linearVelocityRefMeters,
       Rotation2d angleRef,
       double angleVelocityRefRadians) {
+    
+    // This original system was designed that +X would take you towards the Red Driver Station Wall
+    //  However, our system just wants the +X to be the forward direction of the robot
+    //  Just two different ways to do field relative systems, the prior feels slightly more field relative
+    //  Therefore going to have to do some inversions to make sure this behaves correctly
+    boolean isRedAlliance = (DriverStation.getAlliance() == Alliance.Red);
 
     // Calculate feedforward velocities (field-relative).
     double xFF = linearVelocityRefMeters * poseRef.getRotation().getCos();
     double yFF = linearVelocityRefMeters * poseRef.getRotation().getSin();
     double thetaFF = angleVelocityRefRadians;
+
+    if(isRedAlliance)
+    {
+      xFF *= -1;
+    }
 
     m_poseError = poseRef.relativeTo(currentPose);
     m_rotationError = angleRef.minus(currentPose.getRotation());
@@ -106,13 +117,15 @@ public class CustomHolonomicDriveController {
     double thetaFeedback =
         m_thetaController.calculate(currentPose.getRotation().getRadians(), angleRef.getRadians());
 
-    if(DriverStation.getAlliance() == Alliance.Red)
+    // Red has inverted values, see comment above
+    if(isRedAlliance)
     {
-      //xFeedback *= -1;
+      xFeedback *= -1;
       //yFeedback *= -1;
-      //thetaFeedback *= -1;
+   }
 
-    }
+    System.out.println("xFF: " + xFF + "  yFF: " + yFF + " thetaFF: " + thetaFF);
+    System.out.println("xFeedback: " + xFeedback + "  yFeedbac: " + yFeedback + " thetaFeedback: " + thetaFeedback);
 
     // Return next output.
     return ChassisSpeeds.fromFieldRelativeSpeeds(

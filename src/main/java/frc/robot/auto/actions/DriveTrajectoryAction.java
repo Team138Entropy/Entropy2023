@@ -164,6 +164,12 @@ public class DriveTrajectoryAction implements Action {
             // todo - maybe no longer flip?
             
             Trajectory.State driveState = 
+                    mCustomTrajectoryGenerator.getDriveTrajectory().sample(currentTime);
+            RotationSequence.State holonomicRotationState = 
+                    mCustomTrajectoryGenerator.getHolonomicRotationSequence().sample(currentTime);
+
+            /*
+             *         Trajectory.State driveState = 
                 RedAllianceFlipUtility.apply(
                     mCustomTrajectoryGenerator.getDriveTrajectory().sample(currentTime)
                 );
@@ -173,22 +179,15 @@ public class DriveTrajectoryAction implements Action {
                 );
             
 
-            /* 
-            Trajectory.State driveState = 
-       
-                mCustomTrajectoryGenerator.getDriveTrajectory().sample(currentTime)
-            ;
-        RotationSequence.State holonomicRotationState = 
-                mCustomTrajectoryGenerator.getHolonomicRotationSequence().sample(currentTime)
-            ;
-            */
-                //Get Pose with vision: mRObotState.getPose()
-
+            // Get Robot Pose to Calculate Error
+            Pose2d currentRobotPose = mRobotState.isRealRobot() ? 
+                mRobotState.getDriveOnlyPose() :
+                mRobotState.getDriveOnlySimPose();
 
             // Calculate velocity
             ChassisSpeeds nextDriveState =
                 mCustomHolonomicDriveController.calculate(
-                    mRobotState.getDriveOnlyPose(), driveState, holonomicRotationState);
+                    currentRobotPose, driveState, holonomicRotationState);
             
             // Tell the Drive to Drive
             mDrive.setSwerveVelocity(nextDriveState);

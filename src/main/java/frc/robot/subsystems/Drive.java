@@ -10,6 +10,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
@@ -25,6 +26,7 @@ import frc.robot.util.DriveSignal;
 import frc.robot.util.TimeDelayedBoolean;
 import frc.robot.util.Util;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.util.geometry.Twist2d;
 import frc.robot.util.simulation.DiffDriveSimSystem;
 import frc.robot.util.simulation.SimSwerveOdometry;
@@ -560,7 +562,10 @@ public class Drive extends Subsystem {
         if(Math.abs(speed.omegaRadiansPerSecond) > 0)
         {
             double sRotation = speed.omegaRadiansPerSecond;
-            sRotation *= -1;
+            if(DriverStation.getAlliance() == Alliance.Blue)
+            {
+              sRotation *= -1;
+            }
             Pigeon.getInstance().rotateSimYaw(sRotation);
         }  
     }
@@ -978,7 +983,7 @@ public class Drive extends Subsystem {
   public void updateSwerveSimPositions(double dt)
   {
     for(SwerveModule mod : mSwerveModules){
-      mod.updateSimPosition(dt);
+      mod.updateSimPosition(dt, DriverStation.getAlliance() == Alliance.Red);
     }
   }
 
