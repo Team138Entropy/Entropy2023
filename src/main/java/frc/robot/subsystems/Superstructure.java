@@ -19,6 +19,7 @@ public class Superstructure {
 
   // Reference to the Arm
   private Arm mArm = Arm.getInstance();
+  private Grasper mGrasper = Grasper.getInstance();
   private SimMechanism mSim = SimMechanism.getInstance();
 
   private boolean mRealRobot;
@@ -144,10 +145,16 @@ public class Superstructure {
         // Extension is in safe position, continue to override to keep it safe
         // arm however is not at its target 
         // we are free to move the arm
+        if(mCurrentTargetPosition.armAngle > 90 && mArm.getArmAngle() < 90 || mCurrentTargetPosition.armAngle < 90 && mArm.getArmAngle() > 90){
+          mGrasper.setGrasperClosed();
+        }
+        
         mOverridingAngle = true;
         mArmOverride = mArmTargetPosition.armAngle;       
       }
     }
+
+    
 
     // Check if Arm made it to its target angle
     // We don't care about extension, that will sort itself out
