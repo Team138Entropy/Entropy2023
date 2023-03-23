@@ -1007,23 +1007,17 @@ public class Robot extends TimedRobot {
         //  TODO: might not need this.. might just be able to do break mode/coast mode
         if(mSuperStructure.isCGCompromised())
         {
-            /*
-             *   private final SlewRateLimiter mSlewControllerX = new SlewRateLimiter(kTranslationSlew);
-  private final SlewRateLimiter mSlewControllerY = new SlewRateLimiter(kTranslationSlew);
-  private final SlewRateLimiter mSlewControllerRotation = new SlewRateLimiter(kRotationSlew);
-             * 
-             */
-            // Rate Limiting This
-            // Calclate 
-            /*
-            sTrans = new Translation2d(
-              
-            , wallR
-            otation)
-            */
-
+            // Scale these controller inputs to protect stopping too fast
+            double xTrans = mSlewControllerX.calculate(sTrans.getX());
+            double yTrans = mSlewControllerY.calculate(sTrans.getY());
+            sTrans = new Translation2d(xTrans, yTrans);
+            sRotation = mSlewControllerRotation.calculate(sRotation);
         }else {
-          // reset to whatever the values are 
+          // Slew Controllers are not currently being used, but must keep them ready
+          // Reset Slew to Current Values
+          mSlewControllerX.reset(sTrans.getX());
+          mSlewControllerY.reset(sTrans.getY());
+          mSlewControllerRotation.reset(sRotation);
         }
 
         // Actually Drive
