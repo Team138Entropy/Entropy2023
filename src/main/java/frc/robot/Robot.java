@@ -992,6 +992,15 @@ public class Robot extends TimedRobot {
           sTrans = sSimpleTrans.times(Constants.SwerveConstants.simpleSwerveDriveSpeed);
         }
 
+        // Ramp Rate/Rate Limit Protections
+        // If the Arm is in a CG Compromised state, limit how fast the robot can stop
+        //  TODO: might not need this.. might just be able to do break mode/coast mode
+        if(mSuperStructure.isCGCompromised())
+        {
+
+        }
+
+        // Actually Drive
         mDrive.setSwerveDrive(sTrans, sRotation, true, true, precisionSteer);
 
         // Log Inputs

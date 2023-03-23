@@ -225,11 +225,19 @@ public class Superstructure {
     return mDisableArmSafety;
   }
 
+  // Is the Arm at the front? Or is it going to the front?
+  // TODO: CHEF Please Cook
+  public boolean isCGCompromised()
+  {
+    return false;
+  }
+
   public void updateSmartDashBoard()
   {
     final String key = "Superstructure/";
     SmartDashboard.putBoolean(key + "Extension Overriding", mOverridingExtension);
     SmartDashboard.putBoolean(key + "Angle Overriding", mOverridingAngle);
+    SmartDashboard.putBoolean(key + "CG Compromised", isCGCompromised());
 
   }
 }
