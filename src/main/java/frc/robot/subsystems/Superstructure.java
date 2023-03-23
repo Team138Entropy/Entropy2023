@@ -226,9 +226,19 @@ public class Superstructure {
   }
 
   // Is the Arm at the front? Or is it going to the front?
-  // TODO: CHEF Please Cook
+  //"I think it should be isComprimisedCGStateThatJoeWantedImplementedAndWasImplementedByTheChefAKAGeorgeBOhAndAlsoGeorgeDrinksDrPepperGoTeam138Poggers()" -Avery
   public boolean isCGCompromised()
   {
+    if(null == mCurrentTargetPosition)
+    {
+      mCurrentTargetPosition = mArmTargetPosition;
+    }
+
+    if(mCurrentTargetPosition.armAngle <= (ArmTargets.TOP_SCORING_FRONT.armAngle + 15) 
+    || mCurrentTargetPosition.armAngle >= (ArmTargets.TOP_SCORING_FRONT.armAngle - 15)){
+      return true;
+    }
+
     return false;
   }
 
