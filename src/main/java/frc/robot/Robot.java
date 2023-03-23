@@ -4,6 +4,7 @@ import org.photonvision.SimVisionTarget;
 
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -113,6 +114,15 @@ public class Robot extends TimedRobot {
 
   // Various Variables
   int mRumbleTimer = 0;
+
+  // Slew Rate Limiters
+  //    https://docs.wpilib.org/en/stable/docs/software/advanced-controls/filters/slew-rate-limiter.html
+  //    Limits Rate of Change by value in constructor
+  public static final double kTranslationSlew = 1.55;
+  public static final double kRotationSlew = 3.00;
+  private final SlewRateLimiter mSlewControllerX = new SlewRateLimiter(kTranslationSlew);
+  private final SlewRateLimiter mSlewControllerY = new SlewRateLimiter(kTranslationSlew);
+  private final SlewRateLimiter mSlewControllerRotation = new SlewRateLimiter(kRotationSlew);
 
   // Test Controls
   private boolean mJogMode = true;
@@ -997,7 +1007,23 @@ public class Robot extends TimedRobot {
         //  TODO: might not need this.. might just be able to do break mode/coast mode
         if(mSuperStructure.isCGCompromised())
         {
+            /*
+             *   private final SlewRateLimiter mSlewControllerX = new SlewRateLimiter(kTranslationSlew);
+  private final SlewRateLimiter mSlewControllerY = new SlewRateLimiter(kTranslationSlew);
+  private final SlewRateLimiter mSlewControllerRotation = new SlewRateLimiter(kRotationSlew);
+             * 
+             */
+            // Rate Limiting This
+            // Calclate 
+            /*
+            sTrans = new Translation2d(
+              
+            , wallR
+            otation)
+            */
 
+        }else {
+          // reset to whatever the values are 
         }
 
         // Actually Drive
