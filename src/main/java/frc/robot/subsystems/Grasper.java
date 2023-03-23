@@ -36,8 +36,10 @@ public class Grasper extends Subsystem {
     private boolean mGrasperOpen = false;
     //Wheel Delay Timer
     private final Timer wheelDelayTimer;
-    //beam sensor delay amount
+    //Beam sensor delay amount
     public double mDelaySeconds;
+    //Toggles the ejection of the object when the grasper opens
+    private boolean ejectState = true;
 
     // Grasper State
     public enum GrasperState {
@@ -80,7 +82,9 @@ public class Grasper extends Subsystem {
     wheelDelayTimer.start();
     sensorDelayOn = false;
     BeamSensorOn = false;
-    GrasperWheelMotor.set(-0.15);
+    if (ejectState == true) {
+      GrasperWheelMotor.set(-0.15);
+    }
    }
 
    // Close the Grasper
