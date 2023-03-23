@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -244,12 +245,27 @@ public class RobotState {
         // Set Reference Pose (don't think this is used for chosen stategy)
         mPhotonPoseEstimators[poseEstimatorIndex].setReferencePose(referencePose);
 
+        // Get Latest Camera Result 
+        PhotonPipelineResult cameraResult = photonVision.CameraList.get(poseEstimatorIndex).getFirst().getLatestResult();
+        
+        //mPhotonPoseEstimators[poseEstimatorIndex]
+
         // Timestamp back from photonVision should be in terms of fpga timestamp     
         Optional<EstimatedRobotPose> result = mPhotonPoseEstimators[poseEstimatorIndex].update();
         if (result.isPresent() && null != result.get().estimatedPose) {
             return new Pair<Pose2d, Double>(result.get().estimatedPose.toPose2d(), result.get().timestampSeconds);
         } else {
             return new Pair<Pose2d, Double>(null, 0.0);
+        }
+    }
+
+    public void processCameraResult(PhotonPipelineResult result, double distanceThreshold)
+    {
+        var resultTargets = result.getTargets();
+        for(int i = 0; i < resultTargets.size(); ++i) 
+        {
+            var trackedTarget = resultTargets.get(i);
+           // trackedTarget.get
         }
     }
 
