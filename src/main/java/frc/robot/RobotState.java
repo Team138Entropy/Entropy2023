@@ -461,6 +461,13 @@ public class RobotState {
             RedCornerPoseObj.setPose(cornerPoseRed);
         }
         
+        // Balance Points
+        Translation2d frontBalancePoint = FieldConstants.Community.chargingStationFrontBalancePoint;
+        Pose2d frontBalancePose = new Pose2d(frontBalancePoint, new Rotation2d());
+        FieldObject2d FrontBalancePoseObj = mVisualField.getObject("Front Balance Point");
+        FrontBalancePoseObj.setPose(frontBalancePose);
+
+        
         // Vision Following Trajectory if applicable
         /*
         Trajectory driveTraj = AutoPilot.getInstance().getTrajectory();

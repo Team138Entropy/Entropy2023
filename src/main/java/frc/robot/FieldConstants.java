@@ -250,6 +250,15 @@ public final class FieldConstants {
               new Translation2d(chargingStationOuterX, chargingStationLeftY)
         };
 
+        // Charging Station Balance Points
+        //      These are points the robot would target to balance
+        public static final Translation2d chargingStationFrontBalancePoint = 
+            new Translation2d(
+                chargingStationInnerX + 1,
+                (chargingStationLeftY - chargingStationRightY) + chargingStationRightY
+
+            );
+
         public static final double redChargingStationOuterX = fieldLength - outerX;
         public static final double redChargingStationInnerX =
         redChargingStationOuterX + chargingStationLength;
