@@ -117,6 +117,9 @@ public class Drive extends Subsystem {
   // Swerve Drive Simulation System
   SwerveDriveSimSystem mSwerveDriveSimSystem;
 
+  // Current Chasis Speed
+  ChassisSpeeds mChassisSpeeds = null;
+
   // Other Variables
   private boolean mBrakeEnabled;
   private boolean mIsSnapping;
@@ -517,19 +520,25 @@ public class Drive extends Subsystem {
           TranslationY: Sideways Velocity
           Rotation: Anglular Velocity
       */
+
+      mChassisSpeeds = fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
+            translation.getX(), 
+            translation.getY(), 
+            rotation, 
+            mRealRobot ? mPigeon.getYaw().getWPIRotation2d() : mPigeon.getSimYaw().getWPIRotation2d()
+        )
+        : new ChassisSpeeds(
+            translation.getX(), 
+            translation.getY(), 
+            rotation);
+
       swerveModuleStates =
       Constants.SwerveConstants.swerveKinematics.toSwerveModuleStates(
-          fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                              translation.getX(), 
-                              translation.getY(), 
-                              rotation, 
-                              mRealRobot ? mPigeon.getYaw().getWPIRotation2d() : mPigeon.getSimYaw().getWPIRotation2d()
-                          )
-                          : new ChassisSpeeds(
-                              translation.getX(), 
-                              translation.getY(), 
-                              rotation)
+        mChassisSpeeds
                           );
+
+
+                          
     }
     
     // Desaturate wheel speeds - keeps speed below a maximum speed
@@ -541,6 +550,19 @@ public class Drive extends Subsystem {
       mod.setDesiredState(swerveModuleStates[mod.getModuleNumber()], isOpenLoop);
     }
   }
+
+
+  public double getSwerveMetersPerSec()
+  {
+    double result = 0;
+    if(null != mChassisSpeeds)
+    {
+      result = mChassisSpeeds.vxMetersPerSecond;
+    }
+    return result;
+  }
+
+
 
   public void setSwerveVelocity(ChassisSpeeds speed)
   {
@@ -647,6 +669,7 @@ public class Drive extends Subsystem {
    SmartDashboard.putBoolean("Break Enabled", mBrakeEnabled);
    SmartDashboard.putBoolean("Is Snapping", mIsSnapping);
    SmartDashboard.putNumber("Pigeon Yaw", mPigeon.getYaw().getDegrees());
+   SmartDashboard.putNumber("Velocity M/S", getSwerveMetersPerSec());
 
    // Drive Style Specific Dashboard
    switch(mDriveStyle)

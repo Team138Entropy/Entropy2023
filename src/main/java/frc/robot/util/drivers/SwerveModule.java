@@ -3,6 +3,7 @@ package frc.robot.util.drivers;
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.sensors.CANCoder;
@@ -101,6 +102,7 @@ public class SwerveModule  {
         mSimPosition = new SwerveModulePosition();
 
         mLastAngle = getState().angle.getDegrees();
+        //mDriveMotor.setNeutralMode(NeutralMode.Coast);
     }
 
     public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop){

@@ -382,7 +382,7 @@ public class Constants {
     // Originally was 1 - 29 - .01 - 600
     public static TuneableNumber tunableArmKF = new TuneableNumber("tunableArmKF",0);
     public static TuneableNumber tunableArmKP = new TuneableNumber("tunableArmKP",1.8);
-    public static TuneableNumber tunableArmKI = new TuneableNumber("tunableArmKI",0);
+    public static TuneableNumber tunableArmKI = new TuneableNumber("tunableArmKI",0.00001);
     public static TuneableNumber tunableArmKD = new TuneableNumber("tunableArmKD",80);
     public static TuneableNumber tunableArmVel = new TuneableNumber("tunableArmVel",1400);
     public static TuneableNumber tunableArmAccel = new TuneableNumber("tunableArmAccel",1400);
@@ -508,7 +508,7 @@ public class Constants {
     public static final NeutralMode driveNeutralMode = NeutralMode.Brake;
 
     /* Swerve Profiling Values */
-    public static final double maxSpeed = 2.5; // meters per second
+    public static final double maxSpeed = 5; // meters per second
     public static final double maxAngularVelocity = 10.0;
 
     public static final double wheelDiameter = Units.inchesToMeters(4.0);

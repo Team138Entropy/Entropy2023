@@ -145,7 +145,7 @@ public class Superstructure {
         // Extension is in safe position, continue to override to keep it safe
         // arm however is not at its target 
         // we are free to move the arm
-        if(mCurrentTargetPosition.armAngle > 90 && mArm.getArmAngle() < 90 || mCurrentTargetPosition.armAngle < 90 && mArm.getArmAngle() > 90){
+        if(mCurrentTargetPosition.armAngle > 90 && mArmTargetPosition.armAngle < 90 || mCurrentTargetPosition.armAngle < 90 && mArmTargetPosition.armAngle > 90){
           mGrasper.setGrasperClosed();
         }
         
@@ -229,17 +229,27 @@ public class Superstructure {
   //"I think it should be isComprimisedCGStateThatJoeWantedImplementedAndWasImplementedByTheChefAKAGeorgeBOhAndAlsoGeorgeDrinksDrPepperGoTeam138Poggers()" -Avery
   public boolean isCGCompromised()
   {
-    if(null == mCurrentTargetPosition)
-    {
-      mCurrentTargetPosition = mArmTargetPosition;
+    boolean result = false;
+    if(mCurrentTargetPosition != null){
+      if(mCurrentTargetPosition.armAngle <= (ArmTargets.TOP_SCORING_FRONT.armAngle + 15) 
+      && mCurrentTargetPosition.armAngle >= (ArmTargets.TOP_SCORING_FRONT.armAngle - 15)){
+      result = true;
+    }
+    }
+    
+    if(mArmTargetPosition != null){
+      if(mArmTargetPosition.armAngle <= (ArmTargets.TOP_SCORING_FRONT.armAngle + 15) 
+      && mArmTargetPosition.armAngle >= (ArmTargets.TOP_SCORING_FRONT.armAngle - 15)){
+      result = true;
     }
 
-    if(mCurrentTargetPosition.armAngle <= (ArmTargets.TOP_SCORING_FRONT.armAngle + 15) 
-    || mCurrentTargetPosition.armAngle >= (ArmTargets.TOP_SCORING_FRONT.armAngle - 15)){
-      return true;
+      if(mArmTargetPosition.armAngle > 90){
+        result = false;
+      }
+
     }
 
-    return false;
+    return result;
   }
 
   public void updateSmartDashBoard()

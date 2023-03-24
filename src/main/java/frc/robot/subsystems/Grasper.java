@@ -168,7 +168,7 @@ public class Grasper extends Subsystem {
 
   // Has the Grasper stay open long enough to use beam sensor
   public boolean getGrasperTimeElapsed3(){
-    return beamActivationTimer.hasElapsed(1.5);
+    return beamActivationTimer.hasElapsed(0.5);
   }
   // Timer for the wheels when closing the Grasper
   public boolean getGrasperTimeElapsed1(){

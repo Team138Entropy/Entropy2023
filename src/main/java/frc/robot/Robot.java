@@ -118,7 +118,7 @@ public class Robot extends TimedRobot {
   // Slew Rate Limiters
   //    https://docs.wpilib.org/en/stable/docs/software/advanced-controls/filters/slew-rate-limiter.html
   //    Limits Rate of Change by value in constructor
-  public static final double kTranslationSlew = 1.55;
+  public static final double kTranslationSlew = 1.25;
   public static final double kRotationSlew = 3.00;
   private final SlewRateLimiter mSlewControllerX = new SlewRateLimiter(kTranslationSlew);
   private final SlewRateLimiter mSlewControllerY = new SlewRateLimiter(kTranslationSlew);
@@ -989,7 +989,7 @@ public class Robot extends TimedRobot {
         }else if(mOperatorInterface.getDriveSportSteer()){
           sTrans = sTrans.times(.9);
         }else{
-          sTrans = sTrans.times(.6);
+          sTrans = sTrans.times(.85);
         }
       
         // Simple Translation (DPad ... Alternative Control)
@@ -1005,13 +1005,14 @@ public class Robot extends TimedRobot {
         // Ramp Rate/Rate Limit Protections
         // If the Arm is in a CG Compromised state, limit how fast the robot can stop
         //  TODO: might not need this.. might just be able to do break mode/coast mode
-        if(mSuperStructure.isCGCompromised())
+        if(mSuperStructure.isCGCompromised() && Math.abs(mDrive.getSwerveMetersPerSec()) > 1 )
         {
             // Scale these controller inputs to protect stopping too fast
             double xTrans = mSlewControllerX.calculate(sTrans.getX());
             double yTrans = mSlewControllerY.calculate(sTrans.getY());
             sTrans = new Translation2d(xTrans, yTrans);
             sRotation = mSlewControllerRotation.calculate(sRotation);
+            
         }else {
           // Slew Controllers are not currently being used, but must keep them ready
           // Reset Slew to Current Values

@@ -292,7 +292,8 @@ public class Arm extends Subsystem {
         SmartDashboard.putNumber(key + "extension current", ExtensionMotor.getSupplyCurrent());
         SmartDashboard.putNumber(key + "Extension Velocity", ExtensionMotor.getSelectedSensorVelocity());
         SmartDashboard.putNumber(key + "shoulder (ticks)", mTargetTicks);
-        SmartDashboard.putNumber(key + "shoulder allowed error", MasterShoulderMotor.getClosedLoopError());
+        SmartDashboard.putNumber(key + "shoulder error", MasterShoulderMotor.getClosedLoopError());
+        
        // SmartDashboard.putNumber(key + "Closed  Loop Error Tolerance", MasterShoulderMotor.getClosed
         MasterShoulderMotor.updateSmartdashboard();
         SecondaryShoulderMotor.updateSmartdashboard();
