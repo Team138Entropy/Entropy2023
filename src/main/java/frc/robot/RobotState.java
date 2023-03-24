@@ -467,6 +467,10 @@ public class RobotState {
         FieldObject2d FrontBalancePoseObj = mVisualField.getObject("Front Balance Point");
         FrontBalancePoseObj.setPose(frontBalancePose);
 
+        Translation2d backBalancePoint = FieldConstants.Community.chargingStationBackBalancePoint;
+        Pose2d backBalancePose = new Pose2d(backBalancePoint, new Rotation2d());
+        FieldObject2d backncePoseObj = mVisualField.getObject("backance Point");
+        backncePoseObj.setPose(backBalancePose);
         
         // Vision Following Trajectory if applicable
         /*
