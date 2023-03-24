@@ -181,7 +181,7 @@ public class DriveTrajectoryAction implements Action {
 
             // Get Robot Pose to Calculate Error
             Pose2d currentRobotPose = mRobotState.isRealRobot() ? 
-                mRobotState.getDriveOnlyPose() :
+                mRobotState.getPose() :
                 mRobotState.getDriveOnlySimPose();
 
             // Calculate velocity

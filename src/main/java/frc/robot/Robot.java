@@ -1012,6 +1012,7 @@ public class Robot extends TimedRobot {
             double yTrans = mSlewControllerY.calculate(sTrans.getY());
             sTrans = new Translation2d(xTrans, yTrans);
             sRotation = mSlewControllerRotation.calculate(sRotation);
+          
             
         }else {
           // Slew Controllers are not currently being used, but must keep them ready
@@ -1019,6 +1020,16 @@ public class Robot extends TimedRobot {
           mSlewControllerX.reset(sTrans.getX());
           mSlewControllerY.reset(sTrans.getY());
           mSlewControllerRotation.reset(sRotation);
+        }
+        
+        // Configure Snap Controller to be safe if CG Compemised
+        if(mSuperStructure.isCGCompromised())
+        {
+          // Unsafe CG
+          mDrive.setCGUnsafeSnap();
+        } else {
+          // Safe CG
+          mDrive.setNormalSnap();
         }
 
         // Actually Drive

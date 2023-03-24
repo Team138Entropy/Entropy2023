@@ -80,10 +80,10 @@ public class AutoPilot {
     private final ProfiledPIDController mOmegaController = new ProfiledPIDController(2, 0, 0, mOMEGA_CONSTRAINTS);
     */
     private final ProfiledPIDController mOmegaController = new ProfiledPIDController(
-        Constants.Drive.SnapConstants.kP,
-        Constants.Drive.SnapConstants.kI, 
-        Constants.Drive.SnapConstants.kD,
-        Constants.Drive.SnapConstants.kAutoPilotThetaControllerConstraints
+        Constants.Drive.SnapConstants_CGUnsafe.kP,
+        Constants.Drive.SnapConstants_CGUnsafe.kI, 
+        Constants.Drive.SnapConstants_CGUnsafe.kD,
+        Constants.Drive.SnapConstants_CGUnsafe.kAutoPilotThetaControllerConstraints
       );
 
     // Tolerances

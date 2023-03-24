@@ -124,7 +124,8 @@ public class Drive extends Subsystem {
   private boolean mBrakeEnabled;
   private boolean mIsSnapping;
 
-  private final ProfiledPIDController mSnapPidController;
+  private ProfiledPIDController mSnapPidController;
+  private boolean mSnapNormal;
   private PIDController mVisionPIDController;
   private TimeDelayedBoolean mDelayedBoolean;
 
@@ -161,12 +162,13 @@ public class Drive extends Subsystem {
 
     // Setup Snap Pid Controller
     mSnapPidController = new ProfiledPIDController(
-      Constants.Drive.SnapConstants.kP,
-      Constants.Drive.SnapConstants.kI, 
-      Constants.Drive.SnapConstants.kD,
-      Constants.Drive.SnapConstants.kThetaControllerConstraints
+      Constants.Drive.SnapConstants_Normal.kP,
+      Constants.Drive.SnapConstants_Normal.kI, 
+      Constants.Drive.SnapConstants_Normal.kD,
+      Constants.Drive.SnapConstants_Normal.kThetaControllerConstraints
     );
     mSnapPidController.enableContinuousInput(-Math.PI, Math.PI);
+    mSnapNormal = true;
     mDelayedBoolean = new TimeDelayedBoolean();
 
 
@@ -178,6 +180,38 @@ public class Drive extends Subsystem {
 
     // Initialize Simulation Systems
     initSimulationSystems();
+  }
+
+  // Configures Snap Controller to Normal Snap
+  public void setNormalSnap()
+  {
+    if(!mSnapNormal)
+    {
+      mSnapPidController = new ProfiledPIDController(
+        Constants.Drive.SnapConstants_Normal.kP,
+        Constants.Drive.SnapConstants_Normal.kI, 
+        Constants.Drive.SnapConstants_Normal.kD,
+        Constants.Drive.SnapConstants_Normal.kThetaControllerConstraints
+      );
+      mSnapPidController.enableContinuousInput(-Math.PI, Math.PI);
+      mSnapNormal = true;
+    }
+  }
+
+  // Configures Snap Controller to Normal Snap
+  public void setCGUnsafeSnap()
+  {
+    if(mSnapNormal)
+    {
+      mSnapPidController = new ProfiledPIDController(
+        Constants.Drive.SnapConstants_CGUnsafe.kP,
+        Constants.Drive.SnapConstants_CGUnsafe.kI, 
+        Constants.Drive.SnapConstants_CGUnsafe.kD,
+        Constants.Drive.SnapConstants_CGUnsafe.kThetaControllerConstraints
+      );
+      mSnapPidController.enableContinuousInput(-Math.PI, Math.PI);
+      mSnapNormal = false;
+    }
   }
 
   // Initialize Simulation Systems
@@ -466,8 +500,8 @@ public class Drive extends Subsystem {
   /* Return if Snap is Complete */
   public boolean isSnapComplete() {
     double error = mSnapPidController.getGoal().position - mPigeon.getYaw().getRadians();
-    return mDelayedBoolean.update(Math.abs(error) < Math.toRadians(Constants.Drive.SnapConstants.kEpsilon), 
-            Constants.Drive.SnapConstants.kTimeout);
+    return mDelayedBoolean.update(Math.abs(error) < Math.toRadians(Constants.Drive.SnapConstants_Normal.kEpsilon), 
+            Constants.Drive.SnapConstants_Normal.kTimeout);
   }
 
   /* Swerve Drive */

@@ -188,8 +188,8 @@ public class Constants {
           new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration);
     };
 
-    public static final class SnapConstants {
-      public static final double kP = 5.0; 
+    public static final class SnapConstants_Normal {
+      public static final double kP = 8.0; 
       public static final double kI = 0;
       public static final double kD = 0.0;
       public static final double kTimeout = 0.25;
@@ -207,6 +207,26 @@ public class Constants {
               public static final TrapezoidProfile.Constraints kAutoPilotThetaControllerConstraints =
               new TrapezoidProfile.Constraints(kAutoPilotMaxAngularSpeedRadiansPerSecond, kAutoPilotMaxAngularSpeedRadiansPerSecondSquared);
   }
+
+  public static final class SnapConstants_CGUnsafe {
+    public static final double kP = 5.0; 
+    public static final double kI = 0;
+    public static final double kD = 0.0;
+    public static final double kTimeout = 0.25;
+    public static final double kEpsilon = 4.0;
+
+    // Constraints for the profiled angle controller
+    public static final double kMaxAngularSpeedRadiansPerSecond = 1.4 * Math.PI;
+    public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.pow(kMaxAngularSpeedRadiansPerSecond, 2);
+
+    public static final double kAutoPilotMaxAngularSpeedRadiansPerSecond = 2 * Math.PI;
+    public static final double kAutoPilotMaxAngularSpeedRadiansPerSecondSquared = Math.pow(kMaxAngularSpeedRadiansPerSecond, 2);
+
+    public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
+            new TrapezoidProfile.Constraints(kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
+            public static final TrapezoidProfile.Constraints kAutoPilotThetaControllerConstraints =
+            new TrapezoidProfile.Constraints(kAutoPilotMaxAngularSpeedRadiansPerSecond, kAutoPilotMaxAngularSpeedRadiansPerSecondSquared);
+}
 
     /* Swerve Modules */
     // Each Angle Offset is a measured value from the CANCoder

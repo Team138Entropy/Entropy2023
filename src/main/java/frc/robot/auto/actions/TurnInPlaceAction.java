@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.interfaces.Gyro;
 import frc.robot.Robot;
 import frc.robot.Enums.SwerveCardinal;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Superstructure;
 
 /**
  * Drives the Trajectory using the Trajectory Follower
@@ -34,6 +35,7 @@ public class TurnInPlaceAction implements Action {
 
     @Override
     public void start() {
+        checkSnapCG();
         mDrive.startSnap(mSnap.degrees);
     }
 
@@ -54,5 +56,16 @@ public class TurnInPlaceAction implements Action {
     public void done() {
         System.out.println("Action: Turn in Place Complete");
         mDrive.setSwerveDrive(new Translation2d(), 0, true, true, false);
+    }
+
+    // Configure
+    private void checkSnapCG()
+    {
+        if(Superstructure.getInstance().isCGCompromised())
+        {
+            mDrive.setCGUnsafeSnap();
+        }else {
+            mDrive.setNormalSnap();
+        }
     }
 }

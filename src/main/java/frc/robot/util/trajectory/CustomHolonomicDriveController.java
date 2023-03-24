@@ -88,23 +88,10 @@ public class CustomHolonomicDriveController {
       Rotation2d angleRef,
       double angleVelocityRefRadians) {
     
-    // This original system was designed that +X would take you towards the Red Driver Station Wall
-    //  However, our system just wants the +X to be the forward direction of the robot
-    //  Just two different ways to do field relative systems, the prior feels slightly more field relative
-    //  Therefore going to have to do some inversions to make sure this behaves correctly
-    boolean isRedAlliance = (DriverStation.getAlliance() == Alliance.Red);
-
     // Calculate feedforward velocities (field-relative).
     double xFF = linearVelocityRefMeters * poseRef.getRotation().getCos();
     double yFF = linearVelocityRefMeters * poseRef.getRotation().getSin();
     double thetaFF = angleVelocityRefRadians;
-
-    if(isRedAlliance)
-    {
-      xFF *= -1;
-
-      // TODO: Might need to flip yFF as well.. probably have to
-    }
 
     m_poseError = poseRef.relativeTo(currentPose);
     m_rotationError = angleRef.minus(currentPose.getRotation());
@@ -118,15 +105,6 @@ public class CustomHolonomicDriveController {
     double yFeedback = m_yController.calculate(currentPose.getY(), poseRef.getY());
     double thetaFeedback =
         m_thetaController.calculate(currentPose.getRotation().getRadians(), angleRef.getRadians());
-
-    // Red has inverted values, see comment above
-    if(isRedAlliance)
-    {
-      xFeedback *= -1;
-
-      // TODO: IT is possible this needs to be flipped dog
-      //yFeedback *= -1;
-   }
 
     // Debug Prints
     //System.out.println("xFF: " + xFF + "  yFF: " + yFF + " thetaFF: " + thetaFF);
