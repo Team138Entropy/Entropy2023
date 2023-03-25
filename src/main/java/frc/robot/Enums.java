@@ -49,7 +49,7 @@ public class Enums {
         TOP_SCORING_BACK(170,0),
         MID_SCORING_BACK(173,Constants.Arm.MaxExtensionPosition),
         //low score back extend: 120000
-        LOW_SCORING_BACK(210,5000),
+        LOW_SCORING_BACK(210,50000),
         INTAKE_BACK(172,0),
         INTAKE_BACK_CUBE(171,0),
         POST_INTAKE_BACK(167,0),

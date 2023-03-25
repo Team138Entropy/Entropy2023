@@ -200,7 +200,7 @@ public class Constants {
       public static final double kEpsilon = 4.0;
 
       // Constraints for the profiled angle controller
-      public static final double kMaxAngularSpeedRadiansPerSecond = 1.4 * Math.PI;
+      public static final double kMaxAngularSpeedRadiansPerSecond = 2 * Math.PI;
       public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.pow(kMaxAngularSpeedRadiansPerSecond, 2);
 
       public static final double kAutoPilotMaxAngularSpeedRadiansPerSecond = 2 * Math.PI;
@@ -536,8 +536,8 @@ public class Constants {
     public static final NeutralMode driveNeutralMode = NeutralMode.Brake;
 
     /* Swerve Profiling Values */
-    public static final double maxSpeed = 5; // meters per second
-    public static final double maxAngularVelocity = 10.0;
+    public static final double maxSpeed = 5.3; // meters per second
+    public static final double maxAngularVelocity = 15.0; //?
 
     public static final double wheelDiameter = Units.inchesToMeters(4.0);
     public static final double wheelCircumference = wheelDiameter * Math.PI;

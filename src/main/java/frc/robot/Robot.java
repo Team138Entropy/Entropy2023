@@ -118,7 +118,8 @@ public class Robot extends TimedRobot {
   // Slew Rate Limiters
   //    https://docs.wpilib.org/en/stable/docs/software/advanced-controls/filters/slew-rate-limiter.html
   //    Limits Rate of Change by value in constructor
-  public static final double kTranslationSlew = 1.25;
+  public static final double kTranslationSlew = 2.4;
+
   public static final double kRotationSlew = 3.00;
   private final SlewRateLimiter mSlewControllerX = new SlewRateLimiter(kTranslationSlew);
   private final SlewRateLimiter mSlewControllerY = new SlewRateLimiter(kTranslationSlew);
@@ -1002,9 +1003,9 @@ public class Robot extends TimedRobot {
         if(mOperatorInterface.getDrivePrecisionSteer()){
           sTrans = sTrans.times(.3);
         }else if(mOperatorInterface.getDriveSportSteer()){
-          sTrans = sTrans.times(.9);
+          sTrans = sTrans.times(1);
         }else{
-          sTrans = sTrans.times(.85);
+          sTrans = sTrans.times(.92);
         }
       
         // Simple Translation (DPad ... Alternative Control)

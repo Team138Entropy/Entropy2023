@@ -260,7 +260,7 @@ public final class FieldConstants {
             );
         public static final Translation2d chargingStationBackBalancePoint = 
             new Translation2d(
-                chargingStationOuterX - .6,
+                chargingStationOuterX - .7,
                 (chargingStationLeftY - chargingStationRightY)/2 + chargingStationRightY
 
             );

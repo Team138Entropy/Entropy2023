@@ -154,10 +154,10 @@ public class Arm extends Subsystem {
         MasterShoulderMotor.configMotionCruiseVelocity(Constants.Arm.tunableArmVel.get());
         MasterShoulderMotor.configMotionAcceleration(Constants.Arm.tunableArmAccel.get());
 
-           /*
+        
         MasterShoulderMotor.configAllowableClosedloopError(0, 
             Constants.Arm.tuneableArmClosedLoopError.get(), 10);
-        */
+        
 
         if(mMaximumDegreesTarget >= Degrees && mMinimumDegreesTarget <= Degrees)
         {
