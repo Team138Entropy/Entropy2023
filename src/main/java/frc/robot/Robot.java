@@ -379,6 +379,8 @@ public class Robot extends TimedRobot {
     mAutoModes.addOption("Cube - Charging Station (Aquire Object)", new ChargingStationMode(TargetedObject.CUBE, true));
     mAutoModes.addOption("Cone - Charging Station", new ChargingStationMode(TargetedObject.CONE, false));
     mAutoModes.addOption("Cube - Charging Station", new ChargingStationMode(TargetedObject.CUBE, false));
+    mAutoModes.addOption("Cone - Charging Station2", new ChargingStationMode2(TargetedObject.CONE, false));
+    mAutoModes.addOption("Cube - Charging Station2", new ChargingStationMode2(TargetedObject.CUBE, false));
     mAutoModes.addOption("1 CONE 1 CUBE HIGH", new MultiGamepiece(
       new Enums.ScorePositions[] {Enums.ScorePositions.Top, Enums.ScorePositions.Top},
       new Enums.GamePiece[] {Enums.GamePiece.Cone, Enums.GamePiece.Cube}

@@ -364,6 +364,8 @@ public class AutoPilot {
         mYSpeed = driveVelocity.getY();
         mRotationSpeed = mThetaVelocity; 
 
+       // mXSpeed *= -1;
+
         // === End New Concept
         
         // Calculate Speeds to Set into Swerve Drive

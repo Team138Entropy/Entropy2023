@@ -578,7 +578,7 @@ public class Constants {
 
 
         /* Charging Station */
-        public static final double CSDriveVelocity = .8;
+        public static final double CSDriveVelocity = 1.1;
         public static final double CSDriveAcceleration = 3;
         public static final double CSThetaVelocity = 2;
         public static final double CSThetaAcceleration = .5;
