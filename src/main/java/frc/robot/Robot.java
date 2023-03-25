@@ -385,6 +385,13 @@ public class Robot extends TimedRobot {
       new Enums.ScorePositions[] {Enums.ScorePositions.Top, Enums.ScorePositions.Top},
       new Enums.GamePiece[] {Enums.GamePiece.Cone, Enums.GamePiece.Cube}
     ));
+
+    mAutoModes.addOption("Cone High, Cube High, Cone High", new MultiGamepiece(
+      new Enums.ScorePositions[] {Enums.ScorePositions.Top, Enums.ScorePositions.Top, Enums.ScorePositions.Top},
+      new Enums.GamePiece[] {Enums.GamePiece.Cone, Enums.GamePiece.Cube, Enums.GamePiece.Cone}
+    ));
+
+
        mAutoModes.addOption("3 Cube Low", new MultiGamepiece(
       new Enums.ScorePositions[] {Enums.ScorePositions.Low, Enums.ScorePositions.Low, Enums.ScorePositions.Low},
       new Enums.GamePiece[] {Enums.GamePiece.Cube, Enums.GamePiece.Cube, Enums.GamePiece.Cube}
@@ -939,6 +946,12 @@ public class Robot extends TimedRobot {
 
       // Create Pose with the corresponding rotation 
       Pose2d calculatedPose = new Pose2d(mTargetPose.getTranslation(), wallRotation);
+
+      // remove me!
+      calculatedPose = new Pose2d(
+        FieldConstants.Community.chargingStationBackBalancePoint,
+        calculatedPose.getRotation()
+      );
       
       // Set into AutoPilot
       mAutoPilot.setTargetPose(calculatedPose);

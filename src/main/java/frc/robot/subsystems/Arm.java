@@ -66,10 +66,24 @@ public class Arm extends Subsystem {
         // kP: P-Gain so that the closed loop can react to error. Larger Kp would suggest responding harder to error
         //      Typically tuned by starting at a small value and doubling until it oscilates
         // kD: D-Gain. Helps with overshoot
-        //      Typicall starts at 10xPGain
+        //      Typically starts at 10 x PGain
         // kI: I-Gain Helps the sensor settle close to the target position
+        //    Keep doubling I-gain until the error reliably settles to zero.
+    
+        /*
+        MasterShoulderMotor.configAllowableClosedloopError(0, 
+            Constants.Arm.tuneableArmClosedLoopError.get(), 10);
+        */
+
+
         // No Longer Using Scaled Coefficient value!
-        //MasterShoulderMotor.configSelectedFeedbackCoefficient(360.0/8192.0);
+        //      Explained in CTRE but it gives you too little of a resolution
+        //MasterShoulderMotor.configSelectedFeedbackCoefficient(360.0/8192.0)
+        //https://v5.docs.ctr-electronics.com/en/stable/ch16_ClosedLoop.html
+        //https://docs.wpilib.org/en/2020/docs/software/advanced-control/introduction/tuning-pid-controller.html
+        // 0 Everything
+        // Increase Kp Until it starts to oscilate 
+        // Increase Kd as much as possible without introducing jittering
         setArmSpeeds(ArmRotationSpeed.DEFAULT);
 
         SecondaryShoulderMotor.follow(MasterShoulderMotor); // Secondary Motor will follow Primary Motor
@@ -139,6 +153,11 @@ public class Arm extends Subsystem {
         MasterShoulderMotor.config_kD(0, Constants.Arm.tunableArmKD.get());
         MasterShoulderMotor.configMotionCruiseVelocity(Constants.Arm.tunableArmVel.get());
         MasterShoulderMotor.configMotionAcceleration(Constants.Arm.tunableArmAccel.get());
+
+           /*
+        MasterShoulderMotor.configAllowableClosedloopError(0, 
+            Constants.Arm.tuneableArmClosedLoopError.get(), 10);
+        */
 
         if(mMaximumDegreesTarget >= Degrees && mMinimumDegreesTarget <= Degrees)
         {
@@ -288,11 +307,13 @@ public class Arm extends Subsystem {
         SmartDashboard.putNumber(key + "Maximum Arm Extension", mMaximumExtensionTarget);
         SmartDashboard.putNumber(key + "Minimum Arm Extension", mMinimumExtensionTarget);
         SmartDashboard.putNumber(key + "Target Arm Extension", mTargetedExtension);
-        SmartDashboard.putString(key + "extension control mode", ExtensionMotor.getControlMode().name());
-        SmartDashboard.putNumber(key + "extension current", ExtensionMotor.getSupplyCurrent());
+        SmartDashboard.putString(key + "Extension control mode", ExtensionMotor.getControlMode().name());
+        SmartDashboard.putNumber(key + "Extension current", ExtensionMotor.getSupplyCurrent());
         SmartDashboard.putNumber(key + "Extension Velocity", ExtensionMotor.getSelectedSensorVelocity());
-        SmartDashboard.putNumber(key + "shoulder (ticks)", mTargetTicks);
-        SmartDashboard.putNumber(key + "shoulder error", MasterShoulderMotor.getClosedLoopError());
+        SmartDashboard.putNumber(key + "Shoulder (ticks)", mTargetTicks);
+        SmartDashboard.putNumber(key + "Shoulder error", MasterShoulderMotor.getClosedLoopError());
+
+        //MasterShoulderMotor.configAllowableClosedloopError(0, mMaximumDegreesTarget, 0)
         
        // SmartDashboard.putNumber(key + "Closed  Loop Error Tolerance", MasterShoulderMotor.getClosed
         MasterShoulderMotor.updateSmartdashboard();

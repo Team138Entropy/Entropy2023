@@ -204,6 +204,12 @@ public class Enums {
         Advanced
     };
 
+    // Arm Constraint Type
+    public enum ArmConstraintType {
+        ExtensionMaximum,  // Extension cannot be extended this extension value!
+        ExtensionMinimum   // Extension cannot be pulled in beyond this value
+    };
+
     public enum ArmRotationSpeed {
         DEFAULT(1400, 1400),
         ROBOT_MOVING(1400, 1400);

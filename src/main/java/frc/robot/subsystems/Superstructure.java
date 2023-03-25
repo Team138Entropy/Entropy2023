@@ -4,6 +4,7 @@ import java.util.Vector;
 import frc.robot.Constants;
 import frc.robot.subsystems.Arm;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Enums.ArmControlType;
 import frc.robot.Enums.ArmRotationSpeed;
 import frc.robot.Enums.ArmTargets;
 import frc.robot.simulation.SimMechanism;
@@ -27,6 +28,9 @@ public class Superstructure {
   private ArmTargets mCurrentTargetPosition;
   private ArmTargets mPreviousTargetPosition;
   private ArmTargets mArmTargetPosition;
+
+  // Arm Control Style (Default to Simple)
+  private ArmControlType mArmControlType = ArmControlType.Simple;
 
   private boolean mOverridingExtension;
   private boolean mOverridingAngle;
@@ -232,24 +236,36 @@ public class Superstructure {
     boolean result = false;
     if(mCurrentTargetPosition != null){
       if(mCurrentTargetPosition.armAngle <= (ArmTargets.TOP_SCORING_FRONT.armAngle + 15) 
-      && mCurrentTargetPosition.armAngle >= (ArmTargets.TOP_SCORING_FRONT.armAngle - 15)){
-      result = true;
-    }
+        && mCurrentTargetPosition.armAngle >= (ArmTargets.TOP_SCORING_FRONT.armAngle - 15)){
+        result = true;
+      }
     }
     
     if(mArmTargetPosition != null){
       if(mArmTargetPosition.armAngle <= (ArmTargets.TOP_SCORING_FRONT.armAngle + 15) 
-      && mArmTargetPosition.armAngle >= (ArmTargets.TOP_SCORING_FRONT.armAngle - 15)){
-      result = true;
-    }
+        && mArmTargetPosition.armAngle >= (ArmTargets.TOP_SCORING_FRONT.armAngle - 15)){
+        result = true;
+      }
 
+      // If Arm is going back to the front you don't have to worry
       if(mArmTargetPosition.armAngle > 90){
         result = false;
       }
-
     }
 
     return result;
+  }
+
+  // Set the Arm Control Style
+  public void setArmControlType(ArmControlType ct)
+  {
+    mArmControlType = ct;
+  }
+
+  // Get Current Arm Control Style
+  public ArmControlType getArmControlType()
+  {
+    return mArmControlType;
   }
 
   public void updateSmartDashBoard()

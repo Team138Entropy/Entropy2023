@@ -3,11 +3,15 @@ import edu.wpi.first.math.geometry.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
+
 import edu.wpi.first.math.util.Units;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
+import frc.robot.Enums.ArmConstraintType;
 import frc.robot.Enums.ArmTargets;
+import frc.robot.util.Triplet;
 import frc.robot.util.TuneableNumber;
 import frc.robot.util.drivers.SwerveModuleConstants;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -406,6 +410,10 @@ public class Constants {
     public static TuneableNumber tunableArmKD = new TuneableNumber("tunableArmKD",80);
     public static TuneableNumber tunableArmVel = new TuneableNumber("tunableArmVel",1400);
     public static TuneableNumber tunableArmAccel = new TuneableNumber("tunableArmAccel",1400);
+    public static TuneableNumber tuneableArmClosedLoopError = new TuneableNumber("tuneableArmClosedLoopError",25);
+
+    // Constraints - A
+    public static Vector<Triplet<Double, ArmConstraintType, Double>> ArmConstraints;
   }
 
   public static class Grasper {

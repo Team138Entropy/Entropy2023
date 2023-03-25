@@ -58,6 +58,8 @@ public class RedAllianceFlipUtility {
 
   /**
    * Flips a trajectory state to the correct side of the field based on the current alliance color.
+   * This function has been modified from the original one, and no longer inverts the X axis
+   * Because this system is field relative, the trajectory will always want to go forward
    */
   public static Trajectory.State apply(Trajectory.State state) {
     if (shouldFlip()) {
@@ -66,11 +68,11 @@ public class RedAllianceFlipUtility {
           state.velocityMetersPerSecond,
           state.accelerationMetersPerSecondSq,
           new Pose2d(
-              FieldConstants.fieldLength - state.poseMeters.getX(),
-              state.poseMeters.getY(),
+              state.poseMeters.getX(),
+              FieldConstants.fieldWidth - state.poseMeters.getY(),
               new Rotation2d(
-                  -state.poseMeters.getRotation().getCos(),
-                  state.poseMeters.getRotation().getSin())),
+                  state.poseMeters.getRotation().getCos(),
+                  -state.poseMeters.getRotation().getSin())),
           -state.curvatureRadPerMeter);
     } else {
       return state;
@@ -78,10 +80,11 @@ public class RedAllianceFlipUtility {
   }
 
   /** Flips a rotation sequence state based on the current alliance color. */
+  // Modified Function, invert Sin only
   public static RotationSequence.State apply(RotationSequence.State state) {
     if (shouldFlip()) {
       return new RotationSequence.State(
-          new Rotation2d(-state.position.getCos(), state.position.getSin()),
+          new Rotation2d(state.position.getCos(), -state.position.getSin()),
           -state.velocityRadiansPerSec);
     } else {
       return state;

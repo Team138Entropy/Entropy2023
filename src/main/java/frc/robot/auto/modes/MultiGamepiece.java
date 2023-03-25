@@ -309,7 +309,7 @@ public class MultiGamepiece extends AutoModeBase {
         }
 
         // Score Gamepiece 3
-        if(doStage3 && false)
+        if(doStage3)
         {
             // Drive to Score 3
             DriveTrajectoryAction Gp2ToScore3TrajectoryAction = new DriveTrajectoryAction(

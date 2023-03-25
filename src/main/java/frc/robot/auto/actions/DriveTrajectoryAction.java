@@ -163,21 +163,24 @@ public class DriveTrajectoryAction implements Action {
 
             // todo - maybe no longer flip?
             
+            /*
             Trajectory.State driveState = 
                     mCustomTrajectoryGenerator.getDriveTrajectory().sample(currentTime);
             RotationSequence.State holonomicRotationState = 
                     mCustomTrajectoryGenerator.getHolonomicRotationSequence().sample(currentTime);
-
-            /*
-             *         Trajectory.State driveState = 
+            */
+           
+           // Flip if Red
+           // X Side will behave the same, Y will be different
+           Trajectory.State driveState = 
                 RedAllianceFlipUtility.apply(
                     mCustomTrajectoryGenerator.getDriveTrajectory().sample(currentTime)
                 );
             RotationSequence.State holonomicRotationState = 
                 RedAllianceFlipUtility.apply(
                     mCustomTrajectoryGenerator.getHolonomicRotationSequence().sample(currentTime)
-                );
-            */
+            );
+        
 
             // Get Robot Pose to Calculate Error
             Pose2d currentRobotPose = mRobotState.isRealRobot() ? 
