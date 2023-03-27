@@ -406,6 +406,8 @@ public class OperatorInterface {
             target = ArmTargets.INTAKE_GROUND_FRONT;
         }else if(mOperatorController2.getButton(Buttons.B)){
             target = ArmTargets.INTAKE_GROUND_BACK;
+        }else if (mOperatorController2.getButton(Buttons.SW1)) {
+            target = ArmTargets.TOP_SCORING_FRONT_SKILLSHOT;
         }
         return target;
     }
