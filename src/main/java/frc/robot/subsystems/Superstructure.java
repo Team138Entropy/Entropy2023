@@ -130,6 +130,26 @@ public class Superstructure {
     boolean isExtensionSafe = evaluteExtensionSafety();
     boolean isAtTargetArmAngle = evaluateArmAngle();
     boolean isAtTargetOverallPosition = (mCurrentTargetPosition == mArmTargetPosition);
+    if(mCurrentTargetPosition == ArmTargets.TOP_SCORING_FRONT && mArmTargetPosition == ArmTargets.TOP_SCORING_FRONT_SKILLSHOT){
+      isExtensionSafe = true;
+
+    }else if(mCurrentTargetPosition == ArmTargets.TOP_SCORING_FRONT_SKILLSHOT && mArmTargetPosition == ArmTargets.TOP_SCORING_FRONT){
+      isExtensionSafe = true;
+
+    }else if(mCurrentTargetPosition == ArmTargets.TOP_SCORING_FRONT && mArmTargetPosition == ArmTargets.TOP_SCORING_FRONT_CUBE){
+      isExtensionSafe = true;
+
+    }else if(mCurrentTargetPosition == ArmTargets.TOP_SCORING_FRONT_CUBE && mArmTargetPosition == ArmTargets.TOP_SCORING_FRONT){
+      isExtensionSafe = true;
+
+    }else if(mCurrentTargetPosition == ArmTargets.TOP_SCORING_FRONT_CUBE && mArmTargetPosition == ArmTargets.TOP_SCORING_FRONT_SKILLSHOT){
+      isExtensionSafe = true;
+
+    }else if(mCurrentTargetPosition == ArmTargets.TOP_SCORING_FRONT_SKILLSHOT && mArmTargetPosition == ArmTargets.TOP_SCORING_FRONT_CUBE){
+      isExtensionSafe = true;
+
+    }
+
 
     // Set Arm Speed - Don't think we should do this anymore!
     //mArm.setArmSpeeds(getRotationSpeed(mArmTargetPosition, mCurrentTargetPosition));
