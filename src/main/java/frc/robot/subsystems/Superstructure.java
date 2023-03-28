@@ -5,6 +5,7 @@ import java.util.Vector;
 import frc.robot.Constants;
 import frc.robot.subsystems.Arm;
 import frc.robot.util.physics.ArmConstraint;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Enums.ArmControlType;
 import frc.robot.Enums.ArmRotationSpeed;
@@ -81,6 +82,18 @@ public class Superstructure {
     return result;
   }
 
+  private double getArmAngle()
+  {
+    double result = 0;
+    if(mRealRobot)
+    {
+      result = mArm.getArmAngle();
+    }else {
+      result = mSim.getArmAngle();
+    }
+    return result;
+  }
+
   private boolean evaluteExtension()
   {
     boolean result = false;
@@ -95,6 +108,18 @@ public class Superstructure {
       {
         result = true;
       }
+    }
+    return result;
+  }
+
+  private double getExtensionPosition()
+  {
+    double result = 0;
+    if(mRealRobot)
+    {
+      result = mArm.getArmExtensionPosition();
+    }else {
+      result = mSim.getArmExtension();
     }
     return result;
   }
@@ -132,6 +157,8 @@ public class Superstructure {
       break;
       case Advanced:
         processAdvancedArmControl();
+      break;
+      default:
       break;
     }
   }
@@ -216,8 +243,9 @@ public class Superstructure {
   // Process Advanced Arm Control
   private void processAdvancedArmControl() 
   {
-      // Determine Current Extension Value
-      double extensionValue = getExtensionValue(mArm.getArmAngle(), mArmTargetPosition);
+      // Get Arm Setpoints
+      Pair<Double, Double> armSetPoints = getArmSetPoints(
+        getArmAngle(), getExtensionPosition(), mArmTargetPosition);
   }
 
 
@@ -302,10 +330,12 @@ public class Superstructure {
   }
 
 
-  // Determine Extension Based on Current Angle 
-  public double getExtensionValue(double currentAngle, ArmTargets targetPosition)
+  // Returns Angle and Extenion based on current positions and constraints
+  public Pair<Double, Double> getArmSetPoints(double currentAngle, double currentExtension, ArmTargets targetPosition)
   {
-    double extension = 0;
+    // Default these values to the Target Values, but they may get changed
+    double OutputExtension = 0;
+    double OutputAngle = 0;
 
     // direction 
     // Back Values are Greater than Front values
@@ -327,7 +357,7 @@ public class Superstructure {
       
     }
 
-    return extension;
+    return new Pair<Double, Double>(OutputAngle, OutputExtension);
   }
 
   // Set the Arm Control Style
