@@ -1,6 +1,7 @@
 package frc.robot;
 import edu.wpi.first.math.geometry.*;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -9,11 +10,11 @@ import edu.wpi.first.math.util.Units;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
-import frc.robot.Enums.ArmConstraintType;
 import frc.robot.Enums.ArmTargets;
 import frc.robot.util.Triplet;
 import frc.robot.util.TuneableNumber;
 import frc.robot.util.drivers.SwerveModuleConstants;
+import frc.robot.util.physics.ArmConstraint;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
@@ -106,6 +107,8 @@ public class Constants {
 
     // Allowed Seconds Threshold
     public static final double kAllowedSecondsThreshold = 5; //seconds
+
+    public static final double kAllowedTargetArea = 0.1; // How big must a target be
   }
 
   public static class AutoPilot {
@@ -419,7 +422,19 @@ public class Constants {
     public static TuneableNumber tuneableArmClosedLoopError = new TuneableNumber("tuneableArmClosedLoopError",25);
 
     // Constraints - A
-    public static Vector<Triplet<Double, ArmConstraintType, Double>> ArmConstraints;
+    public static Vector<ArmConstraint> ArmConstraints;
+    static {
+      ArmConstraints = new Vector<ArmConstraint>();
+
+      // must me pulled in on over the top rotations
+      ArmConstraints.add(new ArmConstraint(70.0, ArmConstraint.ArmConstraintType.ExtensionMaximum, 0.0));
+      ArmConstraints.add(new ArmConstraint(90.0, ArmConstraint.ArmConstraintType.ExtensionMaximum, 0.0));
+      ArmConstraints.add(new ArmConstraint(110.0, ArmConstraint.ArmConstraintType.ExtensionMaximum, 0.0));
+
+      // sort by angle
+      Collections.sort(ArmConstraints);  
+
+    }
   }
 
   public static class Grasper {

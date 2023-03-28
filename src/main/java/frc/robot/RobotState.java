@@ -252,7 +252,7 @@ public class RobotState {
         PhotonPipelineResult cameraResult = photonVision.CameraList.get(poseEstimatorIndex).getFirst().getLatestResult();
 
         // Filter Out too Small Targets
-        cameraResult = processCameraResult(cameraResult, .1);
+        cameraResult = processCameraResult(cameraResult, Constants.Vision.kAllowedTargetArea);
         
         // Timestamp back from photonVision should be in terms of fpga timestamp     
         Optional<EstimatedRobotPose> result = mPhotonPoseEstimators[poseEstimatorIndex].update(cameraResult);

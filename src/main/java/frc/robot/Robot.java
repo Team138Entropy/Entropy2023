@@ -92,8 +92,10 @@ public class Robot extends TimedRobot {
   // Arm Target Chooser 
   private SendableChooser<ArmTargets> mArmTargetOverrideChooser;
 
-  // Targeted Object Chooser
+  // Arm Control Chooser
+  private SendableChooser<ArmControlType> mArmControlTypeChooser;
 
+  // Targeted Object Chooser
   private SendableChooser<TargetedObject> mTargetedObjectChooser;
 
   // Field Object
@@ -195,6 +197,12 @@ public class Robot extends TimedRobot {
     mArmTargetOverrideChooser.addOption("INTAKE_GROUND_FRONT", ArmTargets.INTAKE_GROUND_FRONT);
     mArmTargetOverrideChooser.addOption("INTAKE_GROUND_BACK", ArmTargets.INTAKE_GROUND_BACK);
     SmartDashboard.putData("Arm Target Override", mArmTargetOverrideChooser);
+
+    // Arm Control Type Chooser - Able to Set Via Dashbaord
+    mArmControlTypeChooser = new SendableChooser<ArmControlType>();
+    mArmControlTypeChooser.setDefaultOption("None", ArmControlType.None);
+    mArmControlTypeChooser.addOption("Simple", ArmControlType.Simple);
+    mArmControlTypeChooser.addOption("Advanced", ArmControlType.Advanced);
 
     // Arm Target Position Chooser - Able to Override the Button
     mTargetedObjectChooser = new SendableChooser<TargetedObject>();
@@ -303,12 +311,17 @@ public class Robot extends TimedRobot {
 
     mOverrideTargetedObject = mTargetedObjectChooser.getSelected();
 
+    // Set Arm Control Type
+    if(mArmControlTypeChooser.getSelected() != ArmControlType.None)
+    {
+      mSuperStructure.setArmControlType(mArmControlTypeChooser.getSelected());
+    }
+
     // Currently Targeted Object
     mCurrentTargetedObject = mOperatorInterface.setTargetedObject();
 
     // Controllable Panel (Turn on Light for Cone)
     mPowerPanel.setSwitchableChannel(mCurrentTargetedObject == TargetedObject.CONE);
-    
   }
 
   private void updateSmartdashboard()

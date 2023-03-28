@@ -1,8 +1,10 @@
 package frc.robot.subsystems;
 
+import java.util.ListIterator;
 import java.util.Vector;
 import frc.robot.Constants;
 import frc.robot.subsystems.Arm;
+import frc.robot.util.physics.ArmConstraint;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Enums.ArmControlType;
 import frc.robot.Enums.ArmRotationSpeed;
@@ -214,7 +216,8 @@ public class Superstructure {
   // Process Advanced Arm Control
   private void processAdvancedArmControl() 
   {
-      // Get Target Arm Position
+      // Determine Current Extension Value
+      double extensionValue = getExtensionValue(mArm.getArmAngle(), mArmTargetPosition);
   }
 
 
@@ -296,6 +299,35 @@ public class Superstructure {
     }
 
     return result;
+  }
+
+
+  // Determine Extension Based on Current Angle 
+  public double getExtensionValue(double currentAngle, ArmTargets targetPosition)
+  {
+    double extension = 0;
+
+    // direction 
+    // Back Values are Greater than Front values
+    // 0 is Frontside of Robot, 270 is Backside
+    // List will be ordered from least to greatest, meaning rotating forward is backwards through list
+    boolean rotatingForward = (currentAngle > targetPosition.armAngle);
+
+    // Rotating forward, iterate further
+    final int listSize = Constants.Arm.ArmConstraints.size();
+    int startIndex = (rotatingForward ? listSize : 0);
+    ListIterator listIterator = Constants.Arm.ArmConstraints.listIterator(startIndex);
+
+    // Advance Either Forward or Backwards through list
+    while((rotatingForward ? listIterator.hasPrevious() : listIterator.hasNext()))
+    {
+      ArmConstraint currentConstraint = rotatingForward ? 
+                                     (ArmConstraint) listIterator.previous() : 
+                                     (ArmConstraint) listIterator.next();
+      
+    }
+
+    return extension;
   }
 
   // Set the Arm Control Style
