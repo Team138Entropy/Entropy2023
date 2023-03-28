@@ -59,10 +59,20 @@ public class Arm extends Subsystem {
         MasterShoulderMotor.setSensorPhase(false);
         MasterShoulderMotor.setInverted(true);
         // Good Motion Magic Tuning Guide Here: https://v5.docs.ctr-electronics.com/en/stable/ch16_ClosedLoop.html#motion-magic-position-velocity-current-closed-loop-closed-loop
-        MasterShoulderMotor.config_kF(0, Constants.Arm.tunableArmKF.get());
-        MasterShoulderMotor.config_kP(0, Constants.Arm.tunableArmKP.get()); 
-        MasterShoulderMotor.config_kI(0, Constants.Arm.tunableArmKI.get());
-        MasterShoulderMotor.config_kD(0, Constants.Arm.tunableArmKD.get());
+
+        // Main Slot - Far Errors
+        MasterShoulderMotor.config_kF(0, Constants.Arm.tunableArmKF_Prim.get());
+        MasterShoulderMotor.config_kP(0, Constants.Arm.tunableArmKP_Prim.get()); 
+        MasterShoulderMotor.config_kI(0, Constants.Arm.tunableArmKI_Prim.get());
+        MasterShoulderMotor.config_kD(0, Constants.Arm.tunableArmKD_Prim.get());
+
+        // Secondary Slot - Close Errors
+        MasterShoulderMotor.config_kF(1, Constants.Arm.tunableArmKF_Sec.get());
+        MasterShoulderMotor.config_kP(1, Constants.Arm.tunableArmKP_Sec.get()); 
+        MasterShoulderMotor.config_kI(1, Constants.Arm.tunableArmKI_Sec.get());
+        MasterShoulderMotor.config_kD(1, Constants.Arm.tunableArmKD_Sec.get());
+
+
         // kP: P-Gain so that the closed loop can react to error. Larger Kp would suggest responding harder to error
         //      Typically tuned by starting at a small value and doubling until it oscilates
         // kD: D-Gain. Helps with overshoot
@@ -99,7 +109,6 @@ public class Arm extends Subsystem {
         ExtensionMotor.setSensorPhase(false);
         ExtensionMotor.config_kF(0, 0);
         ExtensionMotor.config_kP(0, 0.25);
-
         ExtensionMotor.config_kI(0, 0);
         ExtensionMotor.config_kD(0, 0);
         ExtensionMotor.configMotionAcceleration(20000*4);
@@ -146,17 +155,22 @@ public class Arm extends Subsystem {
 
     // Set the Arm Angle in Position Mode
     public void setArmAngle(double Degrees){
-        // Temp.. Update Pids
-        MasterShoulderMotor.config_kF(0, Constants.Arm.tunableArmKF.get());
-        MasterShoulderMotor.config_kP(0, Constants.Arm.tunableArmKP.get()); 
-        MasterShoulderMotor.config_kI(0, Constants.Arm.tunableArmKI.get());
-        MasterShoulderMotor.config_kD(0, Constants.Arm.tunableArmKD.get());
+        // Temp.. Update Pids .. SHould Remove When DOne
+        MasterShoulderMotor.config_kF(0, Constants.Arm.tunableArmKF_Prim.get());
+        MasterShoulderMotor.config_kP(0, Constants.Arm.tunableArmKP_Prim.get()); 
+        MasterShoulderMotor.config_kI(0, Constants.Arm.tunableArmKI_Prim.get());
+        MasterShoulderMotor.config_kD(0, Constants.Arm.tunableArmKD_Prim.get());
         MasterShoulderMotor.configMotionCruiseVelocity(Constants.Arm.tunableArmVel.get());
         MasterShoulderMotor.configMotionAcceleration(Constants.Arm.tunableArmAccel.get());
+        MasterShoulderMotor.config_kF(1, Constants.Arm.tunableArmKF_Sec.get());
+        MasterShoulderMotor.config_kP(1, Constants.Arm.tunableArmKP_Sec.get()); 
+        MasterShoulderMotor.config_kI(1, Constants.Arm.tunableArmKI_Sec.get());
+        MasterShoulderMotor.config_kD(1, Constants.Arm.tunableArmKD_Sec.get());
 
         
         MasterShoulderMotor.configAllowableClosedloopError(0, 
             Constants.Arm.tuneableArmClosedLoopError.get(), 10);
+        // remove this block eventually
         
 
         if(mMaximumDegreesTarget >= Degrees && mMinimumDegreesTarget <= Degrees)

@@ -404,10 +404,16 @@ public class Constants {
 
     //tunable PID values
     // Originally was 1 - 29 - .01 - 600
-    public static TuneableNumber tunableArmKF = new TuneableNumber("tunableArmKF",0);
-    public static TuneableNumber tunableArmKP = new TuneableNumber("tunableArmKP",1.8);
-    public static TuneableNumber tunableArmKI = new TuneableNumber("tunableArmKI",0.00001);
-    public static TuneableNumber tunableArmKD = new TuneableNumber("tunableArmKD",80);
+    public static TuneableNumber tunableArmKF_Prim = new TuneableNumber("tunableArmKF_Prim",0);
+    public static TuneableNumber tunableArmKP_Prim = new TuneableNumber("tunableArmKP_Prim",1.8);
+    public static TuneableNumber tunableArmKI_Prim = new TuneableNumber("tunableArmKI_Prim",0.00001);
+    public static TuneableNumber tunableArmKD_Prim = new TuneableNumber("tunableArmKD_Prim",80);
+
+    public static TuneableNumber tunableArmKF_Sec = new TuneableNumber("tunableArmKF_Sec",0);
+    public static TuneableNumber tunableArmKP_Sec = new TuneableNumber("tunableArmKP_Sec",1.8);
+    public static TuneableNumber tunableArmKI_Sec = new TuneableNumber("tunableArmKI_Sec",0.00001);
+    public static TuneableNumber tunableArmKD_Sec = new TuneableNumber("tunableArmKD_Sec",80);
+
     public static TuneableNumber tunableArmVel = new TuneableNumber("tunableArmVel",1400);
     public static TuneableNumber tunableArmAccel = new TuneableNumber("tunableArmAccel",1400);
     public static TuneableNumber tuneableArmClosedLoopError = new TuneableNumber("tuneableArmClosedLoopError",25);

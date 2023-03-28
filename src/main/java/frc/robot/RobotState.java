@@ -7,6 +7,9 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
+import java.util.ArrayList;
+import java.util.List;
 
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -247,11 +250,12 @@ public class RobotState {
 
         // Get Latest Camera Result 
         PhotonPipelineResult cameraResult = photonVision.CameraList.get(poseEstimatorIndex).getFirst().getLatestResult();
-        
-        //mPhotonPoseEstimators[poseEstimatorIndex]
 
+        // Filter Out too Small Targets
+        cameraResult = processCameraResult(cameraResult, .1);
+        
         // Timestamp back from photonVision should be in terms of fpga timestamp     
-        Optional<EstimatedRobotPose> result = mPhotonPoseEstimators[poseEstimatorIndex].update();
+        Optional<EstimatedRobotPose> result = mPhotonPoseEstimators[poseEstimatorIndex].update(cameraResult);
         if (result.isPresent() && null != result.get().estimatedPose) {
             return new Pair<Pose2d, Double>(result.get().estimatedPose.toPose2d(), result.get().timestampSeconds);
         } else {
@@ -259,14 +263,28 @@ public class RobotState {
         }
     }
 
-    public void processCameraResult(PhotonPipelineResult result, double distanceThreshold)
+    // Process Camera Results
+    // Remove Targets too far on the field, or not seen enough
+    public PhotonPipelineResult processCameraResult(PhotonPipelineResult result, double minArea)
     {
+        // List of Filtered Objects
+        List<PhotonTrackedTarget> filteredTargets = new ArrayList<>();
         var resultTargets = result.getTargets();
         for(int i = 0; i < resultTargets.size(); ++i) 
         {
+            // Is Area of tracked target large enough? If so store it!
             var trackedTarget = resultTargets.get(i);
-           // trackedTarget.get
+            if(trackedTarget.getArea() >= minArea) 
+            {
+                filteredTargets.add(trackedTarget);
+            }
         }
+
+        // Create Processed Result
+        PhotonPipelineResult processedResult = new PhotonPipelineResult(result.getLatencyMillis(), filteredTargets);
+        processedResult.setTimestampSeconds(result.getTimestampSeconds());
+
+        return processedResult;
     }
 
     // Get Vision Estimated Pose Latency (Seconds)
