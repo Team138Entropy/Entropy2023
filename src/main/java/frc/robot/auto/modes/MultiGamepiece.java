@@ -44,7 +44,7 @@ public class MultiGamepiece extends AutoModeBase {
         GamePiece Gamepiece3 = (GamepieceCount >= 3) ? gamePieces[2] : GamePiece.Cube;
    
         // Is Blue or Red Alliance
-        boolean isBlueAlliance = (mRobotState.getAlliance() == Alliance.Blue);
+        //boolean isBlueAlliance = (mRobotState.getAlliance() == Alliance.Blue);
 
         // Speed Configurations 
         //   [Gamepiece Count][Each Level][Velocity, Acceleration]
@@ -98,29 +98,28 @@ public class MultiGamepiece extends AutoModeBase {
 
         // Set Odometry Starting Location
         setStartingPosition(
-            (isBlueAlliance) ? TargetedPositions.GRID_1 : TargetedPositions.GRID_9, 
+            TargetedPositions.GRID_1, 
             startingRotation
         );
 
         // Force Blue Alliance now - update maybe no longer do this?
         // the Red alliance post flipper handles the rest
-        //isBlueAlliance = true;
         Alliance currentAlliance = mRobotState.getAlliance();
         //currentAlliance = Alliance.Blue; // everything should be set
 
         // Scoring Positions
         Translation2d ScoreSpot1 = FieldConstants.getTargetPositionPose(
-            isBlueAlliance ? TargetedPositions.GRID_1 : TargetedPositions.GRID_9,
+            TargetedPositions.GRID_1,
             currentAlliance);
              
         Translation2d ScoreSpot2 = FieldConstants.getTargetPositionPose(
-             isBlueAlliance ? TargetedPositions.GRID_2 : TargetedPositions.GRID_8,
+             TargetedPositions.GRID_2,
              currentAlliance);
-             ScoreSpot2 = ScoreSpot2.plus(new Translation2d(isBlueAlliance ? .0 : -.0,0));
+             ScoreSpot2 = ScoreSpot2.plus(new Translation2d(.0,0));
         Translation2d ScoreSpot3 = FieldConstants.getTargetPositionPose(
-            isBlueAlliance ? TargetedPositions.GRID_3 : TargetedPositions.GRID_7,
+            TargetedPositions.GRID_3,
             currentAlliance);
-             ScoreSpot3 = ScoreSpot3.plus(new Translation2d(isBlueAlliance ? .2 : -.2,0));
+             ScoreSpot3 = ScoreSpot3.plus(new Translation2d(.2,0));
 
         // Game Object Staging Positions (Left to Right just like the Grid)
         Translation2d Stage1 = FieldConstants.Auto.Waypoints.StagingWaypoints[3]
@@ -130,21 +129,18 @@ public class MultiGamepiece extends AutoModeBase {
 
         // Offset First Staging Point to support Straight on Approach
         //      Otherwise it is trying to line up center of robot
-        Stage1 = Stage1.plus(new Translation2d(isBlueAlliance ? -.7 : .7,0));
+        Stage1 = Stage1.plus(new Translation2d(-.7,0));
 
         // Staging Entrance Points
-        Translation2d Stage2Entrance = Stage2.plus(new Translation2d(0, isBlueAlliance ? .5 : -.5));
+        Translation2d Stage2Entrance = Stage2.plus(new Translation2d(0,.5));
 
         // Charging Station Exit and Entrance Points
-        Translation2d CS_LowerEntrance = ScoreSpot1.plus(new Translation2d(isBlueAlliance ? 1 : -1, 0));
-        Translation2d CS_UpperEntrance = 
-            isBlueAlliance ?
-                        FieldConstants.Community.chargingStationCornersBlue[3] :
-                        FieldConstants.Community.chargingStationCornersRed[3];
+        Translation2d CS_LowerEntrance = ScoreSpot1.plus(new Translation2d(1, 0));
+        Translation2d CS_UpperEntrance = FieldConstants.Community.chargingStationCornersBlue[3];
 
         // Slightly Translate Points
         //      Blue should have slightly greater Y
-        CS_UpperEntrance = CS_UpperEntrance.plus(new Translation2d(isBlueAlliance ? .5 : -.5, isBlueAlliance ? .8 : -.8));
+        CS_UpperEntrance = CS_UpperEntrance.plus(new Translation2d(.5,.8));
         
         // Slightly Shifted CS Upper Entrance for Stage Spot 1
         //      this is to ensure the approach for stage 1 is good
@@ -231,7 +227,7 @@ public class MultiGamepiece extends AutoModeBase {
             );
             gp1ToScore2TrajectoryAction.addPose(
                 new Pose2d(
-                    ScoreSpot2.plus(new Translation2d(0,isBlueAlliance ? .1 : -.1)),
+                    ScoreSpot2.plus(new Translation2d(0,.1)),
                     startingRotation.getRotation()
                 )
             );
