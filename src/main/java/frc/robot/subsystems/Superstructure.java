@@ -122,6 +122,22 @@ public class Superstructure {
       mCurrentTargetPosition = mArmTargetPosition;
     }
 
+    // Proceed Based on Arm Extension Type 
+    switch(mArmControlType)
+    {
+      case Simple:
+        processSimpleArmControl();
+      break;
+      case Advanced:
+        processAdvancedArmControl();
+      break;
+    }
+  }
+
+  // Process Simple Arm Control
+  private void processSimpleArmControl()
+  {
+
     // is Extension at Safe Position
     /*
     boolean isExtensionSafe = mArm.isArmExtensionAtPosition(mExtensionSafePosition, mExtensionPositionDeadband);
@@ -193,6 +209,12 @@ public class Superstructure {
     // Set Arm Angle and Arm Extension
     mArm.setArmAngle(mOverridingAngle ? mArmOverride: mCurrentTargetPosition.armAngle);
     mArm.setArmExtension(mOverridingExtension ? mExtensionOverride : mCurrentTargetPosition.armExtend);
+  }
+
+  // Process Advanced Arm Control
+  private void processAdvancedArmControl() 
+  {
+      // Get Target Arm Position
   }
 
 
