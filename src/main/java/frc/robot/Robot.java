@@ -203,6 +203,7 @@ public class Robot extends TimedRobot {
     mArmControlTypeChooser.setDefaultOption("None", ArmControlType.None);
     mArmControlTypeChooser.addOption("Simple", ArmControlType.Simple);
     mArmControlTypeChooser.addOption("Advanced", ArmControlType.Advanced);
+    SmartDashboard.putData("Arm Algorithm Chooser", mArmControlTypeChooser);
 
     // Arm Target Position Chooser - Able to Override the Button
     mTargetedObjectChooser = new SendableChooser<TargetedObject>();

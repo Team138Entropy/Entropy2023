@@ -2,6 +2,9 @@ package frc.robot.subsystems;
 
 import java.util.ListIterator;
 import java.util.Vector;
+
+import com.ctre.phoenix.schedulers.ConcurrentScheduler;
+
 import frc.robot.Constants;
 import frc.robot.subsystems.Arm;
 import frc.robot.util.physics.ArmConstraint;
@@ -246,6 +249,10 @@ public class Superstructure {
       // Get Arm Setpoints
       Pair<Double, Double> armSetPoints = getArmSetPoints(
         getArmAngle(), getExtensionPosition(), mArmTargetPosition);
+
+      // Set Into Arm
+      mArm.setArmAngle(armSetPoints.getFirst());
+      mArm.setArmExtension(armSetPoints.getSecond());
   }
 
 
@@ -334,8 +341,8 @@ public class Superstructure {
   public Pair<Double, Double> getArmSetPoints(double currentAngle, double currentExtension, ArmTargets targetPosition)
   {
     // Default these values to the Target Values, but they may get changed
-    double OutputExtension = 0;
-    double OutputAngle = 0;
+    double OutputExtension = targetPosition.armExtend;
+    double OutputAngle = targetPosition.armAngle;
 
     // direction 
     // Back Values are Greater than Front values
@@ -348,13 +355,37 @@ public class Superstructure {
     int startIndex = (rotatingForward ? listSize : 0);
     ListIterator listIterator = Constants.Arm.ArmConstraints.listIterator(startIndex);
 
+    // Design of this is to get the arm angle as close as possible to the target arm angle as possible
+    // Arm is Backside Home (~225, Retracted Full) and wants to go to Score Front High (~0, Full Extension)
+    //      Need to Understand the Constraints in the way, even though the arm may not be immediately constrainted extension wise, 
+    //      it will be on its path 
+
+    // Goal is to maximize extension staying in constraints
+    
+
     // Advance Either Forward or Backwards through list
     while((rotatingForward ? listIterator.hasPrevious() : listIterator.hasNext()))
     {
       ArmConstraint currentConstraint = rotatingForward ? 
                                      (ArmConstraint) listIterator.previous() : 
                                      (ArmConstraint) listIterator.next();
-      
+
+      // Rotating Forward - Arm Angle is Decreasing
+      // Rotating Backward - Arm Angle is Increasing
+
+      // 
+      if(rotatingForward && 
+       currentAngle >= currentConstraint.Angle
+      ){
+        // Rotating Forward, This Angle Constraint is a lesser angle meaning it is in the path 
+
+      }
+      else if(!rotatingForward && 
+        currentAngle <= currentConstraint.Angle
+      ){
+        // Rotating Backward, This Angle Constraint is a greater angle meaning it is in the path
+        
+      }                 
     }
 
     return new Pair<Double, Double>(OutputAngle, OutputExtension);

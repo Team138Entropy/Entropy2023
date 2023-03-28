@@ -6,6 +6,7 @@ public class ArmConstraint implements Comparable<ArmConstraint> {
   
     // Arm Constraint Type
     public enum ArmConstraintType {
+        None,              // No Constraint
         ExtensionMaximum,  // Extension cannot be extended this extension value!
         ExtensionMinimum   // Extension cannot be pulled in beyond this value
     };
