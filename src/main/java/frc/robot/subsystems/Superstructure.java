@@ -145,6 +145,7 @@ public class Superstructure {
     return result;
   }
 
+
   public void update() {
     // initial state 
     if(null == mCurrentTargetPosition)
@@ -353,7 +354,7 @@ public class Superstructure {
     // Rotating forward, iterate further
     final int listSize = Constants.Arm.ArmConstraints.size();
     int startIndex = (rotatingForward ? listSize : 0);
-    ListIterator listIterator = Constants.Arm.ArmConstraints.listIterator(startIndex);
+    ListIterator<ArmConstraint> listIterator = Constants.Arm.ArmConstraints.listIterator(startIndex);
 
     // Design of this is to get the arm angle as close as possible to the target arm angle as possible
     // Arm is Backside Home (~225, Retracted Full) and wants to go to Score Front High (~0, Full Extension)
@@ -361,6 +362,8 @@ public class Superstructure {
     //      it will be on its path 
 
     // Goal is to maximize extension staying in constraints
+    
+    // TODO: Constraint class for now just enforces max extension..which is all we need it for
     
 
     // Advance Either Forward or Backwards through list
@@ -379,6 +382,27 @@ public class Superstructure {
       ){
         // Rotating Forward, This Angle Constraint is a lesser angle meaning it is in the path 
 
+        // evaluate if current extension is below or equal to this max height
+        if(!isExtLessThanOrEqualMax(currentExtension, currentConstraint.Value))
+        {
+          // Current Extension is not less than the maximum constraint
+          // Angle must be held here until this corrects
+          OutputAngle = currentConstraint.Angle;
+
+          // Set Current Extension Max
+          //  If overall desire of extension is even less than max, set that instead
+          OutputExtension = Math.min(currentConstraint.Value, mArmTargetPosition.armAngle);
+
+          break;
+        }
+
+        // Evaluate if current extension target is allowed. 
+        //  Just because Extension is not affected by constraint, does not mean it target will eventually
+        //  We need to hold target to maximum until it is through this area
+        if(mArmTargetPosition.armExtend > currentConstraint.Value)
+        {
+          OutputExtension = mArmTargetPosition.armExtend;
+        }
       }
       else if(!rotatingForward && 
         currentAngle <= currentConstraint.Angle
@@ -390,6 +414,21 @@ public class Superstructure {
 
     return new Pair<Double, Double>(OutputAngle, OutputExtension);
   }
+
+  private boolean isExtLessThanOrEqualMax(double currExtPos, double maxValue)
+  {
+    boolean result = false;
+    if(mRealRobot)
+    {
+      // real
+      // If current extension position is less than or requal to the max value
+      result = (currExtPos <= (maxValue + mExtensionPositionDeadband));
+    } else {
+      result = (mSim.getArmExtension() <= (maxValue + mExtensionPositionDeadband));
+    }
+    return result;
+  }
+
 
   // Set the Arm Control Style
   public void setArmControlType(ArmControlType ct)
