@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.Enums;
 import frc.robot.util.drivers.BeamSensor;
 import frc.robot.util.drivers.EntropyCANSparkMax;
 
@@ -36,8 +37,17 @@ public class Grasper extends Subsystem {
     private boolean mGrasperOpen = false;
     //Wheel Delay Timer
     private final Timer wheelDelayTimer;
-    //beam sensor delay amount
+    //Beam sensor delay amount
     public double mDelaySeconds;
+    //Grasper Eject Speed (Cube)
+    public double CubeEjectPower;
+    //Grasper Eject Speed (Cone)
+    public double ConeEjectPower;
+    //Grasper Eject Cube
+    public boolean CubeEject;
+    //Grasper Eject Cone
+    public boolean ConeEject;
+
 
     // Grasper State
     public enum GrasperState {
@@ -68,6 +78,8 @@ public class Grasper extends Subsystem {
       // Sets brake mode
       GrasperWheelMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
       mDelaySeconds = 0.15;
+      CubeEjectPower = Constants.Grasper.CubeEjectSpeed.get();
+      ConeEjectPower = -0.15;
     }
   
    // Open the Grasper
@@ -80,7 +92,12 @@ public class Grasper extends Subsystem {
     wheelDelayTimer.start();
     sensorDelayOn = false;
     BeamSensorOn = false;
-    GrasperWheelMotor.set(-0.15);
+    if (CubeEject == true) {
+      GrasperWheelMotor.set(CubeEjectPower);
+    }
+    else if (ConeEject == true) {
+      GrasperWheelMotor.set(ConeEjectPower);
+    }
    }
 
    // Close the Grasper

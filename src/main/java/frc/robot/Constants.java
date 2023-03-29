@@ -389,8 +389,9 @@ public class Constants {
   }
 
   public static class Grasper {
-   public static final int GrasperMotorId = 3;
-   
+   public static final int GrasperMotorId = 3; 
+   //Ejection speed
+   public static TuneableNumber CubeEjectSpeed = new TuneableNumber("Grasper Ejection Speed", -.15);
   }
 
   public static class Climber {

@@ -782,7 +782,6 @@ public class Robot extends TimedRobot {
     // Drive the Robot
     DriveLoop(mOperatorInterface.getDrivePrecisionSteer(), true);
 
-    
     // Get Arm Target
     if(mOperatorInterface.getArmTarget() != ArmTargets.NONE){
       mCurrentArmTarget = mOperatorInterface.getArmTarget();
@@ -832,10 +831,18 @@ public class Robot extends TimedRobot {
         }
       }
     }
-
+    //Driver controller rumble when the beam sensor triggers
     if (mGrasper.getGrasperState() == Grasper.GrasperState.Closed){
       mOperatorInterface.setDriverRumble(true, 0.2);
     }
+
+    if (mCurrentTargetedObject == TargetedObject.CUBE) {
+      mGrasper.CubeEject = true;
+    }
+    else if (mCurrentTargetedObject == TargetedObject.CONE) {
+      mGrasper.ConeEject = true;
+    }
+
     // Arm Up After Intake
     if(mCurrentArmTarget == ArmTargets.INTAKE_FRONT && mGrasper.getGrasperState() == GrasperState.FullyClosed){
       mCurrentArmTarget = ArmTargets.POST_INTAKE_FRONT;
