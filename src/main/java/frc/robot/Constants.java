@@ -417,6 +417,10 @@ public class Constants {
     public static TuneableNumber tunableArmKI_Sec = new TuneableNumber("tunableArmKI_Sec",0.00001);
     public static TuneableNumber tunableArmKD_Sec = new TuneableNumber("tunableArmKD_Sec",80);
 
+    // Distance Which the Arm Switches to Steady State Pid
+    public static TuneableNumber tunableArmSteadyState = new TuneableNumber("tuneableArmSteadyState",5);
+
+
     public static TuneableNumber tunableArmVel = new TuneableNumber("tunableArmVel",1400);
     public static TuneableNumber tunableArmAccel = new TuneableNumber("tunableArmAccel",1400);
     public static TuneableNumber tuneableArmClosedLoopError = new TuneableNumber("tuneableArmClosedLoopError",25);

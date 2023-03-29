@@ -173,7 +173,7 @@ public class MultiGamepiece extends AutoModeBase {
                     startingRotation.getRotation()
                 )
             );
-            scoreToGp1TrajectoryAction.addPose(
+            scoreToGp1TrajectoryAction.addDifferentialPose( // Differntial Pose does not care about rotation
                 new Pose2d(
                     CS_UpperEntrance_Tighter,
                     SwerveRotation.BACK_FACING_GRID.getRotation()
@@ -213,13 +213,13 @@ public class MultiGamepiece extends AutoModeBase {
                     SwerveRotation.BACK_FACING_GRID.getRotation()
                 )
             );
-            gp1ToScore2TrajectoryAction.addPose(
+            gp1ToScore2TrajectoryAction.addDifferentialPose(
                 new Pose2d(
                     CS_UpperEntrance,
-                    SwerveRotation.BACK_FACING_GRID.getRotation()
+                    startingRotation.getRotation()
                 )
             );
-            gp1ToScore2TrajectoryAction.addPose(
+            gp1ToScore2TrajectoryAction.addDifferentialPose(
                 new Pose2d(
                     CS_LowerEntrance,
                     startingRotation.getRotation()
@@ -260,19 +260,19 @@ public class MultiGamepiece extends AutoModeBase {
                     SwerveRotation.FRONT_FACING_GRID.getRotation()
                 )
             );
-            Score2ToGp2TrajectoryAction.addPose(
+            Score2ToGp2TrajectoryAction.addDifferentialPose(
                 new Pose2d(
                     CS_LowerEntrance,
                     SwerveRotation.FRONT_FACING_GRID.getRotation()
                 )
             );
-            Score2ToGp2TrajectoryAction.addPose(
+            Score2ToGp2TrajectoryAction.addDifferentialPose(
                 new Pose2d(
                     CS_UpperEntrance,
                     SwerveRotation.FRONT_FACING_RIGHT.getRotation()
                 )
             );        
-            Score2ToGp2TrajectoryAction.addPose(
+            Score2ToGp2TrajectoryAction.addDifferentialPose(
                 new Pose2d(
                     Stage2Entrance,
                     SwerveRotation.FRONT_FACING_RIGHT.getRotation()

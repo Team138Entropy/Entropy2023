@@ -12,6 +12,7 @@ import frc.robot.subsystems.Superstructure;
 import frc.robot.util.Waypoint;
 import frc.robot.util.trajectory.CustomHolonomicDriveController;
 import frc.robot.util.trajectory.CustomTrajectoryGenerator;
+import frc.robot.util.trajectory.PoseType;
 import frc.robot.util.trajectory.RedAllianceFlipUtility;
 import frc.robot.util.trajectory.RotationSequence;
 import frc.robot.vision.AutoPilot;
@@ -56,7 +57,7 @@ public class DriveTrajectoryAction implements Action {
         mXController, mYController, mThetaController
     );
 
-    private List<Pose2d> mPoses;
+    private List<Pair<Pose2d, PoseType>> mPoses;
     private Trajectory mTrajectory = null;
     private Rotation2d mOrentation;
 
@@ -92,9 +93,22 @@ public class DriveTrajectoryAction implements Action {
 
     }
 
+    // Adds a Holonomic Pose
     public void addPose(Pose2d pose)
     {
-        mPoses.add(pose);
+        mPoses.add(new Pair<Pose2d, PoseType>(pose, PoseType.Holonomic));
+    }
+
+    // Adds a Holonomic Pose
+    public void addHolonomicPose(Pose2d pose)
+    {
+        mPoses.add(new Pair<Pose2d, PoseType>(pose, PoseType.Holonomic));
+    }
+
+    // Adds a Differential Pose
+    public void addDifferentialPose(Pose2d pose)
+    {
+        mPoses.add(new Pair<Pose2d, PoseType>(pose, PoseType.Differential));
     }
     
     public void addWaypoint(Waypoint wp)
@@ -103,7 +117,7 @@ public class DriveTrajectoryAction implements Action {
             wp.getPose(mRobotState.getAlliance()).getTranslation(),
             wp.getPose(mRobotState.getAlliance()).getRotation()
         );
-        mPoses.add(posePoint);
+        mPoses.add(new Pair<Pose2d, PoseType>(posePoint, PoseType.Holonomic));
     }
 
     public void addWaypoint(Waypoint wp, SwerveRotation rotation)
@@ -112,7 +126,7 @@ public class DriveTrajectoryAction implements Action {
             wp.getPose(mRobotState.getAlliance()).getTranslation(),
             rotation.getRotation()
         );
-        mPoses.add(posePoint);
+        mPoses.add(new Pair<Pose2d, PoseType>(posePoint, PoseType.Holonomic));
     }
     
     // Generate the Trajectory

@@ -1,5 +1,6 @@
 package frc.robot.util.trajectory;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -23,13 +24,30 @@ public class CustomTrajectoryGenerator {
    * @param config
    * @param waypoints
    */
-  public void generateWithPoses(TrajectoryConfig config, List<Pose2d> poses) {
-    List<TrajectoryWaypoint> trajWaypoints = new ArrayList();
+  public void generateWithPoses(TrajectoryConfig config, List<Pair<Pose2d, PoseType>> poses) {
+    List<TrajectoryWaypoint> trajWaypoints = new ArrayList<TrajectoryWaypoint>();
     for(int i = 0; i < poses.size(); ++i)
     {
-        trajWaypoints.add(
-            TrajectoryWaypoint.fromHolonomicPose(poses.get(i))
-        );
+        Pose2d CurrentPose = poses.get(i).getFirst();
+        PoseType CurrentPoseType = poses.get(i).getSecond();
+
+        // Generate Based on Type
+        switch(CurrentPoseType)
+        {
+          case Differential:
+            trajWaypoints.add(
+              TrajectoryWaypoint.fromDifferentialPose(CurrentPose)
+            );
+            break;
+          case Holonomic:
+          default: 
+            trajWaypoints.add(
+                TrajectoryWaypoint.fromHolonomicPose(CurrentPose)
+            );
+          break;
+        }
+
+
     }
     generate(config, trajWaypoints);    
   }

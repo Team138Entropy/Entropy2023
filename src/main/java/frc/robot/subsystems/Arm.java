@@ -27,6 +27,7 @@ public class Arm extends Subsystem {
     private double mTargetedDegrees;
     private double mTargetTicks;
     private final double mShoulderCoefficient = 360.0/8192.0;
+    private int mPidSlot;
 
     // Extension Information
     private double mMaximumExtensionTarget;
@@ -55,6 +56,7 @@ public class Arm extends Subsystem {
         SecondaryShoulderMotor.configFactoryDefault();
         MasterShoulderMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,LimitSwitchNormal.NormallyClosed);
         MasterShoulderMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,LimitSwitchNormal.NormallyClosed);
+        // Configure Feedback Sensors for Pid Slots 0 and 1
         MasterShoulderMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
         MasterShoulderMotor.setSensorPhase(false);
         MasterShoulderMotor.setInverted(true);
@@ -79,6 +81,10 @@ public class Arm extends Subsystem {
         //      Typically starts at 10 x PGain
         // kI: I-Gain Helps the sensor settle close to the target position
         //    Keep doubling I-gain until the error reliably settles to zero.
+
+        // Pid Slot gets constantly reevaluated
+        mPidSlot = 0;
+        MasterShoulderMotor.selectProfileSlot(0, mPidSlot);
     
         /*
         MasterShoulderMotor.configAllowableClosedloopError(0, 
@@ -156,18 +162,21 @@ public class Arm extends Subsystem {
     // Set the Arm Angle in Position Mode
     public void setArmAngle(double Degrees){
         // Temp.. Update Pids .. SHould Remove When DOne
+        // Transition Pids
         MasterShoulderMotor.config_kF(0, Constants.Arm.tunableArmKF_Prim.get());
         MasterShoulderMotor.config_kP(0, Constants.Arm.tunableArmKP_Prim.get()); 
         MasterShoulderMotor.config_kI(0, Constants.Arm.tunableArmKI_Prim.get());
         MasterShoulderMotor.config_kD(0, Constants.Arm.tunableArmKD_Prim.get());
         MasterShoulderMotor.configMotionCruiseVelocity(Constants.Arm.tunableArmVel.get());
         MasterShoulderMotor.configMotionAcceleration(Constants.Arm.tunableArmAccel.get());
+
+        // Steady State Pid
         MasterShoulderMotor.config_kF(1, Constants.Arm.tunableArmKF_Sec.get());
         MasterShoulderMotor.config_kP(1, Constants.Arm.tunableArmKP_Sec.get()); 
         MasterShoulderMotor.config_kI(1, Constants.Arm.tunableArmKI_Sec.get());
         MasterShoulderMotor.config_kD(1, Constants.Arm.tunableArmKD_Sec.get());
 
-        
+        // Close Loop Error
         MasterShoulderMotor.configAllowableClosedloopError(0, 
             Constants.Arm.tuneableArmClosedLoopError.get(), 10);
         // remove this block eventually
@@ -180,6 +189,22 @@ public class Arm extends Subsystem {
             MasterShoulderMotor.set(ControlMode.MotionMagic, ticksTarget, DemandType.ArbitraryFeedForward, feedForward);
             mTargetTicks = ticksTarget;
             mTargetedDegrees = Degrees;
+
+
+            // Evaluate Distance and Change Profile Slot
+            // This is to support changing to steady state
+            double armSteadyStateDegrees = armAngleToTicks(Constants.Arm.tunableArmSteadyState.get());
+            double rotationCurrentPosition = MasterShoulderMotor.getSelectedSensorPosition();
+            double distanceTicks = Math.abs(mTargetTicks - rotationCurrentPosition);
+            if(distanceTicks <= armSteadyStateDegrees)
+            {
+                // Steady State
+                mPidSlot = 1;
+            }else {
+                // Transition
+                mPidSlot = 0;
+            }
+            MasterShoulderMotor.selectProfileSlot(0, mPidSlot);
         }
     }
 
@@ -322,10 +347,12 @@ public class Arm extends Subsystem {
         SmartDashboard.putNumber(key + "Minimum Arm Extension", mMinimumExtensionTarget);
         SmartDashboard.putNumber(key + "Target Arm Extension", mTargetedExtension);
         SmartDashboard.putString(key + "Extension control mode", ExtensionMotor.getControlMode().name());
-        SmartDashboard.putNumber(key + "Extension current", ExtensionMotor.getSupplyCurrent());
+        SmartDashboard.putNumber(key + "Extension Current", ExtensionMotor.getSupplyCurrent());
         SmartDashboard.putNumber(key + "Extension Velocity", ExtensionMotor.getSelectedSensorVelocity());
         SmartDashboard.putNumber(key + "Shoulder (ticks)", mTargetTicks);
-        SmartDashboard.putNumber(key + "Shoulder error", MasterShoulderMotor.getClosedLoopError());
+        SmartDashboard.putNumber(key + "Shoulder Error", MasterShoulderMotor.getClosedLoopError());
+        SmartDashboard.putNumber(key + "Shoulder PID Slot", mPidSlot);
+
 
         //MasterShoulderMotor.configAllowableClosedloopError(0, mMaximumDegreesTarget, 0)
         
