@@ -110,6 +110,17 @@ public class DriveTrajectoryAction implements Action {
     {
         mPoses.add(new Pair<Pose2d, PoseType>(pose, PoseType.Differential));
     }
+
+    // Adds a Translation Only
+    public void addTranslation(Translation2d trans)
+    {
+        mPoses.add(new Pair<Pose2d, PoseType>(
+            new Pose2d(
+                trans, new Rotation2d()
+            ),
+            PoseType.TranslationOnly
+        ));
+    }
     
     public void addWaypoint(Waypoint wp)
     {

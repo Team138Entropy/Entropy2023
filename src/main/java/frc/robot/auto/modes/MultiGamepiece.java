@@ -173,12 +173,7 @@ public class MultiGamepiece extends AutoModeBase {
                     startingRotation.getRotation()
                 )
             );
-            scoreToGp1TrajectoryAction.addDifferentialPose( // Differntial Pose does not care about rotation
-                new Pose2d(
-                    CS_UpperEntrance_Tighter,
-                    SwerveRotation.BACK_FACING_GRID.getRotation()
-                )
-            );
+            scoreToGp1TrajectoryAction.addTranslation(CS_UpperEntrance_Tighter);
             scoreToGp1TrajectoryAction.addPose(
                 new Pose2d(
                     Stage1,
@@ -213,6 +208,10 @@ public class MultiGamepiece extends AutoModeBase {
                     SwerveRotation.BACK_FACING_GRID.getRotation()
                 )
             );
+            gp1ToScore2TrajectoryAction.addTranslation(CS_UpperEntrance);
+            gp1ToScore2TrajectoryAction.addTranslation(CS_LowerEntrance);
+
+            /*
             gp1ToScore2TrajectoryAction.addDifferentialPose(
                 new Pose2d(
                     CS_UpperEntrance,
@@ -225,6 +224,7 @@ public class MultiGamepiece extends AutoModeBase {
                     startingRotation.getRotation()
                 )
             );
+            */
             gp1ToScore2TrajectoryAction.addPose(
                 new Pose2d(
                     ScoreSpot2.plus(new Translation2d(0,0)),
@@ -260,12 +260,9 @@ public class MultiGamepiece extends AutoModeBase {
                     startingRotation.getRotation()
                 )
             );
-            Score2ToGp2TrajectoryAction.addPose(
-                new Pose2d(
-                    CS_LowerEntrance,
-                    startingRotation.getRotation()
-                )
-            );
+            Score2ToGp2TrajectoryAction.addTranslation(CS_LowerEntrance);
+            //Score2ToGp2TrajectoryAction.addTranslation(CS_UpperEntrance);
+
             /* 
             Score2ToGp2TrajectoryAction.addPose(
                 new Pose2d(
@@ -274,19 +271,16 @@ public class MultiGamepiece extends AutoModeBase {
                 )
             );   
             */     
-            Score2ToGp2TrajectoryAction.addDifferentialPose(
-                new Pose2d(
-                    Stage2Entrance,
-                    SwerveRotation.FRONT_FACING_RIGHT.getRotation()
-                )
-            );
+            Score2ToGp2TrajectoryAction.addTranslation(Stage2Entrance);
 
+            
             Score2ToGp2TrajectoryAction.addPose(
                 new Pose2d(
                     Stage2,
                     SwerveRotation.FRONT_FACING_RIGHT.getRotation()
                 )
             );
+            
             Score2ToGp2TrajectoryAction.generate();
             //addAction(Score2ToGp2TrajectoryAction);
             incrimentDuration(Score2ToGp2TrajectoryAction.getEstimatedDuration());
@@ -317,18 +311,8 @@ public class MultiGamepiece extends AutoModeBase {
                     SwerveRotation.FRONT_FACING_RIGHT.getRotation()
                 )
             );
-            Gp2ToScore3TrajectoryAction.addDifferentialPose(
-                new Pose2d(
-                    CS_UpperEntrance,
-                    SwerveRotation.FRONT_FACING_GRID.getRotation()
-                )
-            ); 
-            Gp2ToScore3TrajectoryAction.addDifferentialPose(
-                new Pose2d(
-                    CS_LowerEntrance,
-                    SwerveRotation.FRONT_FACING_GRID.getRotation()
-                )
-            ); 
+            Gp2ToScore3TrajectoryAction.addTranslation(CS_UpperEntrance);
+            Gp2ToScore3TrajectoryAction.addTranslation(CS_LowerEntrance);  
             Gp2ToScore3TrajectoryAction.addPose(
                 new Pose2d(
                     ScoreSpot3,

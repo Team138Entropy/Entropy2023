@@ -274,6 +274,10 @@ public class RobotState {
         {
             // Is Area of tracked target large enough? If so store it!
             var trackedTarget = resultTargets.get(i);
+            //trackedTarget.
+
+            // filter out bad Zs, ambiguitys, etc
+
             if(trackedTarget.getArea() > minArea) 
             {
                 filteredTargets.add(trackedTarget);
@@ -335,6 +339,8 @@ public class RobotState {
                 double stdDeviationCoefficient = .75;
 
                 // If within Threshold
+                // 
+                // this is trash, if anything should scale by distance
                 if(distanceToTarget <= mVisionDistanceThreshold)
                 {
                     stdDeviationCoefficient = .3;
@@ -343,10 +349,17 @@ public class RobotState {
                 // Add Vision Pose 
                 if(addPose)
                 {
+                    // If you wanted to manipulate std deviations: 
+                    /*
                     mSwerveDrivePoseEstimator.addVisionMeasurement(
                         VisionBasedEstimate.getFirst(), // Pose2d
                         VisionBasedEstimate.getSecond(), // Timestamp Seconds
                         VecBuilder.fill(stdDeviationCoefficient, stdDeviationCoefficient, stdDeviationCoefficient)
+                    );
+                    */
+                    mSwerveDrivePoseEstimator.addVisionMeasurement(
+                        VisionBasedEstimate.getFirst(), // Pose2d
+                        VisionBasedEstimate.getSecond() // Timestamp Seconds
                     );
 
                     // Set Valid and Store Pose

@@ -34,6 +34,11 @@ public class CustomTrajectoryGenerator {
         // Generate Based on Type
         switch(CurrentPoseType)
         {
+          case TranslationOnly:
+            trajWaypoints.add(
+              new TrajectoryWaypoint(CurrentPose.getTranslation())
+            );
+          break;
           case Differential:
             trajWaypoints.add(
               TrajectoryWaypoint.fromDifferentialPose(CurrentPose)
