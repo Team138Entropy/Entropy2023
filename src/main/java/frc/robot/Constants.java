@@ -108,7 +108,7 @@ public class Constants {
     // Allowed Seconds Threshold
     public static final double kAllowedSecondsThreshold = 5; //seconds
 
-    public static final double kAllowedTargetArea = 0.1; // How big must a target be
+    public static final double kAllowedTargetArea = 0.2; // How big must a target be
   }
 
   public static class AutoPilot {
@@ -413,12 +413,12 @@ public class Constants {
     public static TuneableNumber tunableArmKD_Prim = new TuneableNumber("tunableArmKD_Prim",80);
 
     public static TuneableNumber tunableArmKF_Sec = new TuneableNumber("tunableArmKF_Sec",0);
-    public static TuneableNumber tunableArmKP_Sec = new TuneableNumber("tunableArmKP_Sec",1.8);
-    public static TuneableNumber tunableArmKI_Sec = new TuneableNumber("tunableArmKI_Sec",0.00001);
-    public static TuneableNumber tunableArmKD_Sec = new TuneableNumber("tunableArmKD_Sec",80);
+    public static TuneableNumber tunableArmKP_Sec = new TuneableNumber("tunableArmKP_Sec",.4);
+    public static TuneableNumber tunableArmKI_Sec = new TuneableNumber("tunableArmKI_Sec",0);
+    public static TuneableNumber tunableArmKD_Sec = new TuneableNumber("tunableArmKD_Sec",0);
 
     // Distance Which the Arm Switches to Steady State Pid
-    public static TuneableNumber tunableArmSteadyState = new TuneableNumber("tuneableArmSteadyState",5);
+    public static TuneableNumber tunableArmSteadyState = new TuneableNumber("tuneableArmSteadyState",10);
 
 
     public static TuneableNumber tunableArmVel = new TuneableNumber("tunableArmVel",1400);

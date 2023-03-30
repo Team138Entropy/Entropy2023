@@ -72,14 +72,14 @@ public class MultiGamepiece extends AutoModeBase {
         TrajSpeedConfig[1][3][1] = 0;   // Traj 4 Accel
 
         // 3 Object Mode Speeds (Drives 4 Trajectories)
-        TrajSpeedConfig[2][0][0] = 1.9; // Traj 1 Vel
-        TrajSpeedConfig[2][0][1] = 2;   // Traj 1 Accel
-        TrajSpeedConfig[2][1][0] = 2.15; // Traj 2 Vel
-        TrajSpeedConfig[2][1][1] = 2;   // Traj 2 Accel
-        TrajSpeedConfig[2][2][0] = 2.4; // Traj 3 Vel
-        TrajSpeedConfig[2][2][1] = 2.4;   // Traj 3 Accel
-        TrajSpeedConfig[2][3][0] = 2.4; // Traj 4 Vel
-        TrajSpeedConfig[2][3][1] = 2.4;   // Traj 4 Accel
+        TrajSpeedConfig[2][0][0] = 1.4; // Traj 1 Vel
+        TrajSpeedConfig[2][0][1] = 1.4;   // Traj 1 Accel
+        TrajSpeedConfig[2][1][0] = 1.4; // Traj 2 Vel
+        TrajSpeedConfig[2][1][1] = 1.4;   // Traj 2 Accel
+        TrajSpeedConfig[2][2][0] = 1.4; // Traj 3 Vel
+        TrajSpeedConfig[2][2][1] = 1.4;   // Traj 3 Accel
+        TrajSpeedConfig[2][3][0] = 1.4; // Traj 4 Vel
+        TrajSpeedConfig[2][3][1] = 1.4;   // Traj 4 Accel
 
         // Selected Speed Profile (However Many Score Positions are specififed)
         var CurSpeedConfig = TrajSpeedConfig[ScoreCount - 1];
@@ -132,7 +132,7 @@ public class MultiGamepiece extends AutoModeBase {
         Stage1 = Stage1.plus(new Translation2d(-.7,0));
 
         // Staging Entrance Points
-        Translation2d Stage2Entrance = Stage2.plus(new Translation2d(0,.5));
+        Translation2d Stage2Entrance = Stage2.plus(new Translation2d(-.3,1.2));
 
         // Charging Station Exit and Entrance Points
         Translation2d CS_LowerEntrance = ScoreSpot1.plus(new Translation2d(1, 0));
@@ -227,7 +227,7 @@ public class MultiGamepiece extends AutoModeBase {
             );
             gp1ToScore2TrajectoryAction.addPose(
                 new Pose2d(
-                    ScoreSpot2.plus(new Translation2d(0,.1)),
+                    ScoreSpot2.plus(new Translation2d(0,0)),
                     startingRotation.getRotation()
                 )
             );
@@ -253,25 +253,27 @@ public class MultiGamepiece extends AutoModeBase {
 
             // 4. Drive to GP 3
             DriveTrajectoryAction Score2ToGp2TrajectoryAction = new DriveTrajectoryAction(
-                SwerveRotation.FRONT_FACING_GRID.getRotation(),CurSpeedConfig[2][0],CurSpeedConfig[2][1]);
+                startingRotation.getRotation(),CurSpeedConfig[2][0],CurSpeedConfig[2][1]);
             Score2ToGp2TrajectoryAction.addPose(
                 new Pose2d(
                     ScoreSpot2,
-                    SwerveRotation.FRONT_FACING_GRID.getRotation()
+                    startingRotation.getRotation()
                 )
             );
-            Score2ToGp2TrajectoryAction.addDifferentialPose(
+            Score2ToGp2TrajectoryAction.addPose(
                 new Pose2d(
                     CS_LowerEntrance,
-                    SwerveRotation.FRONT_FACING_GRID.getRotation()
+                    startingRotation.getRotation()
                 )
             );
-            Score2ToGp2TrajectoryAction.addDifferentialPose(
+            /* 
+            Score2ToGp2TrajectoryAction.addPose(
                 new Pose2d(
                     CS_UpperEntrance,
-                    SwerveRotation.FRONT_FACING_RIGHT.getRotation()
+                    startingRotation.getRotation()
                 )
-            );        
+            );   
+            */     
             Score2ToGp2TrajectoryAction.addDifferentialPose(
                 new Pose2d(
                     Stage2Entrance,
@@ -286,19 +288,18 @@ public class MultiGamepiece extends AutoModeBase {
                 )
             );
             Score2ToGp2TrajectoryAction.generate();
+            //addAction(Score2ToGp2TrajectoryAction);
             incrimentDuration(Score2ToGp2TrajectoryAction.getEstimatedDuration());
-            /* 
+            
             addAction(
                 new ParallelAction(
                     Score2ToGp2TrajectoryAction,
                     new SequentialAction(
                         new WaitAction(.25),
-                        new ArmAction(ArmTargets.INTAKE_GROUND_FRONT),
-                        new GrasperAction(true)
+                        new ArmAction(ArmTargets.INTAKE_GROUND_FRONT)
                     )
                 )
             );
-            */
             addAction(new WaitAction(.2));
             addAction(new GrasperAction(false));
             addAction(new ArmAction(ArmTargets.HOME_BACKSIDE));
@@ -316,13 +317,13 @@ public class MultiGamepiece extends AutoModeBase {
                     SwerveRotation.FRONT_FACING_RIGHT.getRotation()
                 )
             );
-            Gp2ToScore3TrajectoryAction.addPose(
+            Gp2ToScore3TrajectoryAction.addDifferentialPose(
                 new Pose2d(
                     CS_UpperEntrance,
                     SwerveRotation.FRONT_FACING_GRID.getRotation()
                 )
             ); 
-            Gp2ToScore3TrajectoryAction.addPose(
+            Gp2ToScore3TrajectoryAction.addDifferentialPose(
                 new Pose2d(
                     CS_LowerEntrance,
                     SwerveRotation.FRONT_FACING_GRID.getRotation()

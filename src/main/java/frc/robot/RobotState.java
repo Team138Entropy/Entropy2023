@@ -274,7 +274,7 @@ public class RobotState {
         {
             // Is Area of tracked target large enough? If so store it!
             var trackedTarget = resultTargets.get(i);
-            if(trackedTarget.getArea() >= minArea) 
+            if(trackedTarget.getArea() > minArea) 
             {
                 filteredTargets.add(trackedTarget);
             }
