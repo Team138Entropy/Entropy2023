@@ -359,7 +359,9 @@ public class RobotState {
                     */
                     mSwerveDrivePoseEstimator.addVisionMeasurement(
                         VisionBasedEstimate.getFirst(), // Pose2d
-                        VisionBasedEstimate.getSecond() // Timestamp Seconds
+                        VisionBasedEstimate.getSecond(), // Timestamp Seconds
+                        VecBuilder.fill(stdDeviationCoefficient, stdDeviationCoefficient, stdDeviationCoefficient)
+
                     );
 
                     // Set Valid and Store Pose
