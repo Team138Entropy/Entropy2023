@@ -412,6 +412,14 @@ public class Superstructure {
       }                 
     }
 
+    // Debug Logging (if not at target)
+    if(isAtTarget())
+    {
+      System.out.println("ArmSet: Ang: " + OutputAngle +" Ext: " + OutputExtension 
+      + "  Target Ang: " + mArmTargetPosition.armAngle + " Target Ext: " + mArmTargetPosition.armExtend);
+    }
+
+
     return new Pair<Double, Double>(OutputAngle, OutputExtension);
   }
 
