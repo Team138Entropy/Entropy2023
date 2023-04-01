@@ -415,6 +415,7 @@ public class Robot extends TimedRobot {
       new Enums.ScorePositions[] {Enums.ScorePositions.Low, Enums.ScorePositions.Low},
       new Enums.GamePiece[] {Enums.GamePiece.Cube, Enums.GamePiece.Cube}
     ));
+    mAutoModes.addOption("CABLE COVER 2 High", new CableCover2High());
 
     mAutoModes.addOption("Taxi Mode", new taxiMode());
     mAutoModes.addOption("Score Mid and taxi CUBE", new ScoreMidAndTaxiMode(TargetedObject.CUBE));
@@ -459,6 +460,7 @@ public class Robot extends TimedRobot {
     mCurrentArmTarget = ArmTargets.HOME_BACKSIDE;
     mSuperStructure.setTargetArmPosition(mCurrentArmTarget);
     mSuperStructure.update();
+    
 
     // Make sure Arm Safety is enabled
     mSuperStructure.setDisableArmSafety(false);

@@ -442,11 +442,13 @@ public class Constants {
       ArmConstraints = new Vector<ArmConstraint>();
 
       // must be pulled in on over the top rotations
-      ArmConstraints.add(new ArmConstraint(70.0, ArmConstraint.ArmConstraintType.ExtensionMaximum, 0.0));
       ArmConstraints.add(new ArmConstraint(90.0, ArmConstraint.ArmConstraintType.ExtensionMaximum, 0.0));
-      ArmConstraints.add(new ArmConstraint(110.0, ArmConstraint.ArmConstraintType.ExtensionMaximum, 0.0));
+      //ArmConstraints.add(new ArmConstraint(90.0, ArmConstraint.ArmConstraintType.ExtensionMaximum, 0.0));
+      ArmConstraints.add(new ArmConstraint(157.0, ArmConstraint.ArmConstraintType.ExtensionMaximum, 0.0));
 
       // Should not allow extension much beyond the intake positions
+      //ArmConstraints.add(new ArmConstraint(-15, ArmConstraint.ArmConstraintType.ExtensionMaximum, 150000));
+
       // Front Intake
       ArmConstraints.add(new ArmConstraint(-59, ArmConstraint.ArmConstraintType.ExtensionMaximum, 168000));
       // Back Intake

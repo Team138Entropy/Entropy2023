@@ -254,19 +254,43 @@ public class Superstructure {
     // if not at arm target
     if(!isAtTarget())
     {
-      // Get Arm Setpoints
-      Pair<Double, Double> armSetPoints = getArmSetPoints(
-        getArmAngle(), getExtensionPosition(), mArmTargetPosition);
+      // Determine if this is an overthe top externsion,
+      // if it is, you must pull in
+      boolean overTop = isOverTheTop(getArmAngle());
+      boolean isExtensionSafe = evaluteExtensionSafety();
+      if(overTop && !isExtensionSafe)
+      {
+        // Pull in Extension First!
+        mArm.setArmAngle(mCurrentTargetPosition.armAngle);
+        mArm.setArmExtension(0);
+      }else {
+        // Get Arm Setpoints
+        Pair<Double, Double> armSetPoints = getArmSetPoints(
+          getArmAngle(), getExtensionPosition(), mArmTargetPosition);
 
-      // Set Into Arm
-      mArm.setArmAngle(armSetPoints.getFirst());
-      mArm.setArmExtension(armSetPoints.getSecond());
+        // Set Into Arm
+        mArm.setArmAngle(armSetPoints.getFirst());
+        mArm.setArmExtension(armSetPoints.getSecond());
+      }
     }else {
       // At Target Arm Position
       mCurrentTargetPosition = mArmTargetPosition;
       mArm.setArmAngle(mCurrentTargetPosition.armAngle);
       mArm.setArmExtension(mCurrentTargetPosition.armExtend);
     }
+  }
+
+  // Returns True if requested movement is over the top
+  public boolean isOverTheTop(double curentAngle){
+    boolean overTop = false;
+    double targetAngle = mArmTargetPosition.armAngle;
+    if(
+      (targetAngle >= 90 && curentAngle < 90) ||
+      (targetAngle <= 90 && curentAngle > 90)
+    ){
+      overTop = true;
+    }
+    return overTop;
   }
 
   public void setTargetArmPosition(ArmTargets targetPosition)

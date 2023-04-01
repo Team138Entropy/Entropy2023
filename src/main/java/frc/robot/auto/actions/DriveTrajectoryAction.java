@@ -43,7 +43,7 @@ public class DriveTrajectoryAction implements Action {
     private final RobotState mRobotState = RobotState.getInstance();
     private double mMaxVelocityMS = 1;
     private double mMaxVAccelerationMSS = 4;
-    private double mMaxCentripetalAccelerationMetersPerSec2 = Units.inchesToMeters(100.0);
+    private double mMaxCentripetalAccelerationMetersPerSec2 = Units.inchesToMeters(120.0);
     private Timer mTimer;
 
     private final PIDController mXController = new PIDController(2.5, 0.0, 0.0);
