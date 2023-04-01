@@ -1,7 +1,11 @@
 package frc.robot.subsystems;
 
+import java.io.IOException;
 import java.util.ListIterator;
 import java.util.Vector;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import com.ctre.phoenix.schedulers.ConcurrentScheduler;
 
@@ -52,6 +56,7 @@ public class Superstructure {
   // Option to Disable Arm Safety
   private boolean mDisableArmSafety;
 
+
   private Superstructure() {
     mRealRobot = false;
 
@@ -62,7 +67,6 @@ public class Superstructure {
     mOverridingExtension = false;
     mOverridingAngle = false;
     mDisableArmSafety = false;
-
   }
 
   // Set if Sim or Real
@@ -247,6 +251,9 @@ public class Superstructure {
   // Process Advanced Arm Control
   private void processAdvancedArmControl() 
   {
+    // if not at arm target
+    if(!isAtTarget())
+    {
       // Get Arm Setpoints
       Pair<Double, Double> armSetPoints = getArmSetPoints(
         getArmAngle(), getExtensionPosition(), mArmTargetPosition);
@@ -254,8 +261,13 @@ public class Superstructure {
       // Set Into Arm
       mArm.setArmAngle(armSetPoints.getFirst());
       mArm.setArmExtension(armSetPoints.getSecond());
+    }else {
+      // At Target Arm Position
+      mCurrentTargetPosition = mArmTargetPosition;
+      mArm.setArmAngle(mCurrentTargetPosition.armAngle);
+      mArm.setArmExtension(mCurrentTargetPosition.armExtend);
+    }
   }
-
 
   public void setTargetArmPosition(ArmTargets targetPosition)
   {
@@ -354,69 +366,81 @@ public class Superstructure {
       System.out.println("Rotating Forward!");
     }
 
-    // Rotating forward, iterate further
-    final int listSize = Constants.Arm.ArmConstraints.size();
-    int startIndex = (rotatingForward ? listSize : 0);
-    ListIterator<ArmConstraint> listIterator = Constants.Arm.ArmConstraints.listIterator(startIndex);
+    // Is Rotation even required? 
+    boolean isAtTargetArmAngle = evaluateArmAngle();
 
-    // Design of this is to get the arm angle as close as possible to the target arm angle as possible
-    // Arm is Backside Home (~225, Retracted Full) and wants to go to Score Front High (~0, Full Extension)
-    //      Need to Understand the Constraints in the way, even though the arm may not be immediately constrainted extension wise, 
-    //      it will be on its path 
-
-    // Goal is to maximize extension staying in constraints
-    
-    // TODO: Constraint class for now just enforces max extension..which is all we need it for
-    
-
-    // Advance Either Forward or Backwards through list
-    while((rotatingForward ? listIterator.hasPrevious() : listIterator.hasNext()))
+    // Rotation Required 
+    if(!isAtTargetArmAngle)
     {
-      ArmConstraint currentConstraint = rotatingForward ? 
-                                     (ArmConstraint) listIterator.previous() : 
-                                     (ArmConstraint) listIterator.next();
+      // Rotating forward, iterate further
+      final int listSize = Constants.Arm.ArmConstraints.size();
+      int startIndex = (rotatingForward ? listSize : 0);
+      ListIterator<ArmConstraint> listIterator = Constants.Arm.ArmConstraints.listIterator(startIndex);
 
-      // Rotating Forward - Arm Angle is Decreasing
-      // Rotating Backward - Arm Angle is Increasing
+      // Design of this is to get the arm angle as close as possible to the target arm angle as possible
+      // Arm is Backside Home (~225, Retracted Full) and wants to go to Score Front High (~0, Full Extension)
+      //      Need to Understand the Constraints in the way, even though the arm may not be immediately constrainted extension wise, 
+      //      it will be on its path 
+
+      // Goal is to maximize extension staying in constraints
       
-      // Is this an arm angle the constraint system cares about?
-      boolean isRelevantConstraint = false;
-      isRelevantConstraint |= (rotatingForward && (currentAngle >= currentConstraint.Angle));
-      //isRelevantConstraint |= (!rotatingForward && (currentAngle <= currentConstraint.Angle));
-  
+      // TODO: Constraint class for now just enforces max extension..which is all we need it for
+      
 
-      // 
-      if(isRelevantConstraint){
-        // Rotating Forward, This Angle Constraint is a lesser angle meaning it is in the path 
+      // Advance Either Forward or Backwards through list
+      while((rotatingForward ? listIterator.hasPrevious() : listIterator.hasNext()))
+      {
+        ArmConstraint currentConstraint = rotatingForward ? 
+                                      (ArmConstraint) listIterator.previous() : 
+                                      (ArmConstraint) listIterator.next();
 
-        // evaluate if current extension is below or equal to this max height
-        if(!isExtLessThanOrEqualMax(currentExtension, currentConstraint.Value))
-        {
-          // Current Extension is not less than the maximum constraint
-          // Angle must be held here until this corrects
-          OutputAngle = currentConstraint.Angle;
+        // Rotating Forward - Arm Angle is Decreasing
+        // Rotating Backward - Arm Angle is Increasing
+        
+        // Is this an arm angle the constraint system cares about?
+        // Determine if its an angle within the path to the target where the arm cuttently is
+        boolean isRelevantConstraint = false;
+        isRelevantConstraint |= (rotatingForward && (currentAngle >= currentConstraint.Angle) && (currentConstraint.Angle >= targetPosition.armAngle));
+        isRelevantConstraint |= (!rotatingForward && (currentAngle <= currentConstraint.Angle) && (currentConstraint.Angle <= targetPosition.armAngle));
 
-          // Set Current Extension Max
-          //  If overall desire of extension is even less than max, set that instead
-          OutputExtension = Math.min(currentConstraint.Value, mArmTargetPosition.armAngle);
+        // 
+        if(isRelevantConstraint){
+          // Rotating Forward, This Angle Constraint is a lesser angle meaning it is in the path 
 
-          break;
-        }
+          // evaluate if current extension is below or equal to this max height
+          if(!isExtLessThanOrEqualMax(currentExtension, currentConstraint.Value))
+          {
+            // Current Extension is not less than the maximum constraint
+            // Angle must be held here until this corrects
+            OutputAngle = currentConstraint.Angle;
 
-        // Evaluate the Current Constraint
-        // Because it is a constraint, must match it
-        if(OutputExtension > currentConstraint.Value)
-        {
-          OutputExtension = currentConstraint.Value;
-        }
-      }                
+            // Set Current Extension Max
+            //  If overall desire of extension is even less than max, set that instead
+            OutputExtension = Math.min(currentConstraint.Value, mArmTargetPosition.armAngle);
+
+            break;
+          }
+
+          // Evaluate the Current Constraint
+          // Because it is a constraint, must match it
+          if(OutputExtension > currentConstraint.Value)
+          {
+            OutputExtension = currentConstraint.Value;
+          }
+        }                
+      }
     }
+
+  
 
     // Debug Logging (if not at target)
     if(!isAtTarget())
     {
       System.out.println("ArmSet: Ang: " + OutputAngle +" Ext: " + OutputExtension 
-      + "  Target Ang: " + mArmTargetPosition.armAngle + " Target Ext: " + mArmTargetPosition.armExtend);
+        + "  Target Ang: " + mArmTargetPosition.armAngle + " Target Ext: " + mArmTargetPosition.armExtend
+        + "  Cur Ang: " + currentAngle + "  Cur Ext: " + currentExtension
+      );
+
     }
 
 

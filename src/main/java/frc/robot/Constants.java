@@ -425,19 +425,35 @@ public class Constants {
     public static TuneableNumber tunableArmAccel = new TuneableNumber("tunableArmAccel",1400);
     public static TuneableNumber tuneableArmClosedLoopError = new TuneableNumber("tuneableArmClosedLoopError",25);
 
-    // Constraints - A
+    /*
+     *       INTAKE_GROUND_FRONT(-57,164000),
+        INTAKE_GROUND_FRONT_CUBE(-57,162000),
+        INTAKE_GROUND_BACK(223,208000),
+        SAFE(90,0),
+        START(233, 0),
+        HOME_BACKSIDE(220, 0),
+        HOME_FRONTSIDE(-50, 0),
+     */
+
+
+    // Constraints - Arm
     public static Vector<ArmConstraint> ArmConstraints;
     static {
       ArmConstraints = new Vector<ArmConstraint>();
 
-      // must me pulled in on over the top rotations
+      // must be pulled in on over the top rotations
       ArmConstraints.add(new ArmConstraint(70.0, ArmConstraint.ArmConstraintType.ExtensionMaximum, 0.0));
       ArmConstraints.add(new ArmConstraint(90.0, ArmConstraint.ArmConstraintType.ExtensionMaximum, 0.0));
       ArmConstraints.add(new ArmConstraint(110.0, ArmConstraint.ArmConstraintType.ExtensionMaximum, 0.0));
 
+      // Should not allow extension much beyond the intake positions
+      // Front Intake
+      ArmConstraints.add(new ArmConstraint(-59, ArmConstraint.ArmConstraintType.ExtensionMaximum, 168000));
+      // Back Intake
+
+
       // sort by angle
       Collections.sort(ArmConstraints);  
-
     }
   }
 

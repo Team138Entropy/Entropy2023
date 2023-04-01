@@ -452,6 +452,9 @@ public class Robot extends TimedRobot {
     // Close Grasper
     mGrasper.setGrasperFullyClosed();
 
+    // Set Arm Algorthm
+    mSuperStructure.setArmControlType(ArmControlType.Advanced);
+
     // Tell Arm to go to target position
     mCurrentArmTarget = ArmTargets.HOME_BACKSIDE;
     mSuperStructure.setTargetArmPosition(mCurrentArmTarget);
@@ -512,6 +515,8 @@ public class Robot extends TimedRobot {
     // Make sure Arm Safety is enabled
     mSuperStructure.setDisableArmSafety(false);
 
+    // Set Arm Algorthm
+    mSuperStructure.setArmControlType(ArmControlType.Simple);
     
     if(mSuperStructure.getTargetArmPosition() != mCurrentArmTarget && mSuperStructure.getTargetArmPosition() != null){
       mCurrentArmTarget = mSuperStructure.getTargetArmPosition();
