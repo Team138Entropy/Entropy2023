@@ -350,6 +350,9 @@ public class Superstructure {
     // 0 is Frontside of Robot, 270 is Backside
     // List will be ordered from least to greatest, meaning rotating forward is backwards through list
     boolean rotatingForward = (currentAngle > targetPosition.armAngle);
+    if(rotatingForward){
+      System.out.println("Rotating Forward!");
+    }
 
     // Rotating forward, iterate further
     final int listSize = Constants.Arm.ArmConstraints.size();
@@ -375,11 +378,15 @@ public class Superstructure {
 
       // Rotating Forward - Arm Angle is Decreasing
       // Rotating Backward - Arm Angle is Increasing
+      
+      // Is this an arm angle the constraint system cares about?
+      boolean isRelevantConstraint = false;
+      isRelevantConstraint |= (rotatingForward && (currentAngle >= currentConstraint.Angle));
+      //isRelevantConstraint |= (!rotatingForward && (currentAngle <= currentConstraint.Angle));
+  
 
       // 
-      if(rotatingForward && 
-       currentAngle >= currentConstraint.Angle
-      ){
+      if(isRelevantConstraint){
         // Rotating Forward, This Angle Constraint is a lesser angle meaning it is in the path 
 
         // evaluate if current extension is below or equal to this max height
@@ -396,24 +403,17 @@ public class Superstructure {
           break;
         }
 
-        // Evaluate if current extension target is allowed. 
-        //  Just because Extension is not affected by constraint, does not mean it target will eventually
-        //  We need to hold target to maximum until it is through this area
-        if(mArmTargetPosition.armExtend > currentConstraint.Value)
+        // Evaluate the Current Constraint
+        // Because it is a constraint, must match it
+        if(OutputExtension > currentConstraint.Value)
         {
-          OutputExtension = mArmTargetPosition.armExtend;
+          OutputExtension = currentConstraint.Value;
         }
-      }
-      else if(!rotatingForward && 
-        currentAngle <= currentConstraint.Angle
-      ){
-        // Rotating Backward, This Angle Constraint is a greater angle meaning it is in the path
-        
-      }                 
+      }                
     }
 
     // Debug Logging (if not at target)
-    if(isAtTarget())
+    if(!isAtTarget())
     {
       System.out.println("ArmSet: Ang: " + OutputAngle +" Ext: " + OutputExtension 
       + "  Target Ang: " + mArmTargetPosition.armAngle + " Target Ext: " + mArmTargetPosition.armExtend);
