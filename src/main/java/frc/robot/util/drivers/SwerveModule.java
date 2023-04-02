@@ -220,6 +220,16 @@ public class SwerveModule  {
         
     }
 
+    public void setBreakMode()
+    {
+        mDriveMotor.setNeutralMode(NeutralMode.Brake);
+    }
+
+    public void setCoastMode() 
+    {
+        mDriveMotor.setNeutralMode(NeutralMode.Coast);
+    }
+
     public void updateSimPosition(double dt)
     {
         updateSimPosition(dt);

@@ -874,6 +874,20 @@ public class Drive extends Subsystem {
 
   }
 
+  public void setBreakMode()
+  {
+    for(SwerveModule mod : mSwerveModules){
+      mod.setBreakMode();
+    }
+  }
+
+  public void setCoastMode()
+  {
+    for(SwerveModule mod : mSwerveModules){
+      mod.setCoastMode();
+    }
+  }
+
   // Enable or Disable the Brake
   public void setBrake(boolean value)
   {

@@ -17,9 +17,11 @@ import frc.robot.auto.actions.Action;
 import frc.robot.auto.actions.ArmAction;
 import frc.robot.auto.actions.DriveTrajectoryAction;
 import frc.robot.auto.actions.GrasperAction;
+import frc.robot.auto.actions.LambdaAction;
 import frc.robot.auto.actions.ParallelAction;
 import frc.robot.auto.actions.SequentialAction;
 import frc.robot.auto.actions.WaitAction;
+import frc.robot.subsystems.Drive;
 
 public class MultiGamepiece extends AutoModeBase {
     RobotState mRobotState = RobotState.getInstance();
@@ -73,14 +75,14 @@ public class MultiGamepiece extends AutoModeBase {
         TrajSpeedConfig[1][3][1] = 0;   // Traj 4 Accel
 
         // 3 Object Mode Speeds (Drives 4 Trajectories)
-        TrajSpeedConfig[2][0][0] = 2.4; // Traj 1 Vel
-        TrajSpeedConfig[2][0][1] = 2.8;   // Traj 1 Accel
-        TrajSpeedConfig[2][1][0] = 2.3; // Traj 2 Vel
-        TrajSpeedConfig[2][1][1] = 3;   // Traj 2 Accel
-        TrajSpeedConfig[2][2][0] = 3.1; // Traj 3 Vel
-        TrajSpeedConfig[2][2][1] = 3.5;   // Traj 3 Accel
-        TrajSpeedConfig[2][3][0] = 3.8; // Traj 4 Vel
-        TrajSpeedConfig[2][3][1] = 4.2;   // Traj 4 Accel
+        TrajSpeedConfig[2][0][0] = 1.8; // Traj 1 Vel
+        TrajSpeedConfig[2][0][1] = 2.0;   // Traj 1 Accel
+        TrajSpeedConfig[2][1][0] = 2.4; // Traj 2 Vel
+        TrajSpeedConfig[2][1][1] = 2.2;   // Traj 2 Accel
+        TrajSpeedConfig[2][2][0] = 2.3; // Traj 3 Vel
+        TrajSpeedConfig[2][2][1] = 2.2;   // Traj 3 Accel
+        TrajSpeedConfig[2][3][0] = 2; // Traj 4 Vel
+        TrajSpeedConfig[2][3][1] = 2;   // Traj 4 Accel
 
         // Selected Speed Profile (However Many Score Positions are specififed)
         var CurSpeedConfig = TrajSpeedConfig[ScoreCount - 1];
@@ -130,7 +132,7 @@ public class MultiGamepiece extends AutoModeBase {
 
         // Offset First Staging Point to support Straight on Approach
         //      Otherwise it is trying to line up center of robot
-        Stage1 = Stage1.plus(new Translation2d(-.7,0));
+        Stage1 = Stage1.plus(new Translation2d(0,0));
 
         // Staging Entrance Points
         Translation2d Stage2Entrance = Stage2.plus(new Translation2d(0,1.5));
@@ -141,7 +143,7 @@ public class MultiGamepiece extends AutoModeBase {
 
         // Slightly Translate Points
         //      Blue should have slightly greater Y
-        CS_UpperEntrance = CS_UpperEntrance.plus(new Translation2d(.5,.8));
+        CS_UpperEntrance = CS_UpperEntrance.plus(new Translation2d(-.2,.8));
         
         // Slightly Shifted CS Upper Entrance for Stage Spot 1
         //      this is to ensure the approach for stage 1 is good
@@ -162,12 +164,12 @@ public class MultiGamepiece extends AutoModeBase {
             // 1. Score First Object (Starts with Robot)
             if(GamePiece.Cone == Gamepiece1)
             {
-                addAction(new ArmAction(ArmTargets.MID_SCORING_FRONT));
+                addAction(new ArmAction(ArmTargets.TOP_SCORING_FRONT));
             }else
             {
                 addAction(new ArmAction(ArmTargets.LOW_SCORING_BACK));
             }
-            addAction(new WaitAction(.1));
+            addAction(new WaitAction(.05));
             addAction(new GrasperAction(true));
 
 
@@ -248,7 +250,7 @@ public class MultiGamepiece extends AutoModeBase {
             */
             gp1ToScore2TrajectoryAction.addPose(
                 new Pose2d(
-                    ScoreSpot2.plus(new Translation2d(0,.2)),
+                    ScoreSpot2.plus(new Translation2d(0,0)),
                     startingRotation.getRotation()
                 )
             );
@@ -259,7 +261,7 @@ public class MultiGamepiece extends AutoModeBase {
                     gp1ToScore2TrajectoryAction,
                     new SequentialAction(
                         new WaitAction(.0),
-                        new ArmAction(ArmTargets.TOP_SCORING_FRONT_CUBE)
+                        new ArmAction(ArmTargets.TOP_SCORING_FRONT)
                     )
                 )
             );
@@ -297,7 +299,9 @@ public class MultiGamepiece extends AutoModeBase {
             //Score2ToGp2TrajectoryAction.addTranslation(Stage2Entrance);
 
             // Diagnoal approach
-            Score2ToGp2TrajectoryAction.addTranslation(CS_UpperEntrance);
+            Score2ToGp2TrajectoryAction.addTranslation(CS_UpperEntrance.plus(
+                new Translation2d(0, -.1)
+            ));
 
             // 
             /*
@@ -330,7 +334,7 @@ public class MultiGamepiece extends AutoModeBase {
                     )
                 )
             );
-            addAction(new WaitAction(.1));
+            addAction(new WaitAction(.05));
         }
 
         // Score Gamepiece 3
@@ -345,14 +349,23 @@ public class MultiGamepiece extends AutoModeBase {
                     optimalHeading
                 )
             );
-            Gp2ToScore3TrajectoryAction.addTranslation(CS_UpperEntrance);
-            //Gp2ToScore3TrajectoryAction.addTranslation(CS_LowerEntrance);  
+            /*
+            Gp2ToScore3TrajectoryAction.addTranslation(CS_UpperEntrance_Tighter);
+            Gp2ToScore3TrajectoryAction.addTranslation(CS_LowerEntrance);  
             Gp2ToScore3TrajectoryAction.addPose(
                 new Pose2d(
                     ScoreSpot1.plus(new Translation2d(.44, -.3)),
                     SwerveRotation.FRONT_FACING_GRID.getRotation()
                 )
             );
+            */
+            Gp2ToScore3TrajectoryAction.addPose(
+                new Pose2d(
+                    CS_UpperEntrance_Tighter.plus(new Translation2d(.4, 0)),
+                    SwerveRotation.FRONT_FACING_GRID.getRotation()
+                )
+            );
+            Gp2ToScore3TrajectoryAction.setEndVelocity(0);
             Gp2ToScore3TrajectoryAction.generate();
             incrimentDuration(Gp2ToScore3TrajectoryAction.getEstimatedDuration());
             addAction(
@@ -361,14 +374,28 @@ public class MultiGamepiece extends AutoModeBase {
                     new SequentialAction(
                         new WaitAction(.2),
                         new ArmAction(ArmTargets.LOW_SCORING_FRONT)
+                    ),
+                    new SequentialAction(
+                        new WaitAction(2),
+                        new GrasperAction(true)
+                    ),
+                    new SequentialAction(
+                        new WaitAction(.5),
+                        new LambdaAction( () -> {
+                            //setCoast();
+                        })
                     )
                 )
             );
 
             // Score Game GP 3
-            addAction(new WaitAction(.1));
-            addAction(new GrasperAction(true));
+           // addAction(new WaitAction(.1));
+           // addAction(new GrasperAction(true));
         }
+    }
+
+    public void setCoast() {
+        Drive.getInstance().setCoastMode();
     }
 
     @Override

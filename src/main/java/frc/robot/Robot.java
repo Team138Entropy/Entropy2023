@@ -431,6 +431,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    // Ensure Drive is in Break
+    mDrive.setBreakMode();
+
     // Disable Operator Rumble
     mOperatorInterface.setOperatorRumble(false);
 
@@ -497,6 +500,8 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
+        // Ensure Drive is in Break
+        mDrive.setBreakMode();
     
     // disable operator rumble    
     mOperatorInterface.setOperatorRumble(false);

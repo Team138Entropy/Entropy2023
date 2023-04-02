@@ -45,13 +45,13 @@ public class DriveTrajectoryAction implements Action {
     private double mMaxVAccelerationMSS = 4;
 
     // .02 M/S 2
-    private double mMaxCentripetalAccelerationMetersPerSec2 = Units.inchesToMeters(120.0);
+    private double mMaxCentripetalAccelerationMetersPerSec2 = Units.inchesToMeters(100.0);
     private Timer mTimer;
 
     private final PIDController mXController = new PIDController(2.5, 0.0, 0.0);
     private final PIDController mYController = new PIDController(2.5, 0.0, 0.0);
     private final PIDController mThetaController = new PIDController(
-        7, 0.0, 0.0);
+        4, 0.0, 0.0);
 
     // Trajectory Genrator, Drive Controller
     private final CustomTrajectoryGenerator mCustomTrajectoryGenerator = new CustomTrajectoryGenerator();
@@ -63,6 +63,7 @@ public class DriveTrajectoryAction implements Action {
     private Trajectory mTrajectory = null;
     private Rotation2d mOrentation;
     private boolean mUseVision = false;
+    private double mEndVelocity = 1.4;
 
 
     public DriveTrajectoryAction(Rotation2d orentation, double velocity, double acceleration)
@@ -155,7 +156,7 @@ public class DriveTrajectoryAction implements Action {
             mMaxVelocityMS, mMaxVAccelerationMSS)
             .setKinematics(mDrive.getSwerveKinematics())
             .setStartVelocity(0)
-            .setEndVelocity(0).addConstraint(
+            .setEndVelocity(mEndVelocity).addConstraint(
                 new CentripetalAccelerationConstraint(mMaxCentripetalAccelerationMetersPerSec2)
         );
 
@@ -164,6 +165,10 @@ public class DriveTrajectoryAction implements Action {
 
         // Store Trajectory
         mTrajectory = mCustomTrajectoryGenerator.getDriveTrajectory();
+    }
+
+    public void setEndVelocity(double vel){
+        mEndVelocity = vel;
     }
 
     @Override
