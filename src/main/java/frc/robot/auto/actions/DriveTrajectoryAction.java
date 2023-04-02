@@ -43,6 +43,8 @@ public class DriveTrajectoryAction implements Action {
     private final RobotState mRobotState = RobotState.getInstance();
     private double mMaxVelocityMS = 1;
     private double mMaxVAccelerationMSS = 4;
+
+    // .02 M/S 2
     private double mMaxCentripetalAccelerationMetersPerSec2 = Units.inchesToMeters(120.0);
     private Timer mTimer;
 
@@ -60,6 +62,7 @@ public class DriveTrajectoryAction implements Action {
     private List<Pair<Pose2d, PoseType>> mPoses;
     private Trajectory mTrajectory = null;
     private Rotation2d mOrentation;
+    private boolean mUseVision = false;
 
 
     public DriveTrajectoryAction(Rotation2d orentation, double velocity, double acceleration)
@@ -139,6 +142,11 @@ public class DriveTrajectoryAction implements Action {
         );
         mPoses.add(new Pair<Pose2d, PoseType>(posePoint, PoseType.Holonomic));
     }
+
+    // Tell the Custom Holonomic Controller to use Vision
+    public void useVision() {
+        mUseVision = true;
+    }
     
     // Generate the Trajectory
     public void generate()
@@ -169,7 +177,6 @@ public class DriveTrajectoryAction implements Action {
         // Initialize the timer.
         mTimer = new Timer();
         mTimer.start();
-
     }
 
     @Override 
@@ -208,9 +215,10 @@ public class DriveTrajectoryAction implements Action {
         
 
             // Get Robot Pose to Calculate Error
+            // Determine if using Vision Based Pose or Drive Only Pose
             Pose2d currentRobotPose = mRobotState.isRealRobot() ? 
-                mRobotState.getDriveOnlyPose() :
-                mRobotState.getDriveOnlySimPose();
+                (mUseVision ? mRobotState.getPose() : mRobotState.getDriveOnlyPose()) :
+                (mRobotState.getDriveOnlySimPose());
 
             // Calculate velocity
             ChassisSpeeds nextDriveState =

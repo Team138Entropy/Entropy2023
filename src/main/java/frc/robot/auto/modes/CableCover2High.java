@@ -35,6 +35,15 @@ public class CableCover2High extends AutoModeBase {
         // Current Alliance of this Auto Mode
         Alliance currentAlliance = mRobotState.getAlliance();
 
+        // Charging Station 'Safe' Points
+        // Don't get too close to the charging station!
+        Translation2d CS_LowerEntrance = FieldConstants.Community.chargingStationCornersBlue[0];
+        Translation2d CS_UpperEntrance = FieldConstants.Community.chargingStationCornersBlue[2];
+
+        // Make these Safe
+        CS_LowerEntrance = CS_LowerEntrance.plus(new Translation2d(0, -.75));
+        CS_UpperEntrance = CS_UpperEntrance.plus(new Translation2d(0, -.75));
+
         // 4th Game Piece 
         Translation2d Stage4 = FieldConstants.Auto.Waypoints.StagingWaypoints[0]
         .getPose(currentAlliance).getTranslation();
@@ -55,16 +64,18 @@ public class CableCover2High extends AutoModeBase {
 
       // Tell the Arm to go to the Backside Intake while you slowly drive
       DriveTrajectoryAction scoreToGp1TrajectoryAction = new DriveTrajectoryAction(
-        SwerveRotation.FRONT_FACING_GRID.getRotation(), .8, .8);
+        SwerveRotation.FRONT_FACING_GRID.getRotation(), 1.2, 1.8);
         scoreToGp1TrajectoryAction.addPose(
             new Pose2d(
                 ScoreSpot1,
                 SwerveRotation.FRONT_FACING_GRID.getRotation()
             )
         );
+        scoreToGp1TrajectoryAction.addTranslation(CS_LowerEntrance);
+        scoreToGp1TrajectoryAction.addTranslation(CS_UpperEntrance);
         scoreToGp1TrajectoryAction.addPose(
             new Pose2d(
-                Stage4.plus(new Translation2d(0,1)),
+                Stage4.plus(new Translation2d(0,0)),
                 SwerveRotation.FRONT_FACING_GRID.getRotation()
             )
         );
@@ -83,7 +94,39 @@ public class CableCover2High extends AutoModeBase {
             )
         );
 
+        // Cautionary Wait
+        addAction(new WaitAction(.1));
+
         // Drive back!
+        DriveTrajectoryAction Gp1ToScoreSpot2 = new DriveTrajectoryAction(
+        SwerveRotation.FRONT_FACING_GRID.getRotation(), 1.2, 1.8);
+        Gp1ToScoreSpot2.addPose(
+            new Pose2d(
+                Stage4.plus(new Translation2d(0,0)),
+                SwerveRotation.FRONT_FACING_GRID.getRotation()
+            )
+        );
+        Gp1ToScoreSpot2.addTranslation(CS_UpperEntrance);
+        Gp1ToScoreSpot2.addTranslation(CS_LowerEntrance);
+        Gp1ToScoreSpot2.addPose(
+            new Pose2d(
+                ScoreSpot2,
+                SwerveRotation.FRONT_FACING_GRID.getRotation()
+            )
+        );
+        Gp1ToScoreSpot2.generate();
+        incrimentDuration(Gp1ToScoreSpot2.getEstimatedDuration());
+
+        addAction(
+            new ParallelAction(
+                Gp1ToScoreSpot2,
+                new ArmAction(ArmTargets.TOP_SCORING_FRONT)
+            )
+        );
+
+        // Wait and Eject
+        addAction(new WaitAction(.1));
+        addAction(new GrasperAction(true));
 
 
 

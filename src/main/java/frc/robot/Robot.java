@@ -416,6 +416,7 @@ public class Robot extends TimedRobot {
       new Enums.GamePiece[] {Enums.GamePiece.Cube, Enums.GamePiece.Cube}
     ));
     mAutoModes.addOption("CABLE COVER 2 High", new CableCover2High());
+    mAutoModes.addOption("Last Attempt 3 Object", new LastAttempt3Object());
 
     mAutoModes.addOption("Taxi Mode", new taxiMode());
     mAutoModes.addOption("Score Mid and taxi CUBE", new ScoreMidAndTaxiMode(TargetedObject.CUBE));

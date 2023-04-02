@@ -1,6 +1,7 @@
 package frc.robot.auto.modes;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -149,6 +150,11 @@ public class MultiGamepiece extends AutoModeBase {
 
         );
 
+        // This heading might require tuning, based of the calculation it is
+        // "Rotation2d(Rads: -0.71, Deg: -40.40) ... might need to rotate by a few degrees
+        Rotation2d optimalHeading = Stage2.minus(CS_UpperEntrance).getAngle();
+
+
 
         // Score Gamepiece 1
         if(doStage1)
@@ -174,7 +180,14 @@ public class MultiGamepiece extends AutoModeBase {
                     startingRotation.getRotation()
                 )
             );
-            scoreToGp1TrajectoryAction.addTranslation(CS_UpperEntrance_Tighter);
+           // scoreToGp1TrajectoryAction.addTranslation(CS_UpperEntrance_Tighter);
+
+            scoreToGp1TrajectoryAction.addPose(
+                new Pose2d(
+                    CS_UpperEntrance_Tighter,
+                    SwerveRotation.BACK_FACING_GRID.getRotation()
+                )
+            );
             /*
             scoreToGp1TrajectoryAction.addPose(
                 new Pose2d(
@@ -279,13 +292,26 @@ public class MultiGamepiece extends AutoModeBase {
                 )
             );   
             */     
-            Score2ToGp2TrajectoryAction.addTranslation(Stage2Entrance);
 
-            
-            Score2ToGp2TrajectoryAction.addPose(
+            // if we wanted that other approach
+            //Score2ToGp2TrajectoryAction.addTranslation(Stage2Entrance);
+
+            // Diagnoal approach
+            Score2ToGp2TrajectoryAction.addTranslation(CS_UpperEntrance);
+
+            // 
+            /*
+                         Score2ToGp2TrajectoryAction.addPose(
                 new Pose2d(
                     Stage2.plus(new Translation2d(0, -.1)),
                     SwerveRotation.FRONT_FACING_RIGHT.getRotation()
+                )
+            );
+             */
+            Score2ToGp2TrajectoryAction.addPose(
+                new Pose2d(
+                    Stage2.plus(new Translation2d(0, -.1)),
+                    optimalHeading
                 )
             );
             
@@ -312,11 +338,11 @@ public class MultiGamepiece extends AutoModeBase {
         {
             // Drive to Score 3
             DriveTrajectoryAction Gp2ToScore3TrajectoryAction = new DriveTrajectoryAction(
-                SwerveRotation.FRONT_FACING_RIGHT.getRotation(),CurSpeedConfig[3][0],CurSpeedConfig[3][1]);
+                optimalHeading,CurSpeedConfig[3][0],CurSpeedConfig[3][1]);
             Gp2ToScore3TrajectoryAction.addPose(
                 new Pose2d(
                     Stage2,
-                    SwerveRotation.FRONT_FACING_RIGHT.getRotation()
+                    optimalHeading
                 )
             );
             Gp2ToScore3TrajectoryAction.addTranslation(CS_UpperEntrance);
