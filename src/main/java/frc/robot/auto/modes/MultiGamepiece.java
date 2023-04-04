@@ -110,7 +110,7 @@ public class MultiGamepiece extends AutoModeBase {
         // Force Blue Alliance now - update maybe no longer do this?
         // the Red alliance post flipper handles the rest
         Alliance currentAlliance = mRobotState.getAlliance();
-        //currentAlliance = Alliance.Blue; // everything should be set
+        currentAlliance = Alliance.Blue; // everything should be set
 
         // Scoring Positions
         Translation2d ScoreSpot1 = FieldConstants.getTargetPositionPose(
@@ -206,6 +206,7 @@ public class MultiGamepiece extends AutoModeBase {
                     SwerveRotation.BACK_FACING_GRID.getRotation()
                 )
             );
+            //if(mRobotState.getAlliance() == Alliance.Red) scoreToGp1TrajectoryAction.mirror();
             scoreToGp1TrajectoryAction.generate();
             incrimentDuration(scoreToGp1TrajectoryAction.getEstimatedDuration());
 
@@ -256,6 +257,7 @@ public class MultiGamepiece extends AutoModeBase {
                     startingRotation.getRotation()
                 )
             );
+            //if(mRobotState.getAlliance() == Alliance.Red) gp1ToScore2TrajectoryAction.mirror();
             gp1ToScore2TrajectoryAction.generate();
             incrimentDuration(gp1ToScore2TrajectoryAction.getEstimatedDuration());
             addAction(
@@ -321,7 +323,7 @@ public class MultiGamepiece extends AutoModeBase {
                     optimalHeading
                 )
             );
-            
+            //if(mRobotState.getAlliance() == Alliance.Red) Score2ToGp2TrajectoryAction.mirror();
             Score2ToGp2TrajectoryAction.generate();
             //addAction(Score2ToGp2TrajectoryAction);
             incrimentDuration(Score2ToGp2TrajectoryAction.getEstimatedDuration());
@@ -370,6 +372,7 @@ public class MultiGamepiece extends AutoModeBase {
                 )
             );
             Gp2ToScore3TrajectoryAction.setEndVelocity(0);
+            //if(mRobotState.getAlliance() == Alliance.Red) Gp2ToScore3TrajectoryAction.mirror();
             Gp2ToScore3TrajectoryAction.generate();
             incrimentDuration(Gp2ToScore3TrajectoryAction.getEstimatedDuration());
             addAction(

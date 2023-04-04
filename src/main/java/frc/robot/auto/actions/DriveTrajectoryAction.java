@@ -148,6 +148,52 @@ public class DriveTrajectoryAction implements Action {
     public void useVision() {
         mUseVision = true;
     }
+
+    // Converts the Trajectory to a Mirrored Version
+    public void mirror() {
+        
+        // Reference Pose (First on in Path)
+        Pose2d referencePose = null;
+
+        // List of Mirror Poses
+        List<Pair<Pose2d, PoseType>> mirroredPoses = new Vector<>();
+
+        // Itertate Poses
+        for(int i = 0; i < mPoses.size(); ++i) 
+        {
+            Pose2d CurrentPose = mPoses.get(i).getFirst();
+            PoseType CurrentPoseType = mPoses.get(i).getSecond();
+
+            if(null == referencePose)
+            {
+                // Reference Pose
+                referencePose = CurrentPose;
+            }else {
+                // Next Pose in Trajectory
+                double yRef = referencePose.getY();
+                double yDist = CurrentPose.getY() - yRef;
+
+                // Translation Component
+                Translation2d transComp = new Translation2d( 
+                    CurrentPose.getX(), yDist + CurrentPose.getY()
+                );
+
+                // Rotation Component
+                Rotation2d rotComp = new Rotation2d(
+                    CurrentPose.getRotation().getCos(),
+                    CurrentPose.getRotation().getSin());
+
+                // Create new Pose
+                CurrentPose = new Pose2d(transComp, rotComp);
+            }
+
+            // Add to Mirrored List
+            mirroredPoses.add(new Pair<Pose2d,PoseType>(CurrentPose, CurrentPoseType));
+        }
+
+        // Set to new List
+        mPoses = mirroredPoses;
+    }
     
     // Generate the Trajectory
     public void generate()
@@ -210,13 +256,12 @@ public class DriveTrajectoryAction implements Action {
            // Flip if Red
            // X Side will behave the same, Y will be different
            Trajectory.State driveState = 
-                RedAllianceFlipUtility.apply(
-                    mCustomTrajectoryGenerator.getDriveTrajectory().sample(currentTime)
-                );
+           RedAllianceFlipUtility.apply(
+                    mCustomTrajectoryGenerator.getDriveTrajectory().sample(currentTime));
+            
             RotationSequence.State holonomicRotationState = 
-                RedAllianceFlipUtility.apply(
-                    mCustomTrajectoryGenerator.getHolonomicRotationSequence().sample(currentTime)
-            );
+            RedAllianceFlipUtility.apply(
+                    mCustomTrajectoryGenerator.getHolonomicRotationSequence().sample(currentTime));
         
 
             // Get Robot Pose to Calculate Error
@@ -224,6 +269,8 @@ public class DriveTrajectoryAction implements Action {
             Pose2d currentRobotPose = mRobotState.isRealRobot() ? 
                 (mUseVision ? mRobotState.getPose() : mRobotState.getDriveOnlyPose()) :
                 (mRobotState.getDriveOnlySimPose());
+
+            //currentRobotPose = RedAllianceFlipUtility.otherFlip(currentRobotPose);
 
             // Calculate velocity
             ChassisSpeeds nextDriveState =

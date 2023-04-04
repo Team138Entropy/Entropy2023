@@ -234,6 +234,9 @@ public abstract class AutoModeBase {
     {
         if(hasStartingPosition())
         {
+            // Always use Blue Alliance Color
+            allianceColor = Alliance.Blue;
+
             // Has a Starting Position, find the pose for it
             Pose2d pose = FieldConstants.Auto.getStartingPose(
                 mStartingPosition.get(), 

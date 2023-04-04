@@ -56,6 +56,17 @@ public class RedAllianceFlipUtility {
     }
   }
 
+  public static Pose2d otherFlip(Pose2d pose) {
+    if (shouldFlip()) {
+      return new Pose2d(
+          pose.getX(),
+          FieldConstants.fieldWidth - pose.getY(),
+          new Rotation2d(pose.getRotation().getCos(), pose.getRotation().getSin()));
+    } else {
+      return pose;
+    }
+  }
+
   /**
    * Flips a trajectory state to the correct side of the field based on the current alliance color.
    * This function has been modified from the original one, and no longer inverts the X axis

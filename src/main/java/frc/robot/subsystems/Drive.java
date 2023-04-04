@@ -618,7 +618,7 @@ public class Drive extends Subsystem {
         if(Math.abs(speed.omegaRadiansPerSecond) > 0)
         {
             double sRotation = speed.omegaRadiansPerSecond;
-            if(DriverStation.getAlliance() == Alliance.Blue)
+            if(DriverStation.getAlliance() == Alliance.Blue || true)
             {
               sRotation *= -1;
             }
@@ -1054,7 +1054,7 @@ public class Drive extends Subsystem {
   public void updateSwerveSimPositions(double dt)
   {
     for(SwerveModule mod : mSwerveModules){
-      mod.updateSimPosition(dt, DriverStation.getAlliance() == Alliance.Red);
+      mod.updateSimPosition(dt, false);
     }
   }
 

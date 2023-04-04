@@ -34,6 +34,7 @@ import frc.robot.subsystems.*;
 import frc.robot.subsystems.Drive.DriveStyle;
 import frc.robot.util.TuneableNumber;
 import frc.robot.util.drivers.Pigeon;
+import frc.robot.util.trajectory.RedAllianceFlipUtility;
 import edu.wpi.first.wpilibj.Relay;
 import frc.robot.vision.AutoPilot;
 import frc.robot.vision.chargingStationAutoPilot;
@@ -246,8 +247,8 @@ public class Robot extends TimedRobot {
     // Zero Simulation Yaw
     if(!mRealRobot)
     {
-      //mPigeon.setSimAdjustmentAngle(DriverStation.getAlliance() == Alliance.Red ? 0 : 0);
-      mPigeon.setSimYawDegrees(DriverStation.getAlliance() == Alliance.Red ? 180 : 0);
+      mPigeon.setSimAdjustmentAngle(DriverStation.getAlliance() == Alliance.Red ? 0 : 0);
+      //mPigeon.setSimYawDegrees(DriverStation.getAlliance() == Alliance.Red ? 180 : 0);
     }
     
     mArm.zeroSensors();
@@ -280,7 +281,7 @@ public class Robot extends TimedRobot {
       if(!mRealRobot)
       {
         double simAngle = 0;
-        if(DriverStation.getAlliance() == Alliance.Red)
+        if(false && DriverStation.getAlliance() == Alliance.Red)
         {
           simAngle = 180;
         }
@@ -396,6 +397,7 @@ public class Robot extends TimedRobot {
     mAutoModes.addOption("Cube - Charging Station", new ChargingStationMode(TargetedObject.CUBE, false));
     mAutoModes.addOption("Cone - Charging Station2", new ChargingStationMode2(TargetedObject.CONE, false));
     mAutoModes.addOption("Cube - Charging Station2", new ChargingStationMode2(TargetedObject.CUBE, false));
+    mAutoModes.addOption("L Path", new LPath());
     mAutoModes.addOption("1 CONE 1 CUBE HIGH", new MultiGamepiece(
       new Enums.ScorePositions[] {Enums.ScorePositions.Top, Enums.ScorePositions.Top},
       new Enums.GamePiece[] {Enums.GamePiece.Cone, Enums.GamePiece.Cube}
@@ -451,7 +453,8 @@ public class Robot extends TimedRobot {
     // Set Starting Pose if Specified
     if(mAutoModeBase.hasStartingPose())
     {
-      mRobotState.resetPosition(mAutoModeBase.getStartingPose());
+      Pose2d startingPose = RedAllianceFlipUtility.otherFlip(mAutoModeBase.getStartingPose());
+      mRobotState.resetPosition(startingPose);
     }
 
     // Close Grasper

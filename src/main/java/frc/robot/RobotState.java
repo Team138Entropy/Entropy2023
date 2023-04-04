@@ -32,6 +32,7 @@ import frc.robot.Constants.Vision;
 import frc.robot.Enums.CurrentMode;
 import frc.robot.subsystems.Drive;
 import frc.robot.util.drivers.Pigeon;
+import frc.robot.util.trajectory.RedAllianceFlipUtility;
 import frc.robot.vision.AutoPilot;
 import frc.robot.vision.photonVision;
 
@@ -206,7 +207,7 @@ public class RobotState {
         // Since the Robot will have been physically moved, need to update in sim
         if(!mRealRobot)
         {
-            if(DriverStation.getAlliance() == Alliance.Red)
+            if(false && DriverStation.getAlliance() == Alliance.Red)
             {
                 var tempRot = pose.getRotation().rotateBy(Rotation2d.fromDegrees(180));
                 pose = new Pose2d(
@@ -411,7 +412,7 @@ public class RobotState {
 
     public Pose2d getDriveOnlySimPose() {
         Pose2d result = mRobotPoseDriveOnly;
-        if(DriverStation.getAlliance() == Alliance.Red)
+        if(false && DriverStation.getAlliance() == Alliance.Red)
         {
             var rotation = result.getRotation().rotateBy(Rotation2d.fromDegrees(180));
             result = new Pose2d(
@@ -434,6 +435,29 @@ public class RobotState {
 
         //mVisualField.setRobotPose(getPose());
         mVisualField.setRobotPose(mRobotPoseDriveOnly);
+
+
+        Pose2d flippedPose = RedAllianceFlipUtility.apply(mRobotPoseDriveOnly);
+        FieldObject2d flipME = mVisualField.getObject("Flipped Robot");
+        flipME.setPose(flippedPose);
+
+
+
+        // Test Poses
+        Pose2d testPose1 = new Pose2d(
+            new Translation2d(7, 7), Rotation2d.fromDegrees(200));
+        FieldObject2d testPose1Obj = mVisualField.getObject("Test Pose 1");
+        testPose1Obj.setPose(testPose1);
+
+
+        Pose2d testPose2 = new Pose2d(
+            new Translation2d(8.2, 7), 
+            new Rotation2d(
+                testPose1.getRotation().getCos(),
+                -testPose1.getRotation().getSin()));
+        FieldObject2d testPose2Obj = mVisualField.getObject("Test Pose 2");
+        testPose2Obj.setPose(testPose2);
+
 
         // Iterate April Tags and Plot
         for(int i = 0; i < FieldConstants.aprilTags.size(); i++)
