@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.Constants;
 import frc.robot.Enums;
 import frc.robot.FieldConstants;
 import frc.robot.RobotState;
@@ -17,6 +18,7 @@ import frc.robot.auto.actions.Action;
 import frc.robot.auto.actions.ArmAction;
 import frc.robot.auto.actions.DriveTrajectoryAction;
 import frc.robot.auto.actions.GrasperAction;
+import frc.robot.auto.actions.GrasperTimingAction;
 import frc.robot.auto.actions.LambdaAction;
 import frc.robot.auto.actions.ParallelAction;
 import frc.robot.auto.actions.SequentialAction;
@@ -271,6 +273,7 @@ public class MultiGamepiece extends AutoModeBase {
             //addAction(new ArmAction(ArmTargets.TOP_SCORING_FRONT));
 
             // Score Game GP 2
+            addAction(new GrasperTimingAction(Constants.Grasper.regrabSafeDelay));
             addAction(new WaitAction(.0));
             addAction(new GrasperAction(true));
 
@@ -328,6 +331,7 @@ public class MultiGamepiece extends AutoModeBase {
                     Score2ToGp2TrajectoryAction,
                     new SequentialAction(
                         new WaitAction(1),
+                        new GrasperTimingAction(Constants.Grasper.autoDefaultDelay),
                         new GrasperAction(true),
                         new ArmAction(ArmTargets.INTAKE_GROUND_FRONT)
 

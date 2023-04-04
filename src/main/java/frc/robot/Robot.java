@@ -459,6 +459,7 @@ public class Robot extends TimedRobot {
 
     // Set Arm Algorthm
     mSuperStructure.setArmControlType(ArmControlType.Advanced);
+    mArm.setArmFeedforward(.35);
 
     // Tell Arm to go to target position
     mCurrentArmTarget = ArmTargets.HOME_BACKSIDE;
@@ -480,7 +481,8 @@ public class Robot extends TimedRobot {
     );
     mAutoPilot.setMaxSpeed(Constants.SwerveConstants.AutoConstants.AutoPilot.CSMaxSpeed);
 
-    mGrasper.mDelaySeconds = 0;
+    // Configure Close Delay
+    mGrasper.mDelaySeconds = Constants.Grasper.autoDefaultDelay;
   }
 
   /** This function is called periodically during autonomous. */
@@ -525,6 +527,7 @@ public class Robot extends TimedRobot {
 
     // Set Arm Algorthm
     mSuperStructure.setArmControlType(ArmControlType.Simple);
+    mArm.setArmFeedforward(.2);
     
     if(mSuperStructure.getTargetArmPosition() != mCurrentArmTarget && mSuperStructure.getTargetArmPosition() != null){
       mCurrentArmTarget = mSuperStructure.getTargetArmPosition();
@@ -543,7 +546,8 @@ public class Robot extends TimedRobot {
     mAutoPilot.setMaxSpeed(Constants.SwerveConstants.AutoConstants.AutoPilot.TeleopMaxSpeed);
     mAutoPilot.setUseDriveOnlyPose(false);
 
-    mGrasper.mDelaySeconds = 0.15;
+    // Configure Beam Close Delay
+    mGrasper.mDelaySeconds = Constants.Grasper.teleDefaultDelay;
   }
 
   /** This function is called periodically during operator control. */

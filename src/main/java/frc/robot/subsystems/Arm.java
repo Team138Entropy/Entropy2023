@@ -28,6 +28,7 @@ public class Arm extends Subsystem {
     private double mTargetTicks;
     private final double mShoulderCoefficient = 360.0/8192.0;
     private int mPidSlot;
+    private double mRotationFeedForward = .2;
 
     // Extension Information
     private double mMaximumExtensionTarget;
@@ -143,7 +144,7 @@ public class Arm extends Subsystem {
     //      0 & 180 are completely horizontal. Maximum KF
     public double getGravity(){
         double angle = ticksToArmAngle(MasterShoulderMotor.getSelectedSensorPosition());
-        double FF = .2; //scale this by extension?
+        double FF = mRotationFeedForward; //scale this by extension?
         /*/
         if(angle <= 180 && angle >= 90)
         {
@@ -325,6 +326,12 @@ public class Arm extends Subsystem {
             return false;
         }
         return true;
+    }
+
+    // Sets Arm Feedforward value
+    public void setArmFeedforward(double value)
+    {
+        mRotationFeedForward = value;
     }
 
 

@@ -461,6 +461,9 @@ public class Constants {
 
   public static class Grasper {
    public static final int GrasperMotorId = 3;
+   public static final double autoDefaultDelay = 0;
+   public static final double teleDefaultDelay = .15;
+   public static final double regrabSafeDelay = .5; // avoid a regrab
    
   }
 

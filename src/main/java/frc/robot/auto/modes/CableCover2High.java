@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.Constants;
 import frc.robot.Enums;
 import frc.robot.FieldConstants;
 import frc.robot.RobotState;
@@ -16,6 +17,7 @@ import frc.robot.auto.actions.Action;
 import frc.robot.auto.actions.ArmAction;
 import frc.robot.auto.actions.DriveTrajectoryAction;
 import frc.robot.auto.actions.GrasperAction;
+import frc.robot.auto.actions.GrasperTimingAction;
 import frc.robot.auto.actions.ParallelAction;
 import frc.robot.auto.actions.SequentialAction;
 import frc.robot.auto.actions.WaitAction;
@@ -128,8 +130,10 @@ public class CableCover2High extends AutoModeBase {
         );
 
         // Wait and Eject
+        addAction(new GrasperTimingAction(Constants.Grasper.regrabSafeDelay));
         addAction(new WaitAction(.1));
         addAction(new GrasperAction(true));
+
 
         //addAction(new ArmAction(ArmTargets.HOME_BACKSIDE));
 
