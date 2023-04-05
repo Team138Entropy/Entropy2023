@@ -437,7 +437,7 @@ public class RobotState {
         mVisualField.setRobotPose(mRobotPoseDriveOnly);
 
 
-        Pose2d flippedPose = RedAllianceFlipUtility.apply(mRobotPoseDriveOnly);
+        Pose2d flippedPose = RedAllianceFlipUtility.superFlip(mRobotPoseDriveOnly);
         FieldObject2d flipME = mVisualField.getObject("Flipped Robot");
         flipME.setPose(flippedPose);
 

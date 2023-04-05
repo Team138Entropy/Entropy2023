@@ -36,6 +36,7 @@ public class CableCover2High extends AutoModeBase {
 
         // Current Alliance of this Auto Mode
         Alliance currentAlliance = mRobotState.getAlliance();
+        currentAlliance = Alliance.Blue; //always blue
 
         // Charging Station 'Safe' Points
         // Don't get too close to the charging station!

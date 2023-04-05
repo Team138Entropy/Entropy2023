@@ -56,6 +56,17 @@ public class RedAllianceFlipUtility {
     }
   }
 
+  public static Pose2d superFlip(Pose2d pose) {
+    if (shouldFlip()) {
+      return new Pose2d(
+          FieldConstants.fieldLength - pose.getX(),
+          FieldConstants.fieldWidth - pose.getY(),
+          new Rotation2d(-pose.getRotation().getCos(), pose.getRotation().getSin()));
+    } else {
+      return pose;
+    }
+  }
+
   public static Pose2d otherFlip(Pose2d pose) {
     if (shouldFlip()) {
       return new Pose2d(

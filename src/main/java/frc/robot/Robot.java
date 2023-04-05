@@ -390,36 +390,16 @@ public class Robot extends TimedRobot {
   private void populateAutonomousModes(){
     // Auto Mode
     mAutoModes = new SendableChooser<AutoModeBase>();
-
-    mAutoModes.setDefaultOption("Cone - Charging Station (Aquire Object)", new ChargingStationMode(TargetedObject.CONE, true));
+    mAutoModes.addOption("Cone - Charging Station (Aquire Object)", new ChargingStationMode(TargetedObject.CONE, true));
     mAutoModes.addOption("Cube - Charging Station (Aquire Object)", new ChargingStationMode(TargetedObject.CUBE, true));
     mAutoModes.addOption("Cone - Charging Station", new ChargingStationMode(TargetedObject.CONE, false));
     mAutoModes.addOption("Cube - Charging Station", new ChargingStationMode(TargetedObject.CUBE, false));
-    mAutoModes.addOption("Cone - Charging Station2", new ChargingStationMode2(TargetedObject.CONE, false));
-    mAutoModes.addOption("Cube - Charging Station2", new ChargingStationMode2(TargetedObject.CUBE, false));
     mAutoModes.addOption("L Path", new LPath());
-    mAutoModes.addOption("1 CONE 1 CUBE HIGH", new MultiGamepiece(
-      new Enums.ScorePositions[] {Enums.ScorePositions.Top, Enums.ScorePositions.Top},
-      new Enums.GamePiece[] {Enums.GamePiece.Cone, Enums.GamePiece.Cube}
-    ));
-
-    mAutoModes.addOption("Cone High, Cube High, Cone High", new MultiGamepiece(
+    mAutoModes.addOption("2.5 Cone Cube Cone/Cube", new MultiGamepiece(
       new Enums.ScorePositions[] {Enums.ScorePositions.Top, Enums.ScorePositions.Top, Enums.ScorePositions.Top},
       new Enums.GamePiece[] {Enums.GamePiece.Cone, Enums.GamePiece.Cube, Enums.GamePiece.Cone}
     ));
-
-
-       mAutoModes.addOption("3 Cube Low", new MultiGamepiece(
-      new Enums.ScorePositions[] {Enums.ScorePositions.Low, Enums.ScorePositions.Low, Enums.ScorePositions.Low},
-      new Enums.GamePiece[] {Enums.GamePiece.Cube, Enums.GamePiece.Cube, Enums.GamePiece.Cube}
-    ));
-    mAutoModes.addOption("2 Cube Low", new MultiGamepiece(
-      new Enums.ScorePositions[] {Enums.ScorePositions.Low, Enums.ScorePositions.Low},
-      new Enums.GamePiece[] {Enums.GamePiece.Cube, Enums.GamePiece.Cube}
-    ));
-    mAutoModes.addOption("CABLE COVER 2 High", new CableCover2High());
-    mAutoModes.addOption("Last Attempt 3 Object", new LastAttempt3Object());
-
+    mAutoModes.addOption("Cable Cover Cone Cube", new CableCover2High());
     mAutoModes.addOption("Taxi Mode", new taxiMode());
     mAutoModes.addOption("Score Mid and taxi CUBE", new ScoreMidAndTaxiMode(TargetedObject.CUBE));
     mAutoModes.addOption("Score High and taxi  CONE", new ScoreHighAndTaxi(TargetedObject.CONE));
@@ -453,6 +433,7 @@ public class Robot extends TimedRobot {
     // Set Starting Pose if Specified
     if(mAutoModeBase.hasStartingPose())
     {
+      // Because all automodes are layed out for blue, must flip ref point for red
       Pose2d startingPose = RedAllianceFlipUtility.otherFlip(mAutoModeBase.getStartingPose());
       mRobotState.resetPosition(startingPose);
     }
