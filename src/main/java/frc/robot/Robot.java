@@ -390,15 +390,15 @@ public class Robot extends TimedRobot {
   private void populateAutonomousModes(){
     // Auto Mode
     mAutoModes = new SendableChooser<AutoModeBase>();
+    mAutoModes.setDefaultOption("2.5 Cone Cube Cone/Cube", new MultiGamepiece(
+      new Enums.ScorePositions[] {Enums.ScorePositions.Top, Enums.ScorePositions.Top, Enums.ScorePositions.Top},
+      new Enums.GamePiece[] {Enums.GamePiece.Cone, Enums.GamePiece.Cube, Enums.GamePiece.Cone}
+    ));
     mAutoModes.addOption("Cone - Charging Station (Aquire Object)", new ChargingStationMode(TargetedObject.CONE, true));
     mAutoModes.addOption("Cube - Charging Station (Aquire Object)", new ChargingStationMode(TargetedObject.CUBE, true));
     mAutoModes.addOption("Cone - Charging Station", new ChargingStationMode(TargetedObject.CONE, false));
     mAutoModes.addOption("Cube - Charging Station", new ChargingStationMode(TargetedObject.CUBE, false));
     mAutoModes.addOption("L Path", new LPath());
-    mAutoModes.addOption("2.5 Cone Cube Cone/Cube", new MultiGamepiece(
-      new Enums.ScorePositions[] {Enums.ScorePositions.Top, Enums.ScorePositions.Top, Enums.ScorePositions.Top},
-      new Enums.GamePiece[] {Enums.GamePiece.Cone, Enums.GamePiece.Cube, Enums.GamePiece.Cone}
-    ));
     mAutoModes.addOption("Cable Cover Cone Cube", new CableCover2High());
     mAutoModes.addOption("Taxi Mode", new taxiMode());
     mAutoModes.addOption("Score Mid and taxi CUBE", new ScoreMidAndTaxiMode(TargetedObject.CUBE));

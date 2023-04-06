@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants;
 import frc.robot.Enums;
@@ -11,6 +12,7 @@ import frc.robot.FieldConstants;
 import frc.robot.RobotState;
 import frc.robot.Enums.ArmTargets;
 import frc.robot.Enums.GamePiece;
+import frc.robot.Enums.SwerveCardinal;
 import frc.robot.Enums.SwerveRotation;
 import frc.robot.Enums.TargetedPositions;
 import frc.robot.auto.AutoModeEndedException;
@@ -23,6 +25,7 @@ import frc.robot.auto.actions.LambdaAction;
 import frc.robot.auto.actions.ParallelAction;
 import frc.robot.auto.actions.SequentialAction;
 import frc.robot.auto.actions.WaitAction;
+import frc.robot.auto.actions.*;
 import frc.robot.subsystems.Drive;
 
 public class MultiGamepiece extends AutoModeBase {
@@ -207,6 +210,7 @@ public class MultiGamepiece extends AutoModeBase {
                 )
             );
             //if(mRobotState.getAlliance() == Alliance.Red) scoreToGp1TrajectoryAction.mirror();
+            scoreToGp1TrajectoryAction.setEndVelocity(0);
             scoreToGp1TrajectoryAction.generate();
             incrimentDuration(scoreToGp1TrajectoryAction.getEstimatedDuration());
 
@@ -235,7 +239,11 @@ public class MultiGamepiece extends AutoModeBase {
                 )
             );
             gp1ToScore2TrajectoryAction.addTranslation(CS_UpperEntrance);
-            gp1ToScore2TrajectoryAction.addTranslation(CS_LowerEntrance);
+            //gp1ToScore2TrajectoryAction.addTranslation(CS_LowerEntrance);
+
+            // Slightly tightend to charging station
+            gp1ToScore2TrajectoryAction.addTranslation(CS_LowerEntrance.plus(new Translation2d(0, -Units.inchesToMeters(.2))));
+
 
             /*
             gp1ToScore2TrajectoryAction.addDifferentialPose(
@@ -258,6 +266,7 @@ public class MultiGamepiece extends AutoModeBase {
                 )
             );
             //if(mRobotState.getAlliance() == Alliance.Red) gp1ToScore2TrajectoryAction.mirror();
+            gp1ToScore2TrajectoryAction.setEndVelocity(0);
             gp1ToScore2TrajectoryAction.generate();
             incrimentDuration(gp1ToScore2TrajectoryAction.getEstimatedDuration());
             addAction(
@@ -304,9 +313,12 @@ public class MultiGamepiece extends AutoModeBase {
             //Score2ToGp2TrajectoryAction.addTranslation(Stage2Entrance);
 
             // Diagnoal approach
+            /*
             Score2ToGp2TrajectoryAction.addTranslation(CS_UpperEntrance.plus(
                 new Translation2d(0, -.1)
             ));
+            */
+            Score2ToGp2TrajectoryAction.addTranslation(CS_UpperEntrance);
 
             // 
             /*
@@ -317,13 +329,25 @@ public class MultiGamepiece extends AutoModeBase {
                 )
             );
              */
+
+             /*
             Score2ToGp2TrajectoryAction.addPose(
                 new Pose2d(
                     Stage2.plus(new Translation2d(0, -.1)),
                     optimalHeading
                 )
             );
+            */
+            Score2ToGp2TrajectoryAction.addPose(
+                new Pose2d(
+                    //Stage2.plus(new Translation2d(0, -.1)),
+                    Stage2Entrance,
+                    startingRotation.getRotation()
+                )
+            );
+
             //if(mRobotState.getAlliance() == Alliance.Red) Score2ToGp2TrajectoryAction.mirror();
+            Score2ToGp2TrajectoryAction.setEndVelocity(0);
             Score2ToGp2TrajectoryAction.generate();
             //addAction(Score2ToGp2TrajectoryAction);
             incrimentDuration(Score2ToGp2TrajectoryAction.getEstimatedDuration());
@@ -332,19 +356,25 @@ public class MultiGamepiece extends AutoModeBase {
                 new ParallelAction(
                     Score2ToGp2TrajectoryAction,
                     new SequentialAction(
-                        new WaitAction(1),
+                        new SequentialAction(
+                            //new ArmAction(ArmTargets.MID_SCORING_FRONT),
+                            //new WaitAction(.05),
+                            //new ArmAction(ArmTargets.INTAKE_GROUND_FRONT)
+                            new WaitAction(1),
+                            new ArmAction(ArmTargets.INTAKE_GROUND_FRONT)
+                            ),
                         new GrasperTimingAction(Constants.Grasper.autoDefaultDelay),
-                        new GrasperAction(true),
-                        new ArmAction(ArmTargets.INTAKE_GROUND_FRONT)
-
+                        new GrasperAction(true)
                     )
                 )
             );
             addAction(new WaitAction(.05));
+
+            addAction(new TurnInPlaceAction(SwerveCardinal.LEFT));
         }
 
         // Score Gamepiece 3
-        if(doStage3)
+        if(doStage3 && false)
         {
             // Drive to Score 3
             DriveTrajectoryAction Gp2ToScore3TrajectoryAction = new DriveTrajectoryAction(

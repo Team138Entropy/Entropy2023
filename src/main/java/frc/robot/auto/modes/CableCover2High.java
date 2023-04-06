@@ -67,7 +67,7 @@ public class CableCover2High extends AutoModeBase {
 
       // Tell the Arm to go to the Backside Intake while you slowly drive
       DriveTrajectoryAction scoreToGp1TrajectoryAction = new DriveTrajectoryAction(
-        SwerveRotation.FRONT_FACING_GRID.getRotation(), 1.4, 1.8);
+        SwerveRotation.FRONT_FACING_GRID.getRotation(), 1.4, 1.7);
         scoreToGp1TrajectoryAction.addPose(
             new Pose2d(
                 ScoreSpot1,
@@ -114,7 +114,7 @@ public class CableCover2High extends AutoModeBase {
         Gp1ToScoreSpot2.addTranslation(CS_LowerEntrance);
         Gp1ToScoreSpot2.addPose(
             new Pose2d(
-                ScoreSpot2.plus(new Translation2d(-.52,.1)),
+                ScoreSpot2.plus(new Translation2d(-.0,.1)),
                 SwerveRotation.FRONT_FACING_GRID.getRotation()
             )
         );

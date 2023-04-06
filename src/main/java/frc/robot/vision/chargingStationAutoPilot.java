@@ -98,7 +98,7 @@ public class chargingStationAutoPilot {
                 // Set Swerve to those Module States
                 mDrive.setSwerveDrive(new Translation2d(error,0), 0, true, true, false);
                 if(Math.abs(pitchAngleRate) > Constants.AutoPilot.PitchAngleRateThreshold.get()){
-                    mState = balanceState.DRIVE_BACK;
+                    mState = balanceState.LEVELED;
 
                     // Setup AutoPilot 
                     mAutoPilot.setUseDriveOnlyPose(true);

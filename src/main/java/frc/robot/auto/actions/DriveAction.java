@@ -46,7 +46,13 @@ public class DriveAction implements Action {
     // if trajectory is done
     @Override
     public boolean isFinished() {
-        return mTimer.hasElapsed(mSeconds);
+        boolean isDone = mTimer.hasElapsed(mSeconds);
+        if(isDone)
+        {
+                // bad practice
+                done();
+        }
+        return isDone;
     }
 
     @Override

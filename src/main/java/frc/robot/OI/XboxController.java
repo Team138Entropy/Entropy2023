@@ -81,7 +81,8 @@ public class XboxController {
   }
 
   double getJoystick(Side side, Axis axis) {
-    double deadband = Constants.Controllers.joystickDeadband;
+    double deadband = .0;
+    //double deadband = Constants.Controllers.joystickDeadband;
 
     boolean left = side == Side.LEFT;
     boolean y = axis == Axis.Y;

@@ -24,6 +24,7 @@ import frc.robot.auto.actions.DriveAction;
 import frc.robot.auto.actions.DriveToPose;
 import frc.robot.auto.actions.DriveTrajectoryAction;
 import frc.robot.auto.actions.GrasperAction;
+import frc.robot.auto.actions.LambdaAction;
 import frc.robot.auto.actions.ParallelAction;
 import frc.robot.auto.actions.PickupAction;
 import frc.robot.auto.actions.SequentialAction;
@@ -31,6 +32,7 @@ import frc.robot.auto.actions.SetPose;
 import frc.robot.auto.actions.TargetWaypoint;
 import frc.robot.auto.actions.TurnInPlaceAction;
 import frc.robot.auto.actions.WaitAction;
+import frc.robot.subsystems.Drive;
 
 public class ChargingStationMode extends AutoModeBase {
     RobotState mRobotState = RobotState.getInstance();
@@ -51,11 +53,11 @@ public class ChargingStationMode extends AutoModeBase {
         addAction(new GrasperAction(true));
 
         // Wait for Object to fall
-        addAction(new WaitAction(.1));
+        addAction(new WaitAction(.5));
 
         //make sure its closed
         addAction(new GrasperAction(false));
-
+        
 
 
         addAction(
@@ -63,12 +65,16 @@ public class ChargingStationMode extends AutoModeBase {
                 new ArmAction(ArmTargets.HOME_BACKSIDE),
                 new SequentialAction(
                     new WaitAction(1.1),
-                    new DriveAction(new Translation2d(.5,0),3)
+                    new DriveAction(new Translation2d(.9,0),5)
                 )
             )
         );
 
         // Move Arm to Safety
+
+        addAction(                  new LambdaAction( () -> {
+            Drive.getInstance().setBrake(true);
+        }));
         
 
         // Drive Over the Ramp (Only Move in the +X)
@@ -76,10 +82,10 @@ public class ChargingStationMode extends AutoModeBase {
         // Now would be the Time to attempt an aquire
         addAction(new WaitAction(.05));
 
-       // addAction(new DriveAction(new Translation2d(-.5,0),3));
+        
 
         // Charging Station Action
-        addAction(new ChargingStationAction());
+       // addAction(new ChargingStationAction());
 
 
 
