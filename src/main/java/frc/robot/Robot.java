@@ -400,6 +400,7 @@ public class Robot extends TimedRobot {
     mAutoModes.addOption("Cube - Charging Station", new ChargingStationMode(TargetedObject.CUBE, false));
     mAutoModes.addOption("L Path", new LPath());
     mAutoModes.addOption("Cable Cover Cone Cube", new CableCover2High());
+    mAutoModes.addOption("NON Cable Cover Cone Cube", new NonCableCover2());
     mAutoModes.addOption("Taxi Mode", new taxiMode());
     mAutoModes.addOption("Score Mid and taxi CUBE", new ScoreMidAndTaxiMode(TargetedObject.CUBE));
     mAutoModes.addOption("Score High and taxi  CONE", new ScoreHighAndTaxi(TargetedObject.CONE));

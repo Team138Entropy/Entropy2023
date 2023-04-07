@@ -22,15 +22,15 @@ import frc.robot.auto.actions.ParallelAction;
 import frc.robot.auto.actions.SequentialAction;
 import frc.robot.auto.actions.WaitAction;
 
-public class CableCover2High extends AutoModeBase {
+public class NonCableCover2 extends AutoModeBase {
     RobotState mRobotState = RobotState.getInstance();
 
-    // Cable Cover 2 High
-    public CableCover2High( )
+    // NON Cable Cover 2 High
+    public NonCableCover2( )
     {
         // Set Odometry Starting Location
         setStartingPosition(
-            TargetedPositions.GRID_9, 
+            TargetedPositions.GRID_1, 
             SwerveRotation.FRONT_FACING_GRID
         );
 
@@ -38,26 +38,41 @@ public class CableCover2High extends AutoModeBase {
         Alliance currentAlliance = mRobotState.getAlliance();
         currentAlliance = Alliance.Blue; //always blue
 
-        // Charging Station 'Safe' Points
-        // Don't get too close to the charging station!
-        Translation2d CS_LowerEntrance = FieldConstants.Community.chargingStationCornersBlue[0];
-        Translation2d CS_UpperEntrance = FieldConstants.Community.chargingStationCornersBlue[2];
-
-        // Make these Safe
-        CS_LowerEntrance = CS_LowerEntrance.plus(new Translation2d(0, -.75));
-        CS_UpperEntrance = CS_UpperEntrance.plus(new Translation2d(0, -.75));
-
-        // 4th Game Piece 
-        Translation2d Stage4 = FieldConstants.Auto.Waypoints.StagingWaypoints[0]
-        .getPose(currentAlliance).getTranslation();
-
+        // Scoring Positions
         Translation2d ScoreSpot1 = FieldConstants.getTargetPositionPose(
-            TargetedPositions.GRID_9,
-            currentAlliance);
-
+        TargetedPositions.GRID_1,
+        currentAlliance);
+         
         Translation2d ScoreSpot2 = FieldConstants.getTargetPositionPose(
-            TargetedPositions.GRID_8,
-            currentAlliance);
+         TargetedPositions.GRID_2,
+         currentAlliance);
+         ScoreSpot2 = ScoreSpot2.plus(new Translation2d(.1,0));
+
+        
+        // Game Object Staging Positions (Left to Right just like the Grid)
+        Translation2d Stage1 = FieldConstants.Auto.Waypoints.StagingWaypoints[3]
+            .getPose(currentAlliance).getTranslation();
+        Translation2d Stage2 = FieldConstants.Auto.Waypoints.StagingWaypoints[2]
+            .getPose(currentAlliance).getTranslation();  
+
+        // Charging Station Exit and Entrance Points
+        Translation2d CS_LowerEntrance = ScoreSpot1.plus(new Translation2d(1, 0));
+        Translation2d CS_UpperEntrance = FieldConstants.Community.chargingStationCornersBlue[3];
+
+        // Slightly Translate Points
+        //      Blue should have slightly greater Y
+        CS_UpperEntrance = CS_UpperEntrance.plus(new Translation2d(-.2,.8));
+        
+        // Slightly Shifted CS Upper Entrance for Stage Spot 1
+        //      this is to ensure the approach for stage 1 is good
+        Translation2d CS_UpperEntrance_Tighter = new Translation2d(
+            CS_UpperEntrance.getX(), Stage1.getY()
+
+        );
+
+        // Offset First Staging Point to support Straight on Approach
+        //      Otherwise it is trying to line up center of robot
+        Stage1 = Stage1.plus(new Translation2d(0,0));
 
       // Score the Cone!
       addAction(new ArmAction(ArmTargets.TOP_SCORING_FRONT));
@@ -67,7 +82,7 @@ public class CableCover2High extends AutoModeBase {
 
       // Tell the Arm to go to the Backside Intake while you slowly drive
       DriveTrajectoryAction scoreToGp1TrajectoryAction = new DriveTrajectoryAction(
-        SwerveRotation.FRONT_FACING_GRID.getRotation(), 1.2, 1.2);
+        SwerveRotation.FRONT_FACING_GRID.getRotation(), 1.1, 1.3);
         scoreToGp1TrajectoryAction.addPose(
             new Pose2d(
                 ScoreSpot1,
@@ -78,7 +93,7 @@ public class CableCover2High extends AutoModeBase {
         scoreToGp1TrajectoryAction.addTranslation(CS_UpperEntrance);
         scoreToGp1TrajectoryAction.addPose(
             new Pose2d(
-                Stage4.plus(new Translation2d(.15,0)),
+                Stage1.plus(new Translation2d(.15,0)),
                 SwerveRotation.FRONT_FACING_GRID.getRotation()
             )
         );
@@ -92,11 +107,10 @@ public class CableCover2High extends AutoModeBase {
                 scoreToGp1TrajectoryAction,
                 new SequentialAction(
                     new GrasperTimingAction(Constants.Grasper.autoDefaultDelay),
-                    new ArmAction(ArmTargets.INTAKE_GROUND_BACK_LOWER),
+                    new ArmAction(ArmTargets.INTAKE_GROUND_BACK),
                     new GrasperAction(true),
                     new WaitAction(.1)
                 )
-                
             )
         );
 
@@ -108,12 +122,12 @@ public class CableCover2High extends AutoModeBase {
         SwerveRotation.FRONT_FACING_GRID.getRotation(), 2, 1.9);
         Gp1ToScoreSpot2.addPose(
             new Pose2d(
-                Stage4.plus(new Translation2d(0,0)),
+                Stage1,
                 SwerveRotation.FRONT_FACING_GRID.getRotation()
             )
         );
         Gp1ToScoreSpot2.addTranslation(CS_UpperEntrance);
-        Gp1ToScoreSpot2.addTranslation(CS_LowerEntrance.plus(new Translation2d(-.15,0)));
+        Gp1ToScoreSpot2.addTranslation(CS_LowerEntrance.plus(new Translation2d(-.15,-.1)));
         Gp1ToScoreSpot2.addPose(
             new Pose2d(
                 ScoreSpot2.plus(new Translation2d(-.0,.15)),
@@ -128,7 +142,6 @@ public class CableCover2High extends AutoModeBase {
         addAction(
             new ParallelAction(
                 Gp1ToScoreSpot2,
-                new GrasperAction(false),
                 new ArmAction(ArmTargets.TOP_SCORING_FRONT_CUBE)
             )
         );

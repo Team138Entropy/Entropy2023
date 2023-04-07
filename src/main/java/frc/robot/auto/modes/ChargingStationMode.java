@@ -72,7 +72,8 @@ public class ChargingStationMode extends AutoModeBase {
 
         // Move Arm to Safety
 
-        addAction(                  new LambdaAction( () -> {
+        addAction(                  
+            new LambdaAction( () -> {
             Drive.getInstance().setBrake(true);
         }));
         
