@@ -67,7 +67,7 @@ public class CableCover2High extends AutoModeBase {
 
       // Tell the Arm to go to the Backside Intake while you slowly drive
       DriveTrajectoryAction scoreToGp1TrajectoryAction = new DriveTrajectoryAction(
-        SwerveRotation.FRONT_FACING_GRID.getRotation(), 1.2, 1.2);
+        SwerveRotation.FRONT_FACING_GRID.getRotation(), 1, 1);
         scoreToGp1TrajectoryAction.addPose(
             new Pose2d(
                 ScoreSpot1,
@@ -92,7 +92,7 @@ public class CableCover2High extends AutoModeBase {
                 scoreToGp1TrajectoryAction,
                 new SequentialAction(
                     new GrasperTimingAction(Constants.Grasper.autoDefaultDelay),
-                    new ArmAction(ArmTargets.INTAKE_GROUND_BACK_LOWER),
+                    new ArmAction(ArmTargets.INTAKE_GROUND_BACK),
                     new GrasperAction(true),
                     new WaitAction(.1)
                 )
@@ -105,7 +105,7 @@ public class CableCover2High extends AutoModeBase {
 
         // Drive back!
         DriveTrajectoryAction Gp1ToScoreSpot2 = new DriveTrajectoryAction(
-        SwerveRotation.FRONT_FACING_GRID.getRotation(), 2, 1.9);
+        SwerveRotation.FRONT_FACING_GRID.getRotation(), 2.15, 1.9);
         Gp1ToScoreSpot2.addPose(
             new Pose2d(
                 Stage4.plus(new Translation2d(0,0)),
@@ -116,7 +116,7 @@ public class CableCover2High extends AutoModeBase {
         Gp1ToScoreSpot2.addTranslation(CS_LowerEntrance.plus(new Translation2d(-.15,0)));
         Gp1ToScoreSpot2.addPose(
             new Pose2d(
-                ScoreSpot2.plus(new Translation2d(-.0,.15)),
+                ScoreSpot2.plus(new Translation2d(-.0,-.05)),
                 SwerveRotation.FRONT_FACING_GRID.getRotation()
             )
         );
@@ -139,7 +139,7 @@ public class CableCover2High extends AutoModeBase {
         addAction(new GrasperAction(true));
 
 
-        //addAction(new ArmAction(ArmTargets.HOME_BACKSIDE));
+        addAction(new ArmAction(ArmTargets.HOME_BACKSIDE));
 
 
     }
