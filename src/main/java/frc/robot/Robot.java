@@ -1,6 +1,9 @@
 package frc.robot;
 
 import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.photonvision.SimVisionTarget;
 
 import edu.wpi.first.apriltag.AprilTag;
@@ -162,6 +165,13 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotInit() {
+    Logger.getInstance().recordMetadata("ProjectName", "Entropy138"); // Set a metadata value
+    Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/")); // Log to a USB stick
+    Logger.getInstance().addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+
+    Logger.getInstance().start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
+
+
     // Start Rio Camera
     CameraServer.startAutomaticCapture();
 
