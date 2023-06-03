@@ -1,6 +1,5 @@
 package frc.robot;
 
-import org.littletonrobotics.junction.LoggedRobot;
 import org.photonvision.SimVisionTarget;
 
 import edu.wpi.first.apriltag.AprilTag;
@@ -48,7 +47,7 @@ import frc.robot.subsystems.Grasper.GrasperState;
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends LoggedRobot {
+public class Robot extends TimedRobot {
   NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
 
