@@ -36,7 +36,9 @@ import frc.robot.auto.modes.*;
 import frc.robot.simulation.SimMechanism;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.Drive.DriveStyle;
+import frc.robot.util.LedManager;
 import frc.robot.util.TuneableNumber;
+import frc.robot.util.LedManager.entropyColor;
 import frc.robot.util.drivers.Pigeon;
 import frc.robot.util.trajectory.RedAllianceFlipUtility;
 import edu.wpi.first.wpilibj.Relay;
@@ -81,6 +83,9 @@ public class Robot extends LoggedRobot {
   private final Arm mArm = Arm.getInstance();
   private final Grasper mGrasper = Grasper.getInstance();
   private final Superstructure mSuperStructure = Superstructure.getInstance();
+
+  //LED Manager
+  private final LedManager mLedManager = LedManager.getInstance();
 
   private final chargingStationAutoPilot mChargingStationAutoPilot = chargingStationAutoPilot.getInstance();
 
@@ -165,6 +170,7 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotInit() {
+    mLedManager.setColor(entropyColor.CODE_STARTING);
     Logger.getInstance().recordMetadata("ProjectName", "Entropy138"); // Set a metadata value
     Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/")); // Log to a USB stick
     Logger.getInstance().addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
@@ -335,6 +341,13 @@ public class Robot extends LoggedRobot {
 
     // Controllable Panel (Turn on Light for Cone)
     mPowerPanel.setSwitchableChannel(mCurrentTargetedObject == TargetedObject.CONE);
+    
+    if(mPowerPanel.getVoltage() < 10){
+      mLedManager.setColor(entropyColor.LOW_BATTERY);
+    }
+
+    //running LED update loop
+    mLedManager.periodic();
   }
 
   private void updateSmartdashboard()
@@ -395,6 +408,9 @@ public class Robot extends LoggedRobot {
     {
       mSimMechanism.updateSmartDashboard();
     }
+
+    //I might need help on this one, I have no idea how to send colors to the dashboard and google has not given me helpful advice 
+    //SmartDashboard.putData("Color State", mLedManager.getColor().color1);
   }
 
   // Populate Sendable Chooser of Auto Modes
@@ -425,6 +441,7 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void autonomousInit() {
+    mLedManager.setColor(entropyColor.AUTONOMOUS);
     // Ensure Drive is in Break
     mDrive.setBreakMode();
 
@@ -498,6 +515,7 @@ public class Robot extends LoggedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
+
         // Ensure Drive is in Break
         mDrive.setBreakMode();
     
@@ -569,6 +587,7 @@ public class Robot extends LoggedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
+    mLedManager.setColor(entropyColor.ROBOT_DISABLED);
     // Reset all auto mode state.
     if (mAutoModeExecutor != null) {
         mAutoModeExecutor.stop();
@@ -591,6 +610,7 @@ public class Robot extends LoggedRobot {
   /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {
+    mLedManager.setColor(entropyColor.ROBOT_TEST);
     // Close Grasper
     mGrasper.setGrasperClosed();
   }
@@ -903,9 +923,19 @@ public class Robot extends LoggedRobot {
     //driver feedback - beam sensor creates vibration (if getSensorBroken == true then vibrate)
     if (mGrasper.getGrasperState() == Grasper.GrasperState.Closed) {
       mOperatorInterface.setDriverRumble(true, 1);
-  } else {
-    mOperatorInterface.setDriverRumble(false, 0);
-  }
+      mLedManager.setColor(entropyColor.PIECE_ACQUIRED);
+    } else {
+      mOperatorInterface.setDriverRumble(false, 0);
+    }
+
+    //this would need to be tested to find proper values -George
+    /* 
+    if((mPigeon.getUnadjustedPitch().getDegrees() > 100 || mPigeon.getUnadjustedPitch().getDegrees() < -100)
+      || (mPigeon.getRoll().getDegrees() > 100 || mPigeon.getRoll().getDegrees() < -100)
+      ){
+      mLedManager.setColor(entropyColor.ROBOT_FLIPPED);
+    }
+    */
   }
 
    /**
