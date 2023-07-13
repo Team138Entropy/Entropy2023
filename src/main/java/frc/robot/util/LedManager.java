@@ -2,8 +2,6 @@ package frc.robot.util;
 
 import java.util.List;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.networktables.Publisher;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
@@ -19,8 +17,9 @@ public class LedManager {
     return mInstance;
   }
 
-  //idk what the intent of this requirment is so im going to use it as a "robot state" type thing
+  //a entropyColor is essentially the state of the robot and the colors displayed when in that state
   public enum entropyColor{
+    //note: even if two or more entropyColors have the same colors attached, they are seperate because they are displayed in different ways
     ROBOT_DISABLED(Color.kBlack, Color.kGold),
     AUTONOMOUS(Color.kBlack, Color.kGold),
     PIECE_ACQUIRED(Color.kGreen),
@@ -45,37 +44,38 @@ public class LedManager {
   }
 
   //LED object
-  private final AddressableLED leds;
-  private final AddressableLEDBuffer buffer;
+  private final AddressableLED mLeds;
+  private final AddressableLEDBuffer mBuffer;
 
   //values for setting LEDs
-  private static final int length = 43;
-  private static final double breathDuration = 1.0;
+  private static final int mLength = 43;
+  private static final double mBreathDuration = 1.0;
 
   //main color var
-  private entropyColor currentColor;
+  private entropyColor mCurrentColor;
 
   private LedManager(){
     //port:0 placeholder
-    leds = new AddressableLED(0);
-    buffer = new AddressableLEDBuffer(length);
-    leds.setLength(length);
-    leds.setData(buffer);
-    leds.start();
+    mLeds = new AddressableLED(0);
+    mBuffer = new AddressableLEDBuffer(mLength);
+    mLeds.setLength(mLength);
+    mLeds.setData(mBuffer);
+    mLeds.start();
   }
 
   public void setColor(entropyColor color){
-    currentColor = color;
+    mCurrentColor = color;
   }
 
   public entropyColor getColor(){
-    return currentColor;
+    return mCurrentColor;
   }
 
-  //LED control styles
+  //LED control styles:
+  
   private void solid(Color color) {
-    for (int i = 0; i < length; i++) {
-      buffer.setLED(i, color);
+    for (int i = 0; i < mLength; i++) {
+      mBuffer.setLED(i, color);
     }
   }
     
@@ -86,16 +86,16 @@ public class LedManager {
     
   private void stripes(List<Color> colors, int mlength, double duration) {
     int offset = (int) (Timer.getFPGATimestamp() % duration / duration * mlength * colors.size());
-    for (int i = 0; i < length; i++) {
+    for (int i = 0; i < mlength; i++) {
       int colorIndex =
           (int) (Math.floor((double) (i - offset) / mlength) + colors.size()) % colors.size();
       colorIndex = colors.size() - 1 - colorIndex;
-      buffer.setLED(i, colors.get(colorIndex));
+      mBuffer.setLED(i, colors.get(colorIndex));
     }
   }
 
   private void breath(Color c1, Color c2, double timestamp) {
-    double x = ((timestamp % breathDuration) / breathDuration) * 2.0 * Math.PI;
+    double x = ((timestamp % mBreathDuration) / mBreathDuration) * 2.0 * Math.PI;
     double ratio = (Math.sin(x) + 1.0) / 2.0;
     double red = (c1.red * (1 - ratio)) + (c2.red * ratio);
     double green = (c1.green * (1 - ratio)) + (c2.green * ratio);
@@ -105,20 +105,21 @@ public class LedManager {
 
   //update function 
   public synchronized void periodic(){
-    if(currentColor == entropyColor.ROBOT_DISABLED){
-      stripes(List.of(currentColor.color1,currentColor.color2), 3, 5);
-    }else if(currentColor == entropyColor.AUTONOMOUS){
-      stripes(List.of(currentColor.color1,currentColor.color2), 3, 5);
-    }else if(currentColor == entropyColor.PIECE_ACQUIRED){
-      solid(currentColor.color1);
-    }else if(currentColor == entropyColor.LOW_BATTERY){
-      solid(currentColor.color1);
-    }else if(currentColor == entropyColor.CODE_STARTING){
-      strobe(currentColor.color1, .2);
-    }else if(currentColor == entropyColor.ROBOT_TEST){
-      stripes(List.of(currentColor.color1,currentColor.color2), 5, 5);
-    }else if(currentColor == entropyColor.ROBOT_FLIPPED){
-      breath(currentColor.color1, currentColor.color2, 1);
+    switch(mCurrentColor){
+      case ROBOT_DISABLED:
+        stripes(List.of(mCurrentColor.color1,mCurrentColor.color2), 3, 5);
+      case AUTONOMOUS:
+        stripes(List.of(mCurrentColor.color1,mCurrentColor.color2), 3, 5);
+      case PIECE_ACQUIRED:
+        solid(mCurrentColor.color1);
+      case LOW_BATTERY:
+        solid(mCurrentColor.color1);
+      case CODE_STARTING:
+        strobe(mCurrentColor.color1, .2);
+      case ROBOT_TEST:
+        stripes(List.of(mCurrentColor.color1,mCurrentColor.color2), 5, 5);
+      case ROBOT_FLIPPED:
+        breath(mCurrentColor.color1, mCurrentColor.color2, 1);
     }
   }
 }
