@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.TimedRobot;
+//import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
@@ -44,6 +44,7 @@ import frc.robot.util.trajectory.RedAllianceFlipUtility;
 import edu.wpi.first.wpilibj.Relay;
 import frc.robot.vision.AutoPilot;
 import frc.robot.vision.chargingStationAutoPilot;
+import frc.robot.vision.deathstarVision;
 import frc.robot.vision.photonVision;
 import frc.robot.subsystems.Grasper.GrasperState;
 
@@ -165,6 +166,8 @@ public class Robot extends LoggedRobot {
   public TargetedObject mOverrideTargetedObject = TargetedObject.NONE;
   public Pose2d mTargetPose = new Pose2d();
 
+
+  private deathstarVision mDeathstarVision = new deathstarVision("Vader");
   /**
    * On Robot Startup
    */
