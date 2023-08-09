@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.AnalogInput;
-//import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
@@ -174,12 +174,13 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotInit() {
     mLedManager.setColor(entropyColor.CODE_STARTING);
+  
     Logger.getInstance().recordMetadata("ProjectName", "Entropy138"); // Set a metadata value
     Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/")); // Log to a USB stick
     Logger.getInstance().addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
 
     Logger.getInstance().start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
-
+    
 
     // Start Rio Camera
     CameraServer.startAutomaticCapture();

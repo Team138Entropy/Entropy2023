@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class deathstarVision {
 
-  private static final int cameraId = 2;
+  private static final int cameraId = -1;
   private static final int cameraResolutionWidth = 1280;
   private static final int cameraResolutionHeight = 720;
   private static final int cameraAutoExposure = 1;

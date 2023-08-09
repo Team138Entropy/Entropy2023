@@ -105,6 +105,7 @@ public class LedManager {
 
   //update function 
   public synchronized void periodic(){
+    /* 
     switch(mCurrentColor){
       case ROBOT_DISABLED:
         stripes(List.of(mCurrentColor.color1,mCurrentColor.color2), 3, 5);
@@ -121,5 +122,6 @@ public class LedManager {
       case ROBOT_FLIPPED:
         breath(mCurrentColor.color1, mCurrentColor.color2, 1);
     }
+    */
   }
 }
