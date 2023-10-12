@@ -381,8 +381,29 @@ public class OperatorInterface {
         return mDriverController.getButton(Button.A);
     }
 
+
+
+
+
+
+    public boolean getBallerBalling() {
+        return mDriverController.getTrigger(Side.RIGHT);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
     public ArmTargets getArmTarget() {
         ArmTargets target = ArmTargets.NONE;
+
 
         if(mOperatorController2.getAxis(Axises.X) == 1 || mOperatorController2.getAxis(Axises.Y) == -1){
             target = ArmTargets.INTAKE_FRONT;
