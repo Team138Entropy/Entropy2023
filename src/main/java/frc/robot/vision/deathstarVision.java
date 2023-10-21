@@ -15,6 +15,7 @@ import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.PubSubOption;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.vision.AprilTagVisionIO.AprilTagVisionIOInputs;
 
 public class deathstarVision {
 
@@ -53,16 +54,16 @@ public class deathstarVision {
     public deathstarVision(String identifier){
         System.out.println("[Init] Creating deathstarVision (" + identifier + ")");
         var northstarTable = NetworkTableInstance.getDefault().getTable(identifier);
-        System.out.println("check 1");
         var configTable = northstarTable.getSubTable("config");
-        configTable.getIntegerTopic("camera_id").publish().set(cameraId);
-        configTable.getIntegerTopic("camera_resolution_width").publish().set(cameraResolutionWidth);
-        configTable.getIntegerTopic("camera_resolution_height").publish().set(cameraResolutionHeight);
-        configTable.getIntegerTopic("camera_auto_exposure").publish().set(cameraAutoExposure);
-        configTable.getIntegerTopic("camera_exposure").publish().set(cameraExposure);
-        configTable.getIntegerTopic("camera_gain").publish().set(cameraGain);
-        configTable.getDoubleTopic("fiducial_size_m").publish().set(Units.inchesToMeters(6.0));
-        System.out.println("check 2");
+        configTable.getIntegerTopic("CAMERA_ID").publish().set(cameraId);
+        configTable.getIntegerTopic("CAMERA_RESOLUTION_WIDTH").publish().set(cameraResolutionWidth);
+        configTable.getIntegerTopic("CAMERA_RESOLUTION_HEIGHT").publish().set(cameraResolutionHeight);
+        configTable.getIntegerTopic("CAMERA_AUTO_EXPOSURE").publish().set(cameraAutoExposure);
+        configTable.getIntegerTopic("CAMERA_EXPOSURE").publish().set(cameraExposure);
+        configTable.getIntegerTopic("CAMERA_GAIN").publish().set(cameraGain);
+        configTable.getDoubleTopic("fiducial_size").publish().set(Units.inchesToMeters(6.0));
+
+
         try {
             configTable
                 .getStringTopic("tag_layout")
@@ -70,25 +71,21 @@ public class deathstarVision {
                 .set(new ObjectMapper().writeValueAsString(aprilTags));
                 System.out.println("check 3: try");
           } catch (JsonProcessingException e) {
-            System.out.println("check 3: catch");
             throw new RuntimeException("Failed to serialize AprilTag layout JSON for Northstar");
           }
           var outputTable = northstarTable.getSubTable("output");
-          System.out.println("check 4");
           observationSubscriber =
               outputTable
                   .getDoubleArrayTopic("observations")
                   .subscribe(
                       new double[] {}, PubSubOption.keepDuplicates(true), PubSubOption.sendAll(true));
           fpsSubscriber = outputTable.getIntegerTopic("fps").subscribe(0);
-          System.out.println("check 5: fin");
       
           //String disconnectedAlert = "No data from \"" + identifier + "\"";
           //disconnectedTimer.start();
     }
 
-    //real vision stuff: not needed for dummy robot code 
-    /* 
+    
     public void updateInputs(AprilTagVisionIOInputs inputs) {
         var queue = observationSubscriber.readQueue();
         inputs.timestamps = new double[queue.length];
@@ -101,11 +98,12 @@ public class deathstarVision {
     
         // Update disconnected alert
         if (queue.length > 0) {
-          disconnectedTimer.reset();
+          //disconnectedTimer.reset();
         }
         //disconnectedAlert.set(disconnectedTimer.hasElapsed(disconnectedTimeout));
       }
-      */
+
+      
 
     public static final AprilTagFieldLayout aprilTags =
        

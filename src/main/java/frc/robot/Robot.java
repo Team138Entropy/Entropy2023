@@ -168,6 +168,7 @@ public class Robot extends LoggedRobot {
 
 
   private deathstarVision mDeathstarVision = new deathstarVision("Vader");
+  
   /**
    * On Robot Startup
    */
