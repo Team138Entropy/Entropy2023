@@ -4,14 +4,14 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.OI.OperatorInterface;
-import frc.robot.util.TuneableNumber;
+import frc.robot.TuneableNumber;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -79,14 +79,18 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+
+    BottomEject1.setControl(new DutyCycleOut(12.0 * .3));
+
+  }
 
 OperatorInterface mOperatorInterface = OperatorInterface.getInstance();
 
 
 
   //Setting the speed
-TuneableNumber TopEjectSpeed = new TuneableNumber("Top Eject Speed", 0.1);
+TuneableNumber TopEjectSpeed = new TuneableNumber("Top Eject Speed", -0.1);
 TuneableNumber BottomEjectSpeed = new TuneableNumber("Bottom Eject Speed", -0.1);
 //3 doesn't exist because motors 2 and 3 are paired
 TuneableNumber HighIntakeSpeed = new TuneableNumber("High Intake Speed", -0.1);
@@ -95,12 +99,12 @@ TuneableNumber LowIntakeSpeed = new TuneableNumber("Low Intake Speed", 0.1);
 
 
 //Setting the motors
-TalonFX TopEject = new TalonFX(1);
-TalonFX BottomEject1 = new TalonFX(2);
-TalonFX BottomEject2 = new TalonFX(3);
-TalonFX HighIntake = new TalonFX(4);
-TalonFX MidIntake = new TalonFX(5);
-TalonFX LowIntake = new TalonFX(6);
+com.ctre.phoenix6.hardware.TalonFX TopEject = new TalonFX(6);
+TalonFX BottomEject1 = new TalonFX(5);
+TalonFX BottomEject2 = new TalonFX(4);
+TalonFX HighIntake = new TalonFX(3);
+TalonFX MidIntake = new TalonFX(2);
+TalonFX LowIntake = new TalonFX(1);
 
 
   @Override
@@ -111,12 +115,20 @@ TalonFX LowIntake = new TalonFX(6);
     //Trying to pair the two bottom motors to spin the same way and share a single value on the smart dashboard
     double BottomEjectSpeed1 = BottomEjectSpeed.get();
      double BottomEjectSpeed2 = BottomEjectSpeed.get() * -1;
-     TopEject.set(ControlMode.PercentOutput, TopEjectSpeed.get());
-     BottomEject1.set(ControlMode.PercentOutput, BottomEjectSpeed1);
-     BottomEject2.set(ControlMode.PercentOutput, BottomEjectSpeed2);
-     HighIntake.set(ControlMode.PercentOutput, HighIntakeSpeed.get());
-     MidIntake.set(ControlMode.PercentOutput, MidIntakeSpeed.get());
-     LowIntake.set(ControlMode.PercentOutput, LowIntakeSpeed.get());
+
+     TopEject.setControl(new DutyCycleOut( TopEjectSpeed.get()));
+     BottomEject1.setControl(new DutyCycleOut( BottomEjectSpeed1));
+     BottomEject2.setControl(new DutyCycleOut( BottomEjectSpeed2));
+     HighIntake.setControl(new DutyCycleOut(HighIntakeSpeed.get()));
+     MidIntake.setControl(new DutyCycleOut( MidIntakeSpeed.get()));
+     LowIntake.setControl(new DutyCycleOut( LowIntakeSpeed.get()));
+    }else {
+      TopEject.setControl(new DutyCycleOut( 0));
+      BottomEject1.setControl(new DutyCycleOut( 0));
+      BottomEject2.setControl(new DutyCycleOut( 0));
+      HighIntake.setControl(new DutyCycleOut(0));
+      MidIntake.setControl(new DutyCycleOut( 0));
+      LowIntake.setControl(new DutyCycleOut( 0));
     }
 
 

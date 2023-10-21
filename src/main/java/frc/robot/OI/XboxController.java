@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
-import frc.robot.Constants;
 
 /*
     An Xbox Controller Class
@@ -105,7 +104,7 @@ public class XboxController {
   // boolean trigger version
   boolean getTrigger(Side side) {
     return mController.getRawAxis(side == Side.LEFT ? 2 : 3)
-        > Constants.Controllers.triggerDeadband;
+        > .1;
   }
 
   boolean getButton(Button button) {
