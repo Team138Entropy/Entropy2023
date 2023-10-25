@@ -120,12 +120,13 @@ public class AprilTagVision {
     deathstarVision.aprilTags.getTags().forEach((AprilTag tag) -> {lastTagDetectionTimes.put(tag.ID, 0.0);});
   }
 
+  /* 
   public void setDataInterfaces(
       Consumer<List<TimestampedVisionUpdate>> visionConsumer, Supplier<Pose2d> poseSupplier) {
     this.visionConsumer = visionConsumer;
     this.poseSupplier = poseSupplier;
   }
-
+  */
   /** Returns the field relative pose of the demo tag. */
   public Optional<Pose3d> getDemoTagPose() {
     return Optional.ofNullable(demoTagPose);
@@ -134,20 +135,20 @@ public class AprilTagVision {
   /** Sets whether vision updates for odometry are enabled. */
   public void setVisionUpdatesEnabled(boolean enabled) {
     enableVisionUpdates = enabled;
-    enableVisionUpdatesAlert.set(!enabled);
+    //enableVisionUpdatesAlert.set(!enabled);
   }
 
   public void periodic() {
     for (int i = 0; i < io.length; i++) {
       io[i].updateInputs(inputs[i]);
-      //This line is where it gets the imputs 
-      Logger.getInstance().processInputs("AprilTagVision/Inst" + Integer.toString(i), inputs[i]);
+      //This line is where it gets the imputs, it uses logger stuff from 6328 so we have to figure out a substitute 
+      //Logger.getInstance().processInputs("AprilTagVision/Inst" + Integer.toString(i), inputs[i]);
     }
 
     // Loop over instances
     List<Pose2d> allRobotPoses = new ArrayList<>();
     List<Pose3d> allRobotPoses3d = new ArrayList<>();
-    List<TimestampedVisionUpdate> visionUpdates = new ArrayList<>();
+    //List<TimestampedVisionUpdate> visionUpdates = new ArrayList<>();
     //for each instance of vision:
     for (int instanceIndex = 0; instanceIndex < io.length; instanceIndex++) {
 
@@ -253,9 +254,7 @@ public class AprilTagVision {
         // Add to vision updates
         double xyStdDev = xyStdDevCoefficient * Math.pow(avgDistance, 2.0) / tagPoses.size();
         double thetaStdDev = thetaStdDevCoefficient * Math.pow(avgDistance, 2.0) / tagPoses.size();
-        visionUpdates.add(
-            new TimestampedVisionUpdate(
-                timestamp, robotPose, VecBuilder.fill(xyStdDev, xyStdDev, thetaStdDev)));
+        //visionUpdates.add(new TimestampedVisionUpdate(timestamp, robotPose, VecBuilder.fill(xyStdDev, xyStdDev, thetaStdDev)));
         allRobotPoses.add(robotPose);
         allRobotPoses3d.add(robotPose3d);
 
@@ -399,7 +398,7 @@ public class AprilTagVision {
 
     // Send results to pose esimator
     if (enableVisionUpdates) {
-      visionConsumer.accept(visionUpdates);
+      //visionConsumer.accept(visionUpdates);
     }
   }
 }
