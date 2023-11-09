@@ -81,7 +81,6 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    BottomEject1.setControl(new DutyCycleOut(12.0 * .3));
 
   }
 
