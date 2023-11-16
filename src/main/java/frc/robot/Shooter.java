@@ -1,9 +1,15 @@
 package frc.robot;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import java.lang.Math;
 
 public class Shooter { 
-    
+
+    public double targetTopEjectVelocity;
+    public double targetBottomEjectVelocity; 
+    public double targetHighIntakeVelocity; 
+    public double targetMidIntakeVelocity; 
+    public double targetLowIntakeVelocity; 
 
     //Setting the motors
     com.ctre.phoenix6.hardware.TalonFX TopEject = new TalonFX(6);
@@ -13,30 +19,50 @@ public class Shooter {
     TalonFX MidIntake = new TalonFX(2);
     TalonFX LowIntake = new TalonFX(1);
 
+    // Interpolating Table
+    
+
     // Sets the distance (in meters) that the shooter is aiming for
     public void setTargetDistance(double meters){
 
     }
 
+    // Used in isReady - Determines if the current rps of the motor is within the acceptable range
+    public boolean checkBounds(double leeway, double target, double actual){
+        if (Math.abs(actual - target) <= leeway){
+            return true;
+        } return false;
+    }
+
     // Determines if the RPS of each motor is correct for the set distance
-    // There is a window for error coded in - the motors do not have to be perfectly at their set RPS
+    // There is a window for error coded in - the "leeway" variable determines the margin of error (in rps)
     public boolean isReady(){
-        TopEject.getRotorVelocity.getValue();
-        BottomEject.getRotorVelocity.getValue();
-        //4 is a placeholder 
-        if (TopEject.getRotorVelocity >= 3.8 && TopEject.getRotorVelocity <= 4.2){
+        double topEjectVelocity = TopEject.getRotorVelocity.getValue();
+        double bottomEjectVelocity = BottomEject.getRotorVelocity.getValue();
+        double highIntakeVelocity = HighIntake.getRotorVelocity.getValue();
+        double midIntakeVelocity = MidIntake.getRotorVelocity.getValue();
+        double lowIntakeVelocity = LowIntake.getRotorVelocity.getValue();
+        if (checkBounds(5, targetTopEjectVelocity, topEjectVelocity) &&
+            checkBounds(5, targetBottomEjectVelocity, bottomEjectVelocity) &&
+            checkBounds(5, targetHighIntakeVelocity, highIntakeVelocity) &&
+            checkBounds(5, targetMidIntakeVelocity, midIntakeVelocity) &&
+            checkBounds(5, targetLowIntakeVelocity, lowIntakeVelocity)){
         return true;
-        }
+        } return false;
+    }
+
+    public void selectSpeed(double meters){
+        
     }
 
     // Sets the RPS of each individual motor
     public void Run(){
-        TopEject.setControl(new VelocityVoltage(_______));
-        BottomEject1.setControl(new VelocityVoltage(_______));
-        BottomTopEject2.setControl(new VelocityVoltage(_______));
-        HighIntake.setControl(new VelocityVoltage(_______));
-        MediumIntake.setControl(new VelocityVoltage(_______));
-        LowIntake.setControl(new VelocityVoltage(_______));
+        TopEject.setControl(new VelocityVoltage(selectSpeed));
+        BottomEject1.setControl(new VelocityVoltage(selectSpeed));
+        BottomTopEject2.setControl(new VelocityVoltage(selectSpeed));
+        HighIntake.setControl(new VelocityVoltage(selectSpeed));
+        MediumIntake.setControl(new VelocityVoltage(selectSpeed));
+        LowIntake.setControl(new VelocityVoltage(selectSpeed));
     }
 
     // Stops all motors
