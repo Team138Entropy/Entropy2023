@@ -102,26 +102,32 @@ public class LedManager {
     double blue = (c1.blue * (1 - ratio)) + (c2.blue * ratio);
     solid(new Color(red, green, blue));
   }
-
+  
   //update function 
   public synchronized void periodic(){
-    /* 
     switch(mCurrentColor){
       case ROBOT_DISABLED:
         stripes(List.of(mCurrentColor.color1,mCurrentColor.color2), 3, 5);
+       break;
       case AUTONOMOUS:
         stripes(List.of(mCurrentColor.color1,mCurrentColor.color2), 3, 5);
+        break;
       case PIECE_ACQUIRED:
         solid(mCurrentColor.color1);
+        break;
       case LOW_BATTERY:
         solid(mCurrentColor.color1);
+        break;
       case CODE_STARTING:
         strobe(mCurrentColor.color1, .2);
+        break;
       case ROBOT_TEST:
         stripes(List.of(mCurrentColor.color1,mCurrentColor.color2), 5, 5);
+        break;
       case ROBOT_FLIPPED:
         breath(mCurrentColor.color1, mCurrentColor.color2, 1);
+        break;
     }
-    */
+    mLeds.setData(mBuffer);
   }
 }
