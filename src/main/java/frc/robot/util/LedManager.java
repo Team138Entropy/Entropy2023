@@ -48,7 +48,7 @@ public class LedManager {
   private final AddressableLEDBuffer mBuffer;
 
   //values for setting LEDs
-  private static final int mLength = 43;
+  private static final int mLength = 144;
   private static final double mBreathDuration = 1.0;
 
   //main color var
@@ -56,10 +56,11 @@ public class LedManager {
 
   private LedManager(){
     //port:0 placeholder
-    mLeds = new AddressableLED(0);
+    mLeds = new AddressableLED(1);
     mBuffer = new AddressableLEDBuffer(mLength);
     mLeds.setLength(mLength);
-    mLeds.setData(mBuffer);
+    
+    //mLeds.setData(mBuffer);
     mLeds.start();
   }
 
@@ -77,6 +78,7 @@ public class LedManager {
     for (int i = 0; i < mLength; i++) {
       mBuffer.setLED(i, color);
     }
+    mLeds.setData(mBuffer);
   }
     
   private void strobe( Color color, double duration) {
@@ -87,8 +89,7 @@ public class LedManager {
   private void stripes(List<Color> colors, int mlength, double duration) {
     int offset = (int) (Timer.getFPGATimestamp() % duration / duration * mlength * colors.size());
     for (int i = 0; i < mlength; i++) {
-      int colorIndex =
-          (int) (Math.floor((double) (i - offset) / mlength) + colors.size()) % colors.size();
+      int colorIndex = (int) (Math.floor((double) (i - offset) / mlength) + colors.size()) % colors.size();
       colorIndex = colors.size() - 1 - colorIndex;
       mBuffer.setLED(i, colors.get(colorIndex));
     }
@@ -117,6 +118,7 @@ public class LedManager {
         break;
       case LOW_BATTERY:
         solid(mCurrentColor.color1);
+        //mLeds.setData(mBuffer);
         break;
       case CODE_STARTING:
         strobe(mCurrentColor.color1, .2);
@@ -128,6 +130,6 @@ public class LedManager {
         breath(mCurrentColor.color1, mCurrentColor.color2, 1);
         break;
     }
-    mLeds.setData(mBuffer);
+    //mLeds.setData(mBuffer);
   }
 }

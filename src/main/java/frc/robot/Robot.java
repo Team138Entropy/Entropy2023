@@ -174,7 +174,7 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotInit() {
-    mLedManager.setColor(entropyColor.CODE_STARTING);
+    mLedManager.setColor(entropyColor.LOW_BATTERY);
   
     Logger.getInstance().recordMetadata("ProjectName", "Entropy138"); // Set a metadata value
     Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/")); // Log to a USB stick
@@ -348,7 +348,7 @@ public class Robot extends LoggedRobot {
     mPowerPanel.setSwitchableChannel(mCurrentTargetedObject == TargetedObject.CONE);
     
     if(mPowerPanel.getVoltage() < 10){
-      mLedManager.setColor(entropyColor.LOW_BATTERY);
+      //mLedManager.setColor(entropyColor.LOW_BATTERY);
     }
 
     //running LED update loop
@@ -446,7 +446,7 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void autonomousInit() {
-    mLedManager.setColor(entropyColor.AUTONOMOUS);
+    //mLedManager.setColor(entropyColor.AUTONOMOUS);
     // Ensure Drive is in Break
     mDrive.setBreakMode();
 
@@ -592,7 +592,7 @@ public class Robot extends LoggedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
-    mLedManager.setColor(entropyColor.ROBOT_DISABLED);
+    //mLedManager.setColor(entropyColor.ROBOT_DISABLED);
     // Reset all auto mode state.
     if (mAutoModeExecutor != null) {
         mAutoModeExecutor.stop();
@@ -615,7 +615,7 @@ public class Robot extends LoggedRobot {
   /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {
-    mLedManager.setColor(entropyColor.ROBOT_TEST);
+    //mLedManager.setColor(entropyColor.ROBOT_TEST);
     // Close Grasper
     mGrasper.setGrasperClosed();
   }
@@ -928,7 +928,7 @@ public class Robot extends LoggedRobot {
     //driver feedback - beam sensor creates vibration (if getSensorBroken == true then vibrate)
     if (mGrasper.getGrasperState() == Grasper.GrasperState.Closed) {
       mOperatorInterface.setDriverRumble(true, 1);
-      mLedManager.setColor(entropyColor.PIECE_ACQUIRED);
+      //mLedManager.setColor(entropyColor.PIECE_ACQUIRED);
     } else {
       mOperatorInterface.setDriverRumble(false, 0);
     }
