@@ -2,6 +2,9 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.DoubleArraySubscriber;
+import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -82,7 +85,50 @@ public class Robot extends TimedRobot {
     mDrive.resetOdometry(new Pose2d());
 
     // Reset Drive Sensors
+<<<<<<< Updated upstream
     mDrive.zeroSensors();
+=======
+
+    // Zero Simulation Yaw
+    if(!mRealRobot)
+    {
+      mPigeon.setSimAdjustmentAngle(DriverStation.getAlliance() == Alliance.Red ? 0 : 0);
+      //mPigeon.setSimYawDegrees(DriverStation.getAlliance() == Alliance.Red ? 180 : 0);
+    }
+    
+    mArm.zeroSensors();
+    mDrive.zeroHeading();
+    mDrive.zeroEncoders();   
+    
+   final int cameraId = 0;
+   final int cameraResolutionWidth = 1280;
+   final int cameraResolutionHeight = 720;
+   final int cameraAutoExposure = 1;
+   final int cameraExposure = 10;
+   final int cameraGain = 25;
+
+   final DoubleArraySubscriber observationSubscriber;
+   final IntegerSubscriber fpsSubscriber;
+
+   final String identifier = "darkstar";
+
+   var northstarTable = NetworkTableInstance.getDefault().getTable(identifier);
+   var configTable = northstarTable.getSubTable("config");
+   configTable.getIntegerTopic("camera_id").publish().set(cameraId);
+   configTable.getIntegerTopic("camera_resolution_width").publish().set(cameraResolutionWidth);
+   configTable.getIntegerTopic("camera_resolution_height").publish().set(cameraResolutionHeight);
+   configTable.getIntegerTopic("camera_auto_exposure").publish().set(cameraAutoExposure);
+   configTable.getIntegerTopic("camera_exposure").publish().set(cameraExposure);
+   configTable.getIntegerTopic("camera_gain").publish().set(cameraGain);
+   configTable.getDoubleTopic("fiducial_size_m").publish().set(Units.inchesToMeters(6.0));
+   
+   //NetworkTableInstance.getDefault().
+
+
+
+
+    
+>>>>>>> Stashed changes
   }
 
 
@@ -94,6 +140,30 @@ public class Robot extends TimedRobot {
 
     // Update Smartdashboard Overall and Subsystems
     updateSmartdashboard();
+<<<<<<< Updated upstream
+=======
+
+    // Get Arm Override (if set)
+    mArmTargetOverride = mArmTargetOverrideChooser.getSelected();
+
+    mOverrideTargetedObject = mTargetedObjectChooser.getSelected();
+
+    // Set Arm Control Type
+    if(mArmControlTypeChooser.getSelected() != ArmControlType.None)
+    {
+      mSuperStructure.setArmControlType(mArmControlTypeChooser.getSelected());
+    }
+
+    // Currently Targeted Object
+    mCurrentTargetedObject = mOperatorInterface.setTargetedObject();
+
+    // Controllable Panel (Turn on Light for Cone)
+    mPowerPanel.setSwitchableChannel(mCurrentTargetedObject == TargetedObject.CONE);
+    System.out.println("sanity check");
+    for (var client : NetworkTableInstance.getDefault().getConnections()){
+     System.out.println(client.toString());
+    }
+>>>>>>> Stashed changes
   }
 
   private void updateSmartdashboard()
