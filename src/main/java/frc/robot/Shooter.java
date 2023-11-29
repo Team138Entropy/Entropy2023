@@ -10,6 +10,9 @@ public class Shooter {
     public double targetHighIntakeVelocity; 
     public double targetMidIntakeVelocity; 
     public double targetLowIntakeVelocity; 
+    public SpeedLookupConfig TargetedSpeeds;
+    VelocityLookupTable velocityLookup = new VelocityLookupTable();
+
 
     //Setting the motors
     com.ctre.phoenix6.hardware.TalonFX TopEject = new TalonFX(6);
@@ -24,7 +27,7 @@ public class Shooter {
 
     // Sets the distance (in meters) that the shooter is aiming for
     public void setTargetDistance(double meters){
-
+        TargetedSpeeds = velocityLookup.getSpeedFromDistance(meters);
     }
 
     // Used in isReady - Determines if the current rps of the motor is within the acceptable range
@@ -57,7 +60,7 @@ public class Shooter {
 
     // Sets the RPS of each individual motor
     public void Run(){
-        TopEject.setControl(new VelocityVoltage(selectSpeed));
+        TopEject.setControl(new VelocityVoltage(TargetedSpeeds.TopEject));
         BottomEject1.setControl(new VelocityVoltage(selectSpeed));
         BottomTopEject2.setControl(new VelocityVoltage(selectSpeed));
         HighIntake.setControl(new VelocityVoltage(selectSpeed));
