@@ -125,6 +125,9 @@ public class Constants {
 
   // Subsystems
   public static class Drive {
+
+    public static TuneableNumber accelXSlewTuneableNumber = new TuneableNumber("accelXSlewTuneableNumber", 1.5);
+    public static TuneableNumber accelYSlewTuneableNumber = new TuneableNumber("accelYSlewTuneableNumber", 1.5);
     public static boolean enabled = true;
 
     public static int talonSensorTimeoutMs = 250;
