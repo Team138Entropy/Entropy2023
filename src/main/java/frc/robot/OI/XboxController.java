@@ -24,16 +24,16 @@ public class XboxController {
   }
 
   public enum Button {
-    A(1),
-    B(2),
-    X(3),
-    Y(4),
-    LB(5),
-    RB(6),
-    BACK(7),
-    START(8),
-    L_JOYSTICK(9),
-    R_JOYSTICK(10);
+    A(1), //
+    B(2), //
+    X(3), //
+    Y(4), //
+    LB(5), //
+    RB(6), //
+    BACK(7), //
+    START(8), //
+    L_JOYSTICK(9), //
+    R_JOYSTICK(10); //
 
     public final int id;
 
@@ -81,7 +81,8 @@ public class XboxController {
   }
 
   double getJoystick(Side side, Axis axis) {
-    double deadband = Constants.Controllers.joystickDeadband;
+    double deadband = .0;
+    //double deadband = Constants.Controllers.joystickDeadband;
 
     boolean left = side == Side.LEFT;
     boolean y = axis == Axis.Y;
@@ -120,14 +121,13 @@ public class XboxController {
   }
 
   public void setRumble(boolean toggle) {
-    // Check to see if we are already on
-    if (toggle){
-      mController.setRumble(RumbleType.kLeftRumble, 0.5);
-      mController.setRumble(RumbleType.kRightRumble, 0.5);
-    } else {
-      mController.setRumble(RumbleType.kLeftRumble, 0);
-      mController.setRumble(RumbleType.kRightRumble, 0);
-    }
+    setRumble(toggle, .5);
+  }
+
+  public void setRumble(boolean toggle, double value)
+  {
+    mController.setRumble(RumbleType.kLeftRumble, toggle ? value : 0);
+    mController.setRumble(RumbleType.kRightRumble, toggle ? value : 0);
   }
 
   private double handleDeadband(double value, double deadband) {

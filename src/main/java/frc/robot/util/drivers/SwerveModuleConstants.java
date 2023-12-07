@@ -5,6 +5,7 @@ public class SwerveModuleConstants {
     public final int driveMotorID;
     public final int angleMotorID;
     public final int cancoderID;
+    public final String CanBusID;
     public final double angleOffset;
 
     /**
@@ -16,11 +17,13 @@ public class SwerveModuleConstants {
      */
     public SwerveModuleConstants(
         String modName, int driveMotorID, 
-        int angleMotorID, int canCoderID, double angleOffset) {
+        int angleMotorID, int canCoderID, 
+        String busID, double angleOffset) {
         this.moduleName = modName;
         this.driveMotorID = driveMotorID;
         this.angleMotorID = angleMotorID;
         this.cancoderID = canCoderID;
+        this.CanBusID = busID;
         this.angleOffset = angleOffset;
     }
 }

@@ -1,10 +1,15 @@
 package frc.robot.auto;
 
 
+import edu.wpi.first.math.controller.HolonomicDriveController;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -13,8 +18,10 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import frc.robot.Constants;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Drive.DriveStyle;
+import frc.robot.util.DriveSignal;
 
 import java.util.List;
 
@@ -25,9 +32,19 @@ public class TrajectoryFollower {
 
     // Trajectory to Drive
     private Trajectory mTrajectory;
+    private boolean mTrajectorySet;
 
     // The Ramsete Controller to follow the trajectory.
+    // RamsetController for Differential/West Coast Drive Trains
     private final RamseteController mRamseteController;
+
+    // Swerve 
+    // HolonomicDriveController for Swerve/Mechanum based systems
+    private HolonomicDriveController mHolonomicDriveController;
+    private ProfiledPIDController mSwerveThetaController;
+    private PIDController mSwerveXPidController;
+    private PIDController mSwerveYPidController;
+
 
     // The timer to use during the autonomous period.
     private Timer mTimer;
@@ -62,16 +79,35 @@ public class TrajectoryFollower {
     // Sets Selected Trajectory
     public void setTrajectory(Trajectory traj){
         mTrajectory = traj;
+        mTrajectorySet = true;
 
         // Push the trajectory to Field2d.
         mField.getObject("traj").setTrajectory(mTrajectory);
     }
     
     private void init(){
+        // No Trajectory Set
+        mTrajectorySet = false;
+
         System.out.println("TrajectorFollower::Init");
         // Create and push Field2d to SmartDashboard.
         mField = new Field2d();
         SmartDashboard.putData("Autonomous Field", mField);
+
+        // Swerve Specific
+        // Rotation Controller
+        mSwerveThetaController = new ProfiledPIDController(
+                Constants.SwerveConstants.AutoConstants.kPThetaController, 0, 0,
+                Constants.SwerveConstants.AutoConstants.kThetaControllerConstraints);
+        mSwerveThetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+        // Swerve Translation X and Y PID Controllers
+        mSwerveXPidController = new PIDController(Constants.SwerveConstants.AutoConstants.kPXController, 0, 0);
+        mSwerveYPidController = new PIDController(Constants.SwerveConstants.AutoConstants.kPYController, 0, 0);
+
+        // Swerve Specific Controller
+        mHolonomicDriveController = new HolonomicDriveController(mSwerveXPidController, 
+                                        mSwerveYPidController, mSwerveThetaController);
     }
 
     // Called Once at the Start of following the Path
@@ -86,15 +122,25 @@ public class TrajectoryFollower {
         // Initialize the timer.
         mTimer = new Timer();
         mTimer.start();
-
+        
+        // TODO - no for swerve?
         // Reset Encoder Values
-        mDrive.zeroEncoders();
+        //mDrive.zeroEncoders();
 
         // Zero Gyro Position
-        mDrive.zeroHeading();
+        //mDrive.zeroHeading();
 
         // Reset the drivetrain's odometry to the starting pose of the trajectory.
         mDrive.resetOdometry(mTrajectory.getInitialPose());
+        System.out.println("TrajectoryFollower::Initial Pose " 
+            + mTrajectory.getInitialPose().toString()
+        );
+
+        System.out.println("TrajectoryFollower::Initial DrivePose " 
+            + mDrive.getPose().toString()
+        );
+
+        //mTrajectory.getStates().get(0).
 
         // Store the Current Pose of the Drive
         mDrive.storeCurrentPose();
@@ -104,23 +150,40 @@ public class TrajectoryFollower {
         System.out.println("TrajectoryFollower::Update");
         // Update the Drives Odometry
         mDrive.updateOdometry();
-        System.out.println("set robot pose");
+
         // Update the Robot Position on Field2D
         mField.setRobotPose(mDrive.getPose());
-        System.out.println("robot pose done");
+
+        System.out.println("TrajectoryFollower: " + mTimer.get() + 
+                " of " + mTrajectory.getTotalTimeSeconds());
+
         // if the time is within the total trajectory time
         if (mRun && mTimer.get() < mTrajectory.getTotalTimeSeconds()) {
-            System.out.println("Timer Seconds: " + mTimer.get());
-            System.out.println("Total Seconds: " + mTrajectory.getTotalTimeSeconds());
-
+ 
             // Get the desired pose from the trajectory.
+            var currentDrivePose = mDrive.getPose();
             var desiredPose = mTrajectory.sample(mTimer.get());
-                  
-            // Get the reference chassis speeds from the Ramsete controller.
-            var refChassisSpeeds = mRamseteController.calculate(mDrive.getPose(), desiredPose);
-            
-            // Set the linear and angular speeds.
-            mDrive.automousDrive(refChassisSpeeds.vxMetersPerSecond, refChassisSpeeds.omegaRadiansPerSecond);
+            Rotation2d desiredRotation = new Rotation2d();
+
+
+            // Drive System Specific Logic
+            if(DriveStyle.DIFFERENTIAL_DRIVE == mDrive.getDriveStyle())
+            {
+                // Get the reference chassis speeds from the Ramsete controller.
+                var refChassisSpeeds = mRamseteController.calculate(mDrive.getPose(), desiredPose);
+                
+                // Set the linear and angular speeds.
+                mDrive.automousDrive(refChassisSpeeds.vxMetersPerSecond, refChassisSpeeds.omegaRadiansPerSecond);
+            }
+            else if(DriveStyle.SWERVE_DRIVE == mDrive.getDriveStyle())
+            {
+                // Calculate Swerve Chasis Speeds
+                ChassisSpeeds calculatedSpeeds = mHolonomicDriveController.calculate(currentDrivePose, desiredPose, desiredRotation);
+                var targetSwerveModuleStates = mDrive.getSwerveKinematics().toSwerveModuleStates(calculatedSpeeds);
+
+                // Set Swerve to those Module States
+                mDrive.setModuleStates(targetSwerveModuleStates);
+            }
           } else {
             // Log the Trajectory Follower Completeing the Path
             System.out.println("TrajectoryFollower::PathComplete");
@@ -128,21 +191,50 @@ public class TrajectoryFollower {
             // mark path as complete
             mComplete = true;
 
-            // set drive to do nothing
-            mDrive.automousDrive(0, 0);
-          }
+            // Set Drive System to do Nothing
+            // Drive System Specific Logic
+            StopDrive();
+        }
     }
 
     // Stop Drivetrain from moving
     public void StopDrive(){
         System.out.println("TrajectoryFollower::StopDrive");
+        // Stop the Trajectory Follower
+        Stop();
+        
+        // Stop the Drive System
+        if(DriveStyle.DIFFERENTIAL_DRIVE == mDrive.getDriveStyle())
+        {
+            mDrive.automousDrive(0, 0);
+        }
+        else if(DriveStyle.SWERVE_DRIVE == mDrive.getDriveStyle())
+        {
+            mDrive.setSwerveDrive(new Translation2d(), 0, true, true, false);
+        }
+    }
+
+    public void Stop() {
         mRun = false;
-        mDrive.setDrive(0, 0, false);
     }
 
     //returns if getComplete is done
     public boolean isComplete(){
         return mComplete;
+    }
+
+    public void updateSmartdashboard()
+    {
+        final String key = "TrajectoryFollower/";
+        SmartDashboard.putBoolean(key + "Complete", mComplete);
+        SmartDashboard.putBoolean(key + "Running", mRun);
+        SmartDashboard.putBoolean(key + "Trajectory Set", mTrajectorySet);
+        SmartDashboard.putString(key + "Trajectory Initial Pose",
+                mTrajectorySet ? mTrajectory.toString() : "");
+        SmartDashboard.putNumber(key + "Trajectory RunTime (S)", 
+                mTrajectorySet ? mTrajectory.getTotalTimeSeconds() : 0);
+
+        
     }
 
 

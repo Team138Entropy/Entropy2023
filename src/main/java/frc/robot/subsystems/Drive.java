@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
@@ -9,6 +10,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
@@ -16,6 +18,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import frc.robot.Constants;
 import frc.robot.Kinematics;
 import frc.robot.Robot;
@@ -23,8 +26,10 @@ import frc.robot.util.DriveSignal;
 import frc.robot.util.TimeDelayedBoolean;
 import frc.robot.util.Util;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.util.geometry.Twist2d;
 import frc.robot.util.simulation.DiffDriveSimSystem;
+import frc.robot.util.simulation.SimSwerveOdometry;
 import frc.robot.util.simulation.SwerveDriveSimSystem;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -84,6 +89,7 @@ public class Drive extends Subsystem {
   // Swerve Based Systems
   public SwerveDriveOdometry mSwerveOdometry;
   public SwerveModule[] mSwerveModules; 
+  public SimSwerveOdometry mSimSwerveOdometry;
 
   private Pose2d mStoredPose;
 
@@ -111,14 +117,20 @@ public class Drive extends Subsystem {
   // Swerve Drive Simulation System
   SwerveDriveSimSystem mSwerveDriveSimSystem;
 
+  // Current Chasis Speed
+  ChassisSpeeds mChassisSpeeds = null;
+
   // Other Variables
   private boolean mBrakeEnabled;
   private boolean mIsSnapping;
 
   private ProfiledPIDController mSnapPidController;
+  private boolean mSnapNormal;
   private PIDController mVisionPIDController;
   private TimeDelayedBoolean mDelayedBoolean;
 
+  // Real or Simulated Robot
+  private boolean mRealRobot;
 
   public static synchronized Drive getInstance() {
     if (mInstance == null) {
@@ -150,26 +162,56 @@ public class Drive extends Subsystem {
 
     // Setup Snap Pid Controller
     mSnapPidController = new ProfiledPIDController(
-      Constants.Drive.SnapConstants.kP,
-      Constants.Drive.SnapConstants.kI, 
-      Constants.Drive.SnapConstants.kD,
-      Constants.Drive.SnapConstants.kThetaControllerConstraints
+      Constants.Drive.SnapConstants_Normal.kP,
+      Constants.Drive.SnapConstants_Normal.kI, 
+      Constants.Drive.SnapConstants_Normal.kD,
+      Constants.Drive.SnapConstants_Normal.kThetaControllerConstraints
     );
     mSnapPidController.enableContinuousInput(-Math.PI, Math.PI);
+    mSnapNormal = true;
     mDelayedBoolean = new TimeDelayedBoolean();
-    
+
+
     // reset gyro to have position to zero
     m_gyro.reset();
 
     // Reset Odometrey 
-    /*
-    mDifferentialDriveOdometry = new DifferentialDriveOdometry(m_gyro.getRotation2d(), 
-                0, 0);
-    */
-    mDifferentialDriveOdometry = new DifferentialDriveOdometry(m_gyro.getRotation2d());
+    mDifferentialDriveOdometry = new DifferentialDriveOdometry(m_gyro.getRotation2d(), 0, 0);
 
     // Initialize Simulation Systems
     initSimulationSystems();
+  }
+
+  // Configures Snap Controller to Normal Snap
+  public void setNormalSnap()
+  {
+    if(!mSnapNormal)
+    {
+      mSnapPidController = new ProfiledPIDController(
+        Constants.Drive.SnapConstants_Normal.kP,
+        Constants.Drive.SnapConstants_Normal.kI, 
+        Constants.Drive.SnapConstants_Normal.kD,
+        Constants.Drive.SnapConstants_Normal.kThetaControllerConstraints
+      );
+      mSnapPidController.enableContinuousInput(-Math.PI, Math.PI);
+      mSnapNormal = true;
+    }
+  }
+
+  // Configures Snap Controller to Normal Snap
+  public void setCGUnsafeSnap()
+  {
+    if(mSnapNormal)
+    {
+      mSnapPidController = new ProfiledPIDController(
+        Constants.Drive.SnapConstants_CGUnsafe.kP,
+        Constants.Drive.SnapConstants_CGUnsafe.kI, 
+        Constants.Drive.SnapConstants_CGUnsafe.kD,
+        Constants.Drive.SnapConstants_CGUnsafe.kThetaControllerConstraints
+      );
+      mSnapPidController.enableContinuousInput(-Math.PI, Math.PI);
+      mSnapNormal = false;
+    }
   }
 
   // Initialize Simulation Systems
@@ -238,7 +280,14 @@ public class Drive extends Subsystem {
     };
 
     // Swerve Odometry
-    mSwerveOdometry = new SwerveDriveOdometry(Constants.SwerveConstants.swerveKinematics, mPigeon.getYaw().getWPIRotation2d());
+    mSwerveOdometry = new SwerveDriveOdometry(Constants.SwerveConstants.swerveKinematics, 
+                                              mPigeon.getYaw().getWPIRotation2d(),
+                                              getModulePositions()
+    );
+
+    // Sim Swerve Odometry
+    mSimSwerveOdometry = new SimSwerveOdometry(Constants.SwerveConstants.swerveKinematics, 
+                                                mPigeon.getYaw().getWPIRotation2d());
   }
 
   private void configTalon(EntropyTalonFX talon) {
@@ -282,8 +331,9 @@ public class Drive extends Subsystem {
 
   // Zeros all Drive related sensors
   public void zeroSensors() {
-    zeroEncoders(); //zero encoders
-    zeroHeading(); //zero gyro
+    //zeroEncoders(); //zero encoders
+    //zeroHeading(); //zero gyro
+    
   }
 
   // Used for Test
@@ -438,20 +488,26 @@ public class Drive extends Subsystem {
     }
   }
 
+  public boolean isSnapping(){
+    return mIsSnapping;
+  }
+
   /* Calculate the Snap Value needed for Rotation */
   public double calculateSnapValue() {
     return mSnapPidController.calculate(mPigeon.getYaw().getRadians());
   }
 
   /* Return if Snap is Complete */
-  private boolean isSnapComplete() {
+  public boolean isSnapComplete() {
     double error = mSnapPidController.getGoal().position - mPigeon.getYaw().getRadians();
-    return mDelayedBoolean.update(Math.abs(error) < Math.toRadians(Constants.Drive.SnapConstants.kEpsilon), 
-            Constants.Drive.SnapConstants.kTimeout);
+    return mDelayedBoolean.update(Math.abs(error) < Math.toRadians(Constants.Drive.SnapConstants_Normal.kEpsilon), 
+            Constants.Drive.SnapConstants_Normal.kTimeout);
   }
 
   /* Swerve Drive */
-  public void setSwerveDrive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
+  public void setSwerveDrive(Translation2d translation, double rotation, 
+    boolean fieldRelative, boolean isOpenLoop, boolean isPrecisionMode
+  ) {
     // Continue Snapping if Needed
     if (mIsSnapping) {
       if (Math.abs(rotation) == 0.0) {
@@ -462,6 +518,7 @@ public class Drive extends Subsystem {
           checkSnapStop(true);
       }
     }
+
 
     // Determine Swerve Module States
     // SwerveModuleState(MetersPerSecond, Angle)
@@ -497,19 +554,25 @@ public class Drive extends Subsystem {
           TranslationY: Sideways Velocity
           Rotation: Anglular Velocity
       */
+
+      mChassisSpeeds = fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
+            translation.getX(), 
+            translation.getY(), 
+            rotation, 
+            mRealRobot ? mPigeon.getYaw().getWPIRotation2d() : mPigeon.getSimYaw().getWPIRotation2d()
+        )
+        : new ChassisSpeeds(
+            translation.getX(), 
+            translation.getY(), 
+            rotation);
+
       swerveModuleStates =
       Constants.SwerveConstants.swerveKinematics.toSwerveModuleStates(
-          fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                              translation.getX(), 
-                              translation.getY(), 
-                              rotation, 
-                              mPigeon.getYaw().getWPIRotation2d()
-                          )
-                          : new ChassisSpeeds(
-                              translation.getX(), 
-                              translation.getY(), 
-                              rotation)
+        mChassisSpeeds
                           );
+
+
+                          
     }
     
     // Desaturate wheel speeds - keeps speed below a maximum speed
@@ -521,6 +584,59 @@ public class Drive extends Subsystem {
       mod.setDesiredState(swerveModuleStates[mod.getModuleNumber()], isOpenLoop);
     }
   }
+
+
+  public double getSwerveMetersPerSec()
+  {
+    double result = 0;
+    if(null != mChassisSpeeds)
+    {
+      result = mChassisSpeeds.vxMetersPerSecond;
+    }
+    return result;
+  }
+
+
+
+  public void setSwerveVelocity(ChassisSpeeds speed)
+  {
+    SwerveModuleState[] swerveModuleStates = Constants.SwerveConstants.swerveKinematics.toSwerveModuleStates(
+      speed
+    );
+        
+    // Desaturate wheel speeds - keeps speed below a maximum speed
+    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.SwerveConstants.maxSpeed);
+
+    // set the desired state into each swerve module
+    // This will command the drive motor and angle motors to needed angle and speed
+    for (SwerveModule mod : mSwerveModules) {
+      mod.setDesiredState(swerveModuleStates[mod.getModuleNumber()], true);
+    }
+
+    // Sim Only
+    if(!mRealRobot){
+        if(Math.abs(speed.omegaRadiansPerSecond) > 0)
+        {
+            double sRotation = speed.omegaRadiansPerSecond;
+            if(DriverStation.getAlliance() == Alliance.Blue || true)
+            {
+              sRotation *= -1;
+            }
+            Pigeon.getInstance().rotateSimYaw(sRotation);
+        }  
+    }
+  }
+
+
+  /* Used by SwerveControllerCommand in Auto */
+  // Directly Sets the Desired State into the Module
+  public void setModuleStates(SwerveModuleState[] desiredStates) {
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.SwerveConstants.maxSpeed);
+    
+    for(SwerveModule mod : mSwerveModules){
+        mod.setDesiredState(desiredStates[mod.getModuleNumber()], false);
+    }
+}   
 
   /* Get Swerve Module States */
   public SwerveModuleState[] getSwerveModuleStates()
@@ -540,6 +656,16 @@ public class Drive extends Subsystem {
         states[mod.getModuleNumber()] = mod.getDesiredState();
     }
     return states;
+  }
+
+  /* Get Swerve Module Positions */
+  public SwerveModulePosition[] getModulePositions()
+  {
+    SwerveModulePosition[] positions = new SwerveModulePosition[4];
+    for(SwerveModule mod : mSwerveModules){
+        positions[mod.getModuleNumber()] = mod.getPosition();
+    }
+    return positions;
   }
 
   /* Start Snap */
@@ -573,9 +699,11 @@ public class Drive extends Subsystem {
    // SmartDashboard.putNumber("encoder_left", getLeftEncoderPosition());
    // SmartDashboard.putNumber("encoder_right", getRightEncoderPosition());
    // SmartDashboard.putNumber("gyro", getHeading());
+   SmartDashboard.putString("Drive Pose", getPose().toString());
    SmartDashboard.putBoolean("Break Enabled", mBrakeEnabled);
    SmartDashboard.putBoolean("Is Snapping", mIsSnapping);
    SmartDashboard.putNumber("Pigeon Yaw", mPigeon.getYaw().getDegrees());
+   SmartDashboard.putNumber("Velocity M/S", getSwerveMetersPerSec());
 
    // Drive Style Specific Dashboard
    switch(mDriveStyle)
@@ -715,14 +843,16 @@ public class Drive extends Subsystem {
   /** Update Drivesim */
   public synchronized void updateDriveSim()
   {
+    Pose2d SimPose = new Pose2d();
     switch(mDriveStyle)
     {
       case DIFFERENTIAL_DRIVE:
         mDriveSimSystem.updateDrive(getLastDriveSignal());
       break;
       case SWERVE_DRIVE:
-        mSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), getDesiredSwerveModuleStates());
-       // mSwerveDriveSimSystem.updateStates()        
+        updateSwerveSimPositions(.02);
+        mSimSwerveOdometry.update(mPigeon.getSimYaw().getWPIRotation2d(), getDesiredSwerveModuleStates());
+        //mSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), mSwerveModulePositions);
       break;
     }
   }
@@ -737,10 +867,25 @@ public class Drive extends Subsystem {
         );
       break;
       case SWERVE_DRIVE:
-        mSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), getSwerveModuleStates());
+       // mSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), getSwerveModuleStates());
+       mSwerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), getModulePositions());
       break;
     }
 
+  }
+
+  public void setBreakMode()
+  {
+    for(SwerveModule mod : mSwerveModules){
+      mod.setBreakMode();
+    }
+  }
+
+  public void setCoastMode()
+  {
+    for(SwerveModule mod : mSwerveModules){
+      mod.setCoastMode();
+    }
   }
 
   // Enable or Disable the Brake
@@ -756,16 +901,14 @@ public class Drive extends Subsystem {
    */
   public void resetOdometry(Pose2d pose) {
     // Zero the Pigeon
-    
-
-
-    //mDifferentialDriveOdometry.resetPosition(m_gyro.getRotation2d(), 0, 0, pose);
     switch(mDriveStyle)
     {
       case DIFFERENTIAL_DRIVE:
+        //mDifferentialDriveOdometry.resetPosition(m_gyro.getRotation2d(), 0, 0, pose);
       break;
       case SWERVE_DRIVE:
-        
+        mSwerveOdometry.resetPosition(mPigeon.getYaw().getWPIRotation2d(), getModulePositions(), pose);
+        mSimSwerveOdometry.resetPosition(pose, mPigeon.getSimYaw().getWPIRotation2d());
       break;
       default:
       break;
@@ -773,11 +916,19 @@ public class Drive extends Subsystem {
   }
 
   /**
-   * Returns the currently-estimated pose of the robot.
+   *  Returns the Pose of Robot
+   * @return
+   */
+  public synchronized Pose2d getPose() {
+    return mRealRobot ? getRealPose() : getSimulatedPose();
+  }
+
+  /**
+   * Returns the currently-estimated real pose of the robot.
    *
    * @return The pose.
    */
-  public synchronized Pose2d getPose() {
+  public synchronized Pose2d getRealPose() {
     Pose2d result;
     switch(mDriveStyle)
     {
@@ -793,6 +944,29 @@ public class Drive extends Subsystem {
     }
     return result;
   }
+
+  /**
+   * Returns the currently-estimated pose of the robot.
+   *
+   * @return The pose.
+   */
+  public synchronized Pose2d getSimulatedPose() {
+    Pose2d result;
+    switch(mDriveStyle)
+    {
+      case DIFFERENTIAL_DRIVE:
+        result = mDifferentialDriveOdometry.getPoseMeters();
+      break;
+      case SWERVE_DRIVE:
+        result = mSimSwerveOdometry.getPoseMeters();
+      break;
+      default:
+        result = new Pose2d();
+      break;
+    }
+    return result;
+  }
+
 
   /**
    * Stores the Pose of the Robot
@@ -860,4 +1034,39 @@ public class Drive extends Subsystem {
   public DifferentialDriveKinematics getKinematics() {
     return mKinematics;
   }
+
+  public SwerveDriveKinematics getSwerveKinematics() {
+    return Constants.SwerveConstants.swerveKinematics;
+  }
+
+  // Sets if a Robot is Real
+  public void setRealRobot(boolean value)
+  {
+    mRealRobot = value;
+  }
+
+  // Is Real Robot
+  public boolean isRealRobot()
+  {
+    return mRealRobot;
+  }
+
+  public void updateSwerveSimPositions(double dt)
+  {
+    for(SwerveModule mod : mSwerveModules){
+      mod.updateSimPosition(dt, false);
+    }
+  }
+
+
+  public SwerveModulePosition[] getSimSwerveModulePositions()
+  {
+    SwerveModulePosition[] positions = new SwerveModulePosition[4];
+    for(SwerveModule mod : mSwerveModules){
+        positions[mod.getModuleNumber()] = mod.getSimPosition();
+    }
+    return positions;
+  }
+
+
 }

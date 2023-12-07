@@ -1,0 +1,4 @@
+experimental code to use frc web dashboard
+
+https://github.com/robotpy/pynetworktables2js
+- looks like it requires 

@@ -4,9 +4,12 @@ import frc.robot.auto.TrajectoryFollower;
 import edu.wpi.first.math.trajectory.*;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import frc.robot.Robot;
+import frc.robot.Enums.SwerveCardinal;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Superstructure;
 
 /**
  * Drives the Trajectory using the Trajectory Follower
@@ -22,49 +25,47 @@ public class TurnInPlaceAction implements Action {
     private double mGyroStart;
     private double mError;
     private Drive mDrive = Drive.getInstance();
+    private SwerveCardinal mSnap;
 
-    public TurnInPlaceAction(double degrees) {
+    public TurnInPlaceAction(SwerveCardinal snap) {
         mComplete = false;
-        mDegrees = degrees;
+        mSnap = snap;
 
     }
 
     @Override
     public void start() {
-        System.out.println("TurnInPlaceAction - Target Degrees" + mDegrees);
-        mGyroStart = mDrive.getGyro().getAngle();
+        checkSnapCG();
+        mDrive.startSnap(mSnap.degrees);
     }
 
     @Override
     public void update() {
-        updateError();
-        System.out.println("TurnInPlaceAction - Update - Error: ");
-        System.out.println(mError);
-
-        // turn drive by error angle
-        mDrive.driveErrorAngle(0, mError);
-        if (Math.abs(mError) <= 5.5) {
-            System.out.println("Within allowed error");
-            // within degrees
-            mComplete = true;
-        }
+        mDrive.setSwerveDrive(new Translation2d(), 0, true, true, false);
+        System.out.println("Action: Turn in Place running");
     }
 
-    // Update the Error
-    private void updateError() {
-
-        mError = (mDegrees - mGyroStart ) - mDrive.getGyro().getAngle();
-    }
 
     // if trajectory is done
     @Override
     public boolean isFinished() {
-        return mComplete;
+        return !mDrive.isSnapping();
     }
 
     @Override
     public void done() {
         System.out.println("Action: Turn in Place Complete");
-        mDrive.setPercentOutputDrive(0, 0);
+        mDrive.setSwerveDrive(new Translation2d(), 0, true, true, false);
+    }
+
+    // Configure
+    private void checkSnapCG()
+    {
+        if(Superstructure.getInstance().isCGCompromised())
+        {
+            mDrive.setCGUnsafeSnap();
+        }else {
+            mDrive.setNormalSnap();
+        }
     }
 }

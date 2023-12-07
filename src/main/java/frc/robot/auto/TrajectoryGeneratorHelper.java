@@ -33,7 +33,7 @@ public class TrajectoryGeneratorHelper {
     // This is to get the JIT loaded to speed up dynamic trajectory
     public static void generateExampleTrajectories(){
         try {
-            for(int i = 0; i < 5; i++){
+            for(int i = 0; i < 10; i++){
                 Trajectory traj = generateTrajectory(new Pose2d(10, 12, new Rotation2d(12)), 
                     new Pose2d(10, 12, new Rotation2d(12))
                 );

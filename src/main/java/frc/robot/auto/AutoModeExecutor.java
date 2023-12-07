@@ -1,5 +1,6 @@
 package frc.robot.auto;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.auto.modes.AutoModeBase;
 import frc.robot.util.CrashTrackingRunnable;
 import frc.robot.util.Logger;
@@ -98,5 +99,17 @@ public class AutoModeExecutor {
             return;
         }
         mAutoMode.resume();
+    }
+
+    public boolean hasAutoMode()
+    {
+        return (null != mAutoMode);
+    }
+
+    public void updateSmartDashboard()
+    {
+        final String key = "AutoModeExecutor/";
+        SmartDashboard.putBoolean(key + "HasAutoMode", hasAutoMode());
+        if(hasAutoMode()) mAutoMode.updateSmartDashboard(key);
     }
 }

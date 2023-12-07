@@ -1,0 +1,222 @@
+{
+  "tabPane": [
+    {
+      "title": "JoeDev",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "0,0": {
+            "size": [
+              3,
+              4
+            ],
+            "content": {
+              "_type": "Network Table Tree",
+              "_source0": "network_table:///SmartDashboard/Arm",
+              "_title": "Arm"
+            }
+          },
+          "3,0": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Network Table Tree",
+              "_source0": "network_table:///SmartDashboard/Grasper",
+              "_title": "Grasper"
+            }
+          },
+          "6,0": {
+            "size": [
+              4,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/RobotState/Pose Estimation",
+              "_title": "SmartDashboard/RobotState/Pose Estimation"
+            }
+          },
+          "6,2": {
+            "size": [
+              4,
+              3
+            ],
+            "content": {
+              "_type": "Field",
+              "_source0": "network_table:///SmartDashboard/RobotState/Visual Field",
+              "_title": "SmartDashboard/RobotState/Visual Field",
+              "Game/Game": "A2022_Rapid_React",
+              "Visuals/Robot Icon Size": 50.0,
+              "Visuals/Show Outside Circles": false,
+              "Colors/AprilTag 3": "#FFFFFFFF",
+              "Colors/AprilTag 2": "#FFFFFFFF",
+              "Colors/AprilTag 1": "#FFFFFFFF",
+              "Colors/AprilTag 7": "#FFFFFFFF",
+              "Colors/VisionEstimatedPose": "#FFFFFFFF",
+              "Colors/AprilTag 6": "#FFFFFFFF",
+              "Colors/AprilTag 5": "#FFFFFFFF",
+              "Colors/AprilTag 4": "#FFFFFFFF",
+              "Colors/AprilTag 8": "#FFFFFFFF",
+              "Colors/Blue Node 8": "#FFFFFFFF",
+              "Colors/Red Node 7": "#FFFFFFFF",
+              "Colors/Blue Node 3": "#FFFFFFFF",
+              "Colors/Red Node 8": "#FFFFFFFF",
+              "Colors/Blue Node 2": "#FFFFFFFF",
+              "Colors/Blue Node 1": "#FFFFFFFF",
+              "Colors/Blue Node 0": "#FFFFFFFF",
+              "Colors/Blue Node 7": "#FFFFFFFF",
+              "Colors/Blue Node 6": "#FFFFFFFF",
+              "Colors/Blue Node 5": "#FFFFFFFF",
+              "Colors/Blue Node 4": "#FFFFFFFF",
+              "Colors/Red Node 0": "#FFFFFFFF",
+              "Colors/Red Node 1": "#FFFFFFFF",
+              "Colors/Red Node 2": "#FFFFFFFF",
+              "Colors/Red Node 3": "#FFFFFFFF",
+              "Colors/Red Node 4": "#FFFFFFFF",
+              "Colors/Red Node 5": "#FFFFFFFF",
+              "Colors/Red Node 6": "#FFFFFFFF",
+              "Colors/CS Corner 0": "#FFFFFFFF",
+              "Colors/CS Corner 1": "#FFFFFFFF",
+              "Colors/CS Corner 2": "#FFFFFFFF",
+              "Colors/CS Corner 3": "#FFFFFFFF",
+              "Colors/WpilibPose": "#FFFFFFFF"
+            }
+          },
+          "6,1": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Target Arm Position",
+              "_title": "SmartDashboard/Target Arm Position"
+            }
+          },
+          "8,1": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Target Position",
+              "_title": "SmartDashboard/Target Position"
+            }
+          },
+          "3,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/SendableChooser[0]",
+              "_title": "SmartDashboard/SendableChooser[0]"
+            }
+          },
+          "2,4": {
+            "size": [
+              4,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/AutoPilot/Goal Pose",
+              "_title": "SmartDashboard/AutoPilot/Goal Pose"
+            }
+          },
+          "5,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/AutoPilot/Running",
+              "_title": "AutoPilot",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "AUTO",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "1,0": {
+            "size": [
+              3,
+              2
+            ],
+            "content": {
+              "_type": "Network Table Tree",
+              "_source0": "network_table:///SmartDashboard/TrajectoryFollower",
+              "_title": "SmartDashboard/TrajectoryFollower"
+            }
+          },
+          "4,0": {
+            "size": [
+              6,
+              5
+            ],
+            "content": {
+              "_type": "Field",
+              "_source0": "network_table:///SmartDashboard/Autonomous Field",
+              "_title": "SmartDashboard/Autonomous Field",
+              "Game/Game": "A2022_Rapid_React",
+              "Visuals/Robot Icon Size": 50.0,
+              "Visuals/Show Outside Circles": false,
+              "Colors/traj": "#FFFFFFFF"
+            }
+          },
+          "1,2": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/SendableChooser[1]",
+              "_title": "SmartDashboard/SendableChooser[1]"
+            }
+          },
+          "1,3": {
+            "size": [
+              3,
+              2
+            ],
+            "content": {
+              "_type": "Network Table Tree",
+              "_source0": "network_table:///SmartDashboard/AutoModeExecutor",
+              "_title": "SmartDashboard/AutoModeExecutor"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "windowGeometry": {
+    "x": -8.0,
+    "y": -8.0,
+    "width": 1553.5999755859375,
+    "height": 881.5999755859375
+  }
+}

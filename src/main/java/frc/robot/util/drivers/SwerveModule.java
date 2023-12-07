@@ -3,6 +3,7 @@ package frc.robot.util.drivers;
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.sensors.CANCoder;
@@ -16,6 +17,7 @@ import frc.robot.util.drivers.CTRE.CTREConfigs;
 import frc.robot.util.drivers.CTRE.CTREModuleState;
 import frc.robot.util.math.Conversions;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
@@ -52,29 +54,36 @@ public class SwerveModule  {
     private final EntropyTalonFX mDriveMotor;
     private final EntropyTalonFX mAngleMotor;
 
-    // Simulation Motors
-
     // PID
     private double mAngleKp;
     private double mAngleKi;
     private double mAngleKd;
     private SimpleMotorFeedforward mFeedforward;
 
+    // Simulation Only
+    private SwerveModulePosition mSimPosition;
+
+
     public SwerveModule(int moduleNumber, SwerveModuleConstants swerveConstants) {
         mModuleNumber = moduleNumber;
         mModuleName = "Module " + moduleNumber;
         mModuleString = swerveConstants.moduleName;
         mAngleOffset = swerveConstants.angleOffset;
-        mDriveMotor = new EntropyTalonFX(swerveConstants.driveMotorID);
-        mAngleMotor = new EntropyTalonFX(swerveConstants.angleMotorID);
+        mDriveMotor = new EntropyTalonFX(swerveConstants.driveMotorID, swerveConstants.CanBusID);
+        mAngleMotor = new EntropyTalonFX(swerveConstants.angleMotorID, swerveConstants.CanBusID);
         mDesiredState = new SwerveModuleState(0, new Rotation2d()); // zero desired state
+
+        // Feedforward Controller for non open loop
+        mFeedforward = new SimpleMotorFeedforward(Constants.SwerveConstants.driveKS, 
+                                            Constants.SwerveConstants.driveKV, Constants.SwerveConstants.driveKA);
+
 
         // Set Motor Descriptions for logging
         mDriveMotor.setDescription(mModuleName + " Drive Motor");
         mAngleMotor.setDescription(mModuleName + " Angle Motor");
 
         // Angle Encoder
-        mAngleEncoder = new EntropyCANCoder(swerveConstants.cancoderID);
+        mAngleEncoder = new EntropyCANCoder(swerveConstants.cancoderID, swerveConstants.CanBusID);
         configAngleEncoder();
         mAngleEncoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 255);
         mAngleEncoder.setStatusFramePeriod(CANCoderStatusFrame.VbatAndFaults, 255);
@@ -89,7 +98,11 @@ public class SwerveModule  {
         // Drive Motor
         configDriveMotor();
 
+        // Simulation
+        mSimPosition = new SwerveModulePosition();
+
         mLastAngle = getState().angle.getDegrees();
+        //mDriveMotor.setNeutralMode(NeutralMode.Coast);
     }
 
     public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop){
@@ -182,9 +195,55 @@ public class SwerveModule  {
         return mModuleNumber;
     }
 
+    public SwerveModulePosition getPosition() {
+        return new SwerveModulePosition(getDriveMeters(), getHeadingRotation2d());
+    }
+    
+    public double getHeadingDegrees() {
+        return mAngleMotor.getSelectedSensorPosition() * Constants.SwerveConstants.Motor.kTurnDistancePerPulse;
+      }
+    
+    public Rotation2d getHeadingRotation2d() {
+        return Rotation2d.fromDegrees(getHeadingDegrees());
+    }
+
+    public double getDriveMetersPerSecond() {
+        return mDriveMotor.getSelectedSensorVelocity() * Constants.SwerveConstants.Motor.kDriveDistancePerPulse * 10;
+    }
+    
+    public double getDriveMeters() {
+        return mDriveMotor.getSelectedSensorPosition() * Constants.SwerveConstants.Motor.kDriveDistancePerPulse;
+    }
+
     public void zeroEncoders()
     {
         
+    }
+
+    public void setBreakMode()
+    {
+        mDriveMotor.setNeutralMode(NeutralMode.Brake);
+    }
+
+    public void setCoastMode() 
+    {
+        mDriveMotor.setNeutralMode(NeutralMode.Coast);
+    }
+
+    public void updateSimPosition(double dt)
+    {
+        updateSimPosition(dt);
+    }
+
+    public void updateSimPosition(double dt, boolean invert)
+    {
+        mSimPosition.distanceMeters += ((mDesiredState.speedMetersPerSecond * (invert ? -1 : 1)) * dt);
+        mSimPosition.angle = mDesiredState.angle;
+    }
+
+    public SwerveModulePosition getSimPosition()
+    {
+        return mSimPosition;
     }
 
     public void updateSmartDashBoard()
@@ -196,6 +255,9 @@ public class SwerveModule  {
         SmartDashboard.putNumber(BaseKey + "CANCoderID", mAngleEncoder.getDeviceID());
         SmartDashboard.putNumber(BaseKey + "Last Angle", mLastAngle);
         SmartDashboard.putString(BaseKey + "Desired State", mDesiredState.toString());
+        SmartDashboard.putString(BaseKey + "Sim Position", mSimPosition.toString());
+        SmartDashboard.putNumber(BaseKey + "Drive Motor M/S", getDriveMetersPerSecond());
+        SmartDashboard.putNumber(BaseKey + "Drive Motor Meters", getDriveMeters());
         SmartDashboard.putNumber(BaseKey + "CanCoder Position", getCanCoder().getDegrees());
 
         // CANCoder

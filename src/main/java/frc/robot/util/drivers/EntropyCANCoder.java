@@ -8,7 +8,12 @@ public class EntropyCANCoder extends CANCoder {
     private String deviceInfo;
 
     public EntropyCANCoder(int deviceNumber) {
-        super(deviceNumber);
+        this(deviceNumber, "");
+    }
+
+    public EntropyCANCoder(int deviceNumber, String canBusId)
+    {
+        super(deviceNumber, canBusId);
         setDeviceInfo(deviceNumber);
     }
 
@@ -18,9 +23,11 @@ public class EntropyCANCoder extends CANCoder {
 
     public void updateSmartdashboard()
     {  
-        SmartDashboard.putNumber(deviceInfo + "/FirmwareVersion", getFirmwareVersion());
-        SmartDashboard.putNumber(deviceInfo + "/AbsolutePosition", getAbsolutePosition());
-        SmartDashboard.putNumber(deviceInfo + "/Position", getPosition());
-        SmartDashboard.putNumber(deviceInfo + "/Velocity", getVelocity());
+        final String key = "CanCoders/" + deviceInfo;
+        SmartDashboard.putNumber(key + "/FirmwareVersion", getFirmwareVersion());
+        SmartDashboard.putNumber(key + "/AbsolutePosition", getAbsolutePosition());
+        SmartDashboard.putNumber(key + "/AbsolutePosition360", 360 - getAbsolutePosition());
+        SmartDashboard.putNumber(key + "/Position", getPosition());
+        SmartDashboard.putNumber(key + "/Velocity", getVelocity());
     }
 }

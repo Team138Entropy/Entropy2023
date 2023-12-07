@@ -1,0 +1,18 @@
+<html>
+  <body>
+    <frc-dashboard onload="ntLoaded()">
+      <!-- Dashboard code goes here -->
+      <p>FRC DASHBOARD TEST</p>
+    </frc-dashboard>
+    <script src="./frc-web-components.js"></script>
+    <script>
+      function ntLoaded() {
+        NetworkTables.addGlobalListener(function(key, value, isNew) {
+          // do something with the values as they change
+        }, true);
+
+        NetworkTables.putValue('/networktablesLoaded', true);
+      }
+    </script>
+  </body>
+</html>
