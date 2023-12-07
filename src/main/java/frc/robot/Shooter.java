@@ -1,7 +1,9 @@
 package frc.robot;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import java.lang.Math;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Shooter { 
 
@@ -13,6 +15,7 @@ public class Shooter {
     public SpeedLookupConfig TargetedSpeeds;
     VelocityLookupTable velocityLookup = new VelocityLookupTable();
 
+    private final Timer retractTimer;
 
     //Setting the motors
     com.ctre.phoenix6.hardware.TalonFX TopEject = new TalonFX(6);
@@ -22,8 +25,78 @@ public class Shooter {
     TalonFX MidIntake = new TalonFX(2);
     TalonFX LowIntake = new TalonFX(1);
 
-    // Interpolating Table
-    
+    public enum ShooterState {
+        PreppedToFire,
+        Loaded,
+        Retracted,
+        ResetRetraction,
+        Running,
+        Stopped
+      };
+      private ShooterState mShooterState;
+
+    // Public function, allows somebody to set the grasper state. Should be the only public function relating to the shooter
+    public void setShooterState(ShooterState shooterMode){      
+        mShooterState = shooterMode;
+    }
+
+    public void update(){
+        switch(mShooterState) {
+
+
+        case PreppedToFire:
+
+        revUp();
+
+        break;
+
+
+        case Loaded:
+
+        Load();
+
+        break;
+
+
+        case Retracted:
+        
+        retractTimer.start();
+        retract();
+        if (retractionOver() == true){
+            setShooterState(ShooterState.Stopped);
+        }
+        
+
+        break;
+
+
+        case ResetRetraction:
+
+        resetRetract();
+
+        break;
+        
+
+        case Stopped:
+
+        Stop();
+
+        break;
+
+
+        case Running:
+
+        Run();
+
+        break;
+        default:
+        break;
+        }
+    }
+
+    private boolean retractionOver(){
+        return retractTimer.hasElapsed(0.25);
+    }
 
     // Sets the distance (in meters) that the shooter is aiming for
     public void setTargetDistance(double meters){
@@ -59,23 +132,62 @@ public class Shooter {
     }
 
     // Sets the RPS of each individual motor
-    public void Run(){
+    private void Run(){
         TopEject.setControl(new VelocityVoltage(TargetedSpeeds.TopEject));
-        BottomEject1.setControl(new VelocityVoltage(selectSpeed));
-        BottomTopEject2.setControl(new VelocityVoltage(selectSpeed));
-        HighIntake.setControl(new VelocityVoltage(selectSpeed));
-        MediumIntake.setControl(new VelocityVoltage(selectSpeed));
-        LowIntake.setControl(new VelocityVoltage(selectSpeed));
+        BottomEject.setControl(new VelocityVoltage(TargetedSpeeds.BottomEject));
+        HighIntake.setControl(new VelocityVoltage(TargetedSpeeds.HighIntake));
+        MediumIntake.setControl(new VelocityVoltage(TargetedSpeeds.MidIntake));
+        LowIntake.setControl(new VelocityVoltage(TargetedSpeeds.LowIntake));
     }
 
     // Stops all motors
-    public void Stop(){
+    private void Stop(){
         TopEject.setControl(new DutyCycleOut(0));
-        BottomEject1.setControl(new DutyCycleOut(0));
-        BottomEject2.setControl(new DutyCycleOut(0));
+        BottomEject.setControl(new DutyCycleOut(0));
         HighIntake.setControl(new DutyCycleOut(0));
         MidIntake.setControl(new DutyCycleOut(0));
         LowIntake.setControl(new DutyCycleOut(0));
     }
 
+    // Stops everything except the intake, which continues normally
+    private void Load(){
+        TopEject.setControl(new DutyCycleOut(0));
+        BottomEject.setControl(new DutyCycleOut(0));
+        HighIntake.setControl(new DutyCycleOut(0));
+        MidIntake.setControl(new DutyCycleOut(MidIntake.getRotorVelocity.getValue()));
+        LowIntake.setControl(new DutyCycleOut(LowIntake.getRotorVelocity.getValue()));
+    }
+
+    private void revUp(){
+        TopEject.setControl(new DutyCycleOut(TopEject.getRotorVelocity.getValue()));
+        BottomEject.setControl(new DutyCycleOut(BottomEject.getRotorVelocity.getValue()));
+        HighIntake.setControl(new DutyCycleOut(0));
+        MidIntake.setControl(new DutyCycleOut(0));
+        LowIntake.setControl(new DutyCycleOut(0));
+    }
+
+    private void retract(){
+        TopEject.setControl(new DutyCycleOut(-0.1));
+        BottomEject.setControl(new DutyCycleOut(-0.1));
+        HighIntake.setControl(new DutyCycleOut(-0.1));
+        MidIntake.setControl(new DutyCycleOut(-0.1));
+        LowIntake.setControl(new DutyCycleOut(-0.1));
+    }
+
+    // Timer in switch statement
+    private void resetRetract(){
+        TopEject.setControl(new DutyCycleOut(0.1));
+        BottomEject.setControl(new DutyCycleOut(0.1));
+        HighIntake.setControl(new DutyCycleOut(0.1));
+        MidIntake.setControl(new DutyCycleOut(0.1));
+        LowIntake.setControl(new DutyCycleOut(0.1));
+    }
 }
+
+/*
+3 new functions:
+- run everything reverse at a slow speed (get ball back down from shooter) ---------------------retract
+- return balls back to their position after the previous function (ensure balls don't drop) ----resetBallPosition
+- only run shooter (everything else zero, prepares to fire) ------------------------------------revUp
+- don't run shooter, run anything else (only run intake) ---------------------------------------Load
+ */

@@ -16,7 +16,7 @@ First number is distance, then motors in order: TopEject, BottomEject, HighIntak
 
     VelocityLookupTable() {}
 
-  // https://en.wikipedia.org/wiki/Linear_interpolation
+
   public double linearInterpolate(double x, double x0, double y0, double x1, double y1) {
     return (y0 * (x1 - x) + y1 * (x - x0)) / (x1 - x0);
   }
