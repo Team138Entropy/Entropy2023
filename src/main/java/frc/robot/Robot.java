@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.OI.OperatorInterface;
+import frc.robot.Shooter.ShooterState;
 import frc.robot.TuneableNumber;
 
 /**
@@ -130,6 +131,13 @@ TalonFX LowIntake = new TalonFX(1);
       LowIntake.setControl(new DutyCycleOut( 0));
     }
 
+    if (mOperatorInterface.getShooterRunning()){
+      setShooterState(ShooterState.Running);
+    }
+
+    if (mOperatorInterface.stopShooter()){
+      setShooterState(ShooterState.Stopped);
+    }
 
   }
 }

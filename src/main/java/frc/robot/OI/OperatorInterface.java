@@ -196,7 +196,32 @@ public class OperatorInterface {
     }
 
 
+    // Shooter code
+    public boolean getShooterRunning(){
+        return mDriverController.getTrigger(Side.RIGHT);
+    }
+
+    public boolean stopShooter(){
+        return mDriverController.getTrigger(Side.LEFT);
+    }
+
+    public boolean revUpShooter(){
+        return mDriverController.getButton(Button.X);
+    }
+
+    public boolean getShooterPrepped(){
+        return mDriverController.getButton(Button.B);
+    }
+
+    public boolean getBallsRetracted(){
+        return mDriverController.getButton(Button.Y);
+    }
+
+    public boolean getBallsReset(){
+        return mDriverController.getButton(Button.A);
+    }
 }
+
 
 
 
