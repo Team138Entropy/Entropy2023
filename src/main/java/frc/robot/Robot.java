@@ -37,6 +37,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
   }
 
+  Shooter mShooter = new Shooter();
   /**
    * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
    * that you want ran during disabled, autonomous, teleoperated and test.
@@ -132,11 +133,17 @@ TalonFX LowIntake = new TalonFX(1);
     }
 
     if (mOperatorInterface.getShooterRunning()){
-      setShooterState(ShooterState.Running);
-    }
-
-    if (mOperatorInterface.stopShooter()){
-      setShooterState(ShooterState.Stopped);
+      mShooter.setShooterState(ShooterState.Running);
+    } else if (mOperatorInterface.stopShooter()){
+      mShooter.setShooterState(ShooterState.Stopped);
+    } else if (mOperatorInterface.getShooterPrepped()){
+      mShooter.setShooterState(ShooterState.PreppedToFire);
+    } else if (mOperatorInterface.loadBalls()){
+      mShooter.setShooterState(ShooterState.Loaded);
+    } else if (mOperatorInterface.getBallsRetracted()){
+      mShooter.setShooterState(ShooterState.Retracted);
+    } else if (mOperatorInterface.getBallsReset()){
+      mShooter.setShooterState(ShooterState.ResetRetraction);
     }
 
   }

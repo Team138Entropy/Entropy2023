@@ -205,7 +205,7 @@ public class OperatorInterface {
         return mDriverController.getTrigger(Side.LEFT);
     }
 
-    public boolean revUpShooter(){
+    public boolean loadBalls(){
         return mDriverController.getButton(Button.X);
     }
 

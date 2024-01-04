@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import java.lang.Math;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shooter { 
 
@@ -36,9 +37,15 @@ public class Shooter {
       };
       private ShooterState mShooterState;
 
+      private void getShooterState(){
+
+      }
+
     // Public function, allows somebody to set the grasper state. Should be the only public function relating to the shooter
     public void setShooterState(ShooterState shooterMode){      
         mShooterState = shooterMode;
+        //this can't be null, needs to return shooter state
+        SmartDashboard.
     }
 
     public void update(){
@@ -181,4 +188,6 @@ public class Shooter {
 /*
 Set each button on a controller to a different state
 Test in Sim
+
+shooter state in shuffleboard
  */
