@@ -128,12 +128,6 @@ public class Robot extends TimedRobot {
   private final SlewRateLimiter mSlewControllerY = new SlewRateLimiter(kTranslationSlew);
   private final SlewRateLimiter mSlewControllerRotation = new SlewRateLimiter(kRotationSlew);
 
-  private SlewRateLimiter mSlewRateControllerX = new SlewRateLimiter(Constants.Drive.accelXSlewTuneableNumber.get());
-  private SlewRateLimiter mSlewRateControllerY = new SlewRateLimiter(Constants.Drive.accelYSlewTuneableNumber.get());
-
-  //public double mOldXAccel = 0;
-  //public double mOldYAccel = 0;
-
   // Test Controls
   private boolean mJogMode = true;
   private boolean mPositionMode = false;
@@ -260,8 +254,6 @@ public class Robot extends TimedRobot {
     mArm.zeroSensors();
     mDrive.zeroHeading();
     mDrive.zeroEncoders();    
-    mSlewRateControllerX.reset(0);
-    mSlewRateControllerY.reset(0);
   }
 
   /**
@@ -954,7 +946,6 @@ public class Robot extends TimedRobot {
     }
     else if(Drive.DriveStyle.SWERVE_DRIVE == driveStyle)
     {
-
       // Zero Gyro
       if(mOperatorInterface.getZeroGyro())
       {
@@ -1062,24 +1053,6 @@ public class Robot extends TimedRobot {
           mSlewControllerY.reset(sTrans.getY());
           mSlewControllerRotation.reset(sRotation);
         }
-
-        double xTrans = mSlewRateControllerX.calculate(sTrans.getX());
-        double yTrans = mSlewRateControllerY.calculate(sTrans.getY());
-        sTrans = new Translation2d(xTrans, yTrans);
-        //not needed ig
-        /*
-         if((Math.abs(sTrans.getX()) - Math.abs(mOldXAccel)) > .2) {
-          double xTrans = mSlewControllerX.calculate(sTrans.getX());
-          double yTrans = sTrans.getY();
-          sTrans = new Translation2d(xTrans,yTrans);
-        }
-        if((Math.abs(sTrans.getY()) - Math.abs(mOldYAccel)) < .2){
-          double xTrans = sTrans.getX();
-          double yTrans = mSlewControllerY.calculate(sTrans.getY());
-          sTrans = new Translation2d(xTrans,yTrans);
-        }
-         */
-        
         
         // Configure Snap Controller to be safe if CG Compemised
         if(mSuperStructure.isCGCompromised())
@@ -1106,16 +1079,6 @@ public class Robot extends TimedRobot {
 
         // Reset Charging Station DOne
         mChargingStationAutoPilot.startBalance();
-
-        //mOldXAccel = sTrans.getX();
-        //mOldYAccel = sTrans.getY();
-
-
-        mSlewRateControllerX = new SlewRateLimiter(Constants.Drive.accelXSlewTuneableNumber.get());
-        mSlewRateControllerY = new SlewRateLimiter(Constants.Drive.accelYSlewTuneableNumber.get());
-
-        mSlewRateControllerX.reset(sTrans.getX());
-        mSlewRateControllerY.reset(sTrans.getY());
       }
     }
   }
